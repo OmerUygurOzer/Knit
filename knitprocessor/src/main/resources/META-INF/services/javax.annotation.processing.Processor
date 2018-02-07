@@ -1,0 +1,3 @@
+com.omerozer.knitprocessor.vp.KnitPresenterProcessor
+com.omerozer.knitprocessor.user.KnitUserProcessor
+com.omerozer.knitprocessor.model.KnitModelProcessor
