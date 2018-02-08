@@ -1,8 +1,13 @@
 package com.omerozer.sample.presenters;
 
+import android.util.Log;
+
 import com.omerozer.knit.*;
 import com.omerozer.knit.Mutator;
 import com.omerozer.knit.mutators.*;
+import com.omerozer.knit.viewevents.ViewEventEnv;
+import com.omerozer.knit.viewevents.ViewEventPool;
+import com.omerozer.knit.viewevents.handlers.EventHandler;
 import com.omerozer.sample.TestObject;
 import com.omerozer.sample.views.MainActivity;
 
@@ -45,6 +50,7 @@ public class MainPresenter {
     Mutator2<String,String,String> mutateTestString = new Mutator2<String, String, String>() {
         @Override
         public String mutate(String param1,String param2) {
+            Log.d("KNIT_TEST","Mutating fullName");
             return param1 + " " + param2;
         }
     };
@@ -62,6 +68,15 @@ public class MainPresenter {
         @Override
         public TestObject mutate(TestObject source) {
             return null;
+        }
+    };
+
+    @ViewEventHandler("clickButton")
+    EventHandler handler = new EventHandler() {
+        @Override
+        public void handle(ViewEventPool eventPool, ViewEventEnv eventEnv, KnitModel modelManager) {
+           // modelManager.request();
+            eventPool.pool(eventEnv);
         }
     };
 

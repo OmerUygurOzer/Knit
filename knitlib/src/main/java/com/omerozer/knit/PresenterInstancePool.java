@@ -26,14 +26,19 @@ public class PresenterInstancePool {
         this.modelManager = modelManager;
     }
 
-    <T> KnitPresenter getPresenterInstance(Object object) {
+    void applyPresenterInstanceToView(Object viewObject){
+        KnitPresenter presenter = getPresenterInstance(viewObject);
+        presenter.apply(viewObject);
+        handleLoadState(presenter);
+    }
+
+
+    KnitPresenter getPresenterInstance(Object object) {
         Class<?> clazz = object.getClass();
         if (instanceMap.containsKey(clazz)) {
-            handleLoadState(instanceMap.get(clazz));
             return instanceMap.get(clazz);
         }
         KnitPresenter presenterInstance = knitClassLoader.createPresentersInstance(object,modelManager);
-        handleLoadState(presenterInstance);
         knitMemoryManager.registerInstance(presenterInstance);
         return presenterInstance;
     }

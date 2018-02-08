@@ -35,8 +35,12 @@ public class SecondActivity extends AppCompatActivity {
 
     @Updating("age")
     public void incAge(int ageUpdate){
-        this.age = ageUpdate;
-        ((TextView) findViewById(R.id.textView_two)).setText(Integer.toString(age));
+        ((TextView) findViewById(R.id.textView_two)).setText(Integer.toString(ageUpdate));
+    }
+
+    @Updating("rand")
+    public void incRand(String rand){
+        ((TextView) findViewById(R.id.textView_rand)).setText(rand);
     }
 
 

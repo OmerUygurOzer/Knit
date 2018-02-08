@@ -27,7 +27,7 @@ public class Knit {
     }
 
     public static void show(Object viewObject) {
-        presenterInstancePool.getPresenterInstance(viewObject).apply(viewObject);
+        presenterInstancePool.applyPresenterInstanceToView(viewObject);
     }
 
     public static void dismiss(Object viewObject){

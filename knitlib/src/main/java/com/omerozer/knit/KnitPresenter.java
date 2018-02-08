@@ -5,10 +5,37 @@ package com.omerozer.knit;
  */
 
 
-public abstract class  KnitPresenter implements MemoryEntity {
+public abstract class KnitPresenter implements MemoryEntity {
 
-     public abstract void apply(Object viewObject);
+    public static final KnitPresenter THIS = new KnitPresenter() {
+        @Override
+        public void apply(Object viewObject) {
 
-     public abstract void releaseCurrentView();
+        }
+
+        @Override
+        public void releaseCurrentView() {
+
+        }
+
+        @Override
+        public void load() {
+
+        }
+
+        @Override
+        public void destroy() {
+
+        }
+
+        @Override
+        public boolean shouldLoad() {
+            return false;
+        }
+    };
+
+    public abstract void apply(Object viewObject);
+
+    public abstract void releaseCurrentView();
 
 }

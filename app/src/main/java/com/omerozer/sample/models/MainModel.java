@@ -1,5 +1,7 @@
 package com.omerozer.sample.models;
 
+import android.util.Log;
+
 import com.omerozer.knit.Generates;
 import com.omerozer.knit.GeneratesAsync;
 import com.omerozer.knit.Model;
@@ -18,6 +20,7 @@ public class MainModel {
     Generator0<String> generateFirstName = new Generator0<String>() {
         @Override
         public String generate() {
+            Log.d("KNIT_TEST","Generating firstname");
             return "Omer";
         }
     };
@@ -43,7 +46,7 @@ public class MainModel {
 
         @Override
         public String generate(String param1, String param2) {
-            return param1 + " HUA"+ param2;
+            return param1 + " HUA "+ param2;
         }
     };
 

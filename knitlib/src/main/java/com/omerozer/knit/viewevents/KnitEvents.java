@@ -1,4 +1,4 @@
-package com.omerozer.knit;
+package com.omerozer.knit.viewevents;
 
 /**
  * Created by omerozer on 2/2/18.

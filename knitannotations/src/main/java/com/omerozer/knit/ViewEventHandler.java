@@ -6,11 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by omerozer on 2/2/18.
+ * Created by omerozer on 2/7/18.
  */
-
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.SOURCE)
-public @interface UpdatesAsync {
+public @interface ViewEventHandler {
     String value();
 }

@@ -14,13 +14,13 @@ import com.omerozer.sample.views.SecondActivity;
 public class SecondPresenter {
 
     @Seed("firstName")
-    String firstName;
+    String firstName = "Omer";
 
     @Seed("rand")
     String rand;
 
     @Seed("key")
-    String key;
+    String key = "Key";
 
     @Seed("age")
     int age = 28;
