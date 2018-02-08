@@ -74,8 +74,8 @@ public class MainPresenter {
     @ViewEventHandler("clickButton")
     EventHandler handler = new EventHandler() {
         @Override
-        public void handle(ViewEventPool eventPool, ViewEventEnv eventEnv, KnitModel modelManager) {
-           // modelManager.request();
+        public void handle(ViewEventPool eventPool, ViewEventEnv eventEnv,KnitModel modelManager) {
+            Log.d("KNIT_TEST","BUTTON_CLICKED");
             eventPool.pool(eventEnv);
         }
     };

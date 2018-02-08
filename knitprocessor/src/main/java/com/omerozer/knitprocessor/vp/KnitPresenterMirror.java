@@ -1,5 +1,7 @@
 package com.omerozer.knitprocessor.vp;
 
+import com.squareup.javapoet.TypeSpec;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -22,6 +24,10 @@ public class KnitPresenterMirror {
     public Map<String,VariableElement> mutatorFields = new LinkedHashMap<>();
 
     public Map<String,String[]> mutatorParams = new LinkedHashMap<>();
+
+    public boolean isEnclosingAHandler = false;
+
+    public Map<String,VariableElement> eventHandlerFields = new LinkedHashMap<>();
 
 
 }

@@ -12,7 +12,7 @@ public class KnitAsyncTaskHandler {
 
     private static final int DEFAULT_THREAD_POOL_SIZE = 4;
 
-    ExecutorService threadPool;
+    private ExecutorService threadPool;
 
     KnitAsyncTaskHandler(){
         this.threadPool = Executors.newFixedThreadPool(DEFAULT_THREAD_POOL_SIZE);

@@ -6,6 +6,7 @@ import com.omerozer.knit.Mutator;
 import com.omerozer.knit.Presenter;
 import com.omerozer.knit.Seed;
 import com.omerozer.knit.Updating;
+import com.omerozer.knit.ViewEventHandler;
 import com.omerozer.knitprocessor.KnitAnnotations;
 
 import java.util.LinkedHashMap;
@@ -87,6 +88,10 @@ public class KnitPresenterProcessor extends AbstractProcessor {
                         } else {
                             knitPresenterMirror.mutatorParams.put(fieldTag, params);
                         }
+                    } else if (element.getAnnotation(ViewEventHandler.class) != null) {
+                        String fieldTag = element.getAnnotation(ViewEventHandler.class).value();
+                        knitPresenterMirror.eventHandlerFields.put(fieldTag,
+                                (VariableElement) element);
                     }
                 }
                 this.presenters.add(knitPresenterMirror);

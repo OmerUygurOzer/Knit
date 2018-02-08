@@ -33,6 +33,18 @@ public class SecondActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.textView_rand)).setText(rand);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Knit.show(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Knit.dismiss(this);
+    }
+
     @Updating("age")
     public void incAge(int ageUpdate){
         ((TextView) findViewById(R.id.textView_two)).setText(Integer.toString(ageUpdate));

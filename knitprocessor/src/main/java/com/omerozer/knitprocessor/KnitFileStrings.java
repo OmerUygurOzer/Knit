@@ -19,8 +19,10 @@ public class KnitFileStrings {
     public static final String KNIT_PRESENTER_APPLY_METHOD = "apply";
     public static final String KNIT_PRESENTER_RELEASE_METHOD = "releaseCurrentView";
     public static final String KNIT_PRESENTER_UPDATE_METHOD_POSTFIX = "_Update";
+    public static final String KNIT_PRESENTER_GET_MODEL_MANAGER_METHOD = "getModelManager";
     public static final String KNIT_PRESENTER_SEED_FIELD_POSTFIX = "_Seed";
     public static final String KNIT_PRESENTER_MUTATOR_FIELD_POSTFIX = "_Mutator";
+    public static final String KNIT_PRESENTER_HANDLER_FIELD_POSTFIX = "_Handler";
 
     //MODEL
     public static final String KNIT_MODEL = "com.omerozer.knit.KnitModel";
@@ -39,6 +41,10 @@ public class KnitFileStrings {
     public static final String KNIT_MODEL_MAP = "com.omerozer.knit.ModelMap";
     public static final String KNIT_VIEW_PRESENTER = "ViewToPresenterMap";
     public static final String KNIT_VIEW_PRESENTER_INTERFACE = "com.omerozer.knit.ViewToPresenterMapInterface";
+    public static final String KNIT_EVENT_HANDLER = "com.omerozer.knit.viewevents.handlers.EventHandler";
+    public static final String KNIT_EVENT_HANDLE_METHOD = "handle";
+    public static final String KNIT_EVENT_VIEW_EVENT_POOL = "com.omerozer.knit.viewevents.ViewEventPool";
+    public static final String KNIT_EVENT_VIEW_EVENT_ENV = "com.omerozer.knit.viewevents.ViewEventEnv";
 
     //ANDROID
     public static final String ANDROID_HANDLER = "android.os.Handler";

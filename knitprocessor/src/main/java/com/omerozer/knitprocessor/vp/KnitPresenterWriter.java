@@ -69,6 +69,14 @@ class KnitPresenterWriter {
 
         shouldLoadMethod = shouldLoadMethodBuilder.build();
 
+        MethodSpec getModelManagerMethod = MethodSpec
+                .methodBuilder(KnitFileStrings.KNIT_PRESENTER_GET_MODEL_MANAGER_METHOD)
+                .returns(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL))
+                .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(Override.class)
+                .addStatement("return this.$L","modelManager")
+                .build();
+
 
         TypeSpec.Builder clazzBuilder = TypeSpec
                 .classBuilder(presenterMirror.enclosingClass.getSimpleName()
@@ -80,16 +88,19 @@ class KnitPresenterWriter {
                 .addField(loadedField)
                 .addField(modelManagerField)
                 .addField(activeViewWeakRefField)
-                .addMethod(shouldLoadMethod);
+                .addMethod(shouldLoadMethod)
+                .addMethod(getModelManagerMethod);
 
         createConstructor(clazzBuilder, presenterMirror);
         createApplyMethod(clazzBuilder, presenterMirror, map);
+        createHandleMethod(clazzBuilder, presenterMirror, map);
         createRemoveMethod(clazzBuilder, presenterMirror);
         createGetters(clazzBuilder, presenterMirror);
         createLoadMethod(clazzBuilder, presenterMirror);
         createDestroyMethod(clazzBuilder, presenterMirror);
         createSeedFields(clazzBuilder, presenterMirror);
         createMutatorFields(clazzBuilder, presenterMirror);
+        createHandlerFields(clazzBuilder, presenterMirror);
         createUpdatingMethods(clazzBuilder, presenterMirror, map);
 
         TypeSpec clazz = clazzBuilder.build();
@@ -138,10 +149,45 @@ class KnitPresenterWriter {
                             + " = this.parent.get_" + incFieldName + "()");
         }
 
+        for (String string : presenterMirror.eventHandlerFields.keySet()) {
+            String incFieldName = presenterMirror.eventHandlerFields.get(
+                    string).getSimpleName().toString();
+            constructorBuilder.addStatement(
+                    "this." + string + KnitFileStrings.KNIT_PRESENTER_HANDLER_FIELD_POSTFIX
+                            + " = this.parent.get_" + incFieldName + "()");
+        }
+
         constructorBuilder.addStatement("this.loaded = false");
 
         clazzBuilder.addMethod(constructorBuilder.build());
 
+    }
+
+    private static void createHandleMethod(TypeSpec.Builder clazzBuilder,
+            KnitPresenterMirror presenterMirror, Map<KnitPresenterMirror, KnitViewMirror> map) {
+
+        MethodSpec.Builder handleMethodBuilder = MethodSpec
+                .methodBuilder(KnitFileStrings.KNIT_EVENT_HANDLE_METHOD)
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_EVENT_VIEW_EVENT_POOL),
+                        "eventPool")
+                .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_EVENT_VIEW_EVENT_ENV),
+                        "eventEnv")
+                .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL), "modelManager");
+
+        handleMethodBuilder.addStatement("$L tag = eventEnv.getTag()",
+                String.class.getCanonicalName());
+
+        for (String string : presenterMirror.eventHandlerFields.keySet()) {
+            handleMethodBuilder.beginControlFlow("if(tag.equals($S))", string);
+            handleMethodBuilder.addStatement("this.$L$L.handle($L,$L,$L)", string,
+                    KnitFileStrings.KNIT_PRESENTER_HANDLER_FIELD_POSTFIX, "eventPool", "eventEnv",
+                    "modelManager");
+            handleMethodBuilder.endControlFlow();
+        }
+
+        clazzBuilder.addMethod(handleMethodBuilder.build());
     }
 
     private static void createApplyMethod(TypeSpec.Builder clazzBuilder,
@@ -243,6 +289,20 @@ class KnitPresenterWriter {
             clazzBuilder.addField(seedField);
         }
     }
+
+    private static void createHandlerFields(TypeSpec.Builder clazzBuilder,
+            KnitPresenterMirror presenterMirror) {
+
+        for (String string : presenterMirror.eventHandlerFields.keySet()) {
+            FieldSpec seedField = FieldSpec
+                    .builder(ClassName.bestGuess(KnitFileStrings.KNIT_EVENT_HANDLER),
+                            string + KnitFileStrings.KNIT_PRESENTER_HANDLER_FIELD_POSTFIX)
+                    .addModifiers(Modifier.PRIVATE)
+                    .build();
+            clazzBuilder.addField(seedField);
+        }
+    }
+
 
     private static void createGetters(TypeSpec.Builder clazzBuilder,
             KnitPresenterMirror presenterMirror) {

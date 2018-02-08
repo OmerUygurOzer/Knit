@@ -34,5 +34,9 @@ public class Knit {
         presenterInstancePool.getPresenterInstance(viewObject).releaseCurrentView();
     }
 
+    static KnitPresenter findPresenter(Object viewObject){
+        return presenterInstancePool.getPresenterInstance(viewObject);
+    }
+
 
 }
