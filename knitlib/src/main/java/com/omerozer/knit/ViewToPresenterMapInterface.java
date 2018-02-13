@@ -7,5 +7,7 @@ package com.omerozer.knit;
 public interface ViewToPresenterMapInterface {
     String getPresenterClass(String view);
 
-    KnitPresenter createPresenterForView(Object viewObject,KnitModel modelManager);
+    InternalPresenter createPresenterForView(Object viewObject,InternalModel modelManager);
+
+    InternalPresenter getPresenterForParent(Object parentObject);
 }

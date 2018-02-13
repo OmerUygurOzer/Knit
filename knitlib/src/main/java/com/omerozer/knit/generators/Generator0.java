@@ -6,8 +6,4 @@ package com.omerozer.knit.generators;
 
 public interface Generator0<K> extends ValueGenerator {
     K generate();
-
-
-
-
 }

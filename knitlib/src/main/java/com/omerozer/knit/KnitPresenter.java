@@ -1,58 +1,21 @@
 package com.omerozer.knit;
 
-import com.omerozer.knit.viewevents.ViewEventEnv;
-import com.omerozer.knit.viewevents.ViewEventPool;
 import com.omerozer.knit.viewevents.handlers.EventHandler;
 
 /**
- * Created by omerozer on 2/1/18.
+ * Created by omerozer on 2/12/18.
  */
 
+public abstract class KnitPresenter<T> implements EventHandler,PresenterInterface{
 
-public abstract class KnitPresenter implements MemoryEntity,EventHandler {
+    protected void requestData(String data,Object... params){
+        InternalPresenter instance = Knit.findPresenterForParent(this);
+        instance.getModelManager().request(data,instance,params);
+    }
 
-    public static final KnitPresenter THIS = new KnitPresenter() {
-        @Override
-        public void handle(ViewEventPool eventPool, ViewEventEnv eventEnv, KnitModel modelManager) {
-
-        }
-
-        @Override
-        public void apply(Object viewObject) {
-
-        }
-
-        @Override
-        public void releaseCurrentView() {
-
-        }
-
-        @Override
-        public KnitModel getModelManager() {
-            return null;
-        }
-
-        @Override
-        public void load() {
-
-        }
-
-        @Override
-        public void destroy() {
-
-        }
-
-        @Override
-        public boolean shouldLoad() {
-            return false;
-        }
-    };
-
-    public abstract void apply(Object viewObject);
-
-    public abstract void releaseCurrentView();
-
-    public abstract KnitModel getModelManager();
+    protected T getView(){
+        return (T) Knit.findPresenterForParent(this).getView();
+    }
 
 
 }

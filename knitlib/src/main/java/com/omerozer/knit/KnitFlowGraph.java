@@ -11,22 +11,22 @@ import java.util.Set;
 
 class KnitFlowGraph {
 
-    private Map<Class<? extends KnitPresenter>, Set<Class<? extends KnitPresenter>>>
+    private Map<Class<? extends InternalPresenter>, Set<Class<? extends InternalPresenter>>>
             viewToPresenterMap;
 
     KnitFlowGraph() {
         this.viewToPresenterMap = new LinkedHashMap<>();
     }
 
-    <T> void mapViewToPresenter(Class<KnitPresenter> from,
-            Class<KnitPresenter> to) {
+    <T> void mapViewToPresenter(Class<InternalPresenter> from,
+            Class<InternalPresenter> to) {
         if (!viewToPresenterMap.containsKey(from)) {
-            viewToPresenterMap.put(from, new LinkedHashSet<Class<? extends KnitPresenter>>());
+            viewToPresenterMap.put(from, new LinkedHashSet<Class<? extends InternalPresenter>>());
         }
         viewToPresenterMap.get(from).add(to);
     }
 
-    <T> Set<Class<? extends KnitPresenter>> getNext(Class<T> viewClass) {
+    <T> Set<Class<? extends InternalPresenter>> getNext(Class<T> viewClass) {
         return viewToPresenterMap.get(viewClass);
     }
 

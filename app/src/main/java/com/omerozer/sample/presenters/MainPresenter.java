@@ -1,14 +1,11 @@
 package com.omerozer.sample.presenters;
 
-import android.util.Log;
-
-import com.omerozer.knit.*;
-import com.omerozer.knit.Mutator;
-import com.omerozer.knit.mutators.*;
+import com.omerozer.knit.InternalModel;
+import com.omerozer.knit.KnitPresenter;
+import com.omerozer.knit.Presenter;
+import com.omerozer.knit.Updating;
 import com.omerozer.knit.viewevents.ViewEventEnv;
 import com.omerozer.knit.viewevents.ViewEventPool;
-import com.omerozer.knit.viewevents.handlers.EventHandler;
-import com.omerozer.sample.TestObject;
 import com.omerozer.sample.views.MainActivity;
 
 
@@ -17,69 +14,40 @@ import com.omerozer.sample.views.MainActivity;
  */
 
 @Presenter(MainActivity.class)
-public class MainPresenter {
+public class MainPresenter extends KnitPresenter<MainActivity> {
 
-    @Seed("fullName")
-    String fullName;
 
-    @Seed("firstName")
-    String firstName;
+    @Override
+    public void onCreate() {
 
-    @Seed("surname")
-    String lastName;
+    }
 
-    @Seed("key")
-    String key;
+    @Override
+    public void onViewApplied(Object viewObject) {
+        requestData("testN","HOE ");
+    }
 
-    @Seed("age")
-    int age;
+    @Override
+    public void onCurrentViewReleased() {
 
-    @Seed("year")
-    int year;
+    }
 
-    @Seed("obj")
-    TestObject object;
-
-    @Seed("rand")
-    String rand;
-
-    @Mutator(
-            value = "fullName",
-            params = {"firstName","surname"}
-    )
-    Mutator2<String,String,String> mutateTestString = new Mutator2<String, String, String>() {
-        @Override
-        public String mutate(String param1,String param2) {
-            Log.d("KNIT_TEST","Mutating fullName");
-            return param1 + " " + param2;
+    @Override
+    public void handle(ViewEventPool eventPool, ViewEventEnv eventEnv, InternalModel modelManager) {
+        if(eventEnv.getTag().equals("button")){
+            getView().recMes("BUTTON PRESSED");
         }
-    };
+        eventPool.pool(eventEnv);
+    }
 
-    @Mutator("age")
-    Mutator1 mutateTestInteger = new Mutator1<Integer,Integer>() {
-        @Override
-        public Integer mutate(Integer source) {
-            return source + 1;
-        }
-    };
+    @Updating("test")
+    void updateData1(String data){
 
-    @Mutator("obj")
-    Mutator1<TestObject,TestObject> mutateObject = new Mutator1<TestObject, TestObject>() {
-        @Override
-        public TestObject mutate(TestObject source) {
-            return null;
-        }
-    };
+    }
 
-    @ViewEventHandler("clickButton")
-    EventHandler handler = new EventHandler() {
-        @Override
-        public void handle(ViewEventPool eventPool, ViewEventEnv eventEnv,KnitModel modelManager) {
-            Log.d("KNIT_TEST","BUTTON_CLICKED");
-            eventPool.pool(eventEnv);
-        }
-    };
-
-
+    @Updating("testN")
+    void updateData2(String data){
+        getView().recMes(data);
+    }
 
 }

@@ -1,7 +1,5 @@
 package com.omerozer.knit;
 
-import android.content.Context;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +13,7 @@ public class PresenterInstancePool {
 
     private KnitMemoryManager knitMemoryManager;
 
-    private Map<Class<?>, KnitPresenter> instanceMap;
+    private Map<Class<?>, InternalPresenter> instanceMap;
 
     private ModelManager modelManager;
 
@@ -27,23 +25,29 @@ public class PresenterInstancePool {
     }
 
     void applyPresenterInstanceToView(Object viewObject){
-        KnitPresenter presenter = getPresenterInstance(viewObject);
-        presenter.apply(viewObject);
+        InternalPresenter presenter = getPresenterInstanceForView(viewObject);
+        presenter.onViewApplied(viewObject);
         handleLoadState(presenter);
     }
 
 
-    KnitPresenter getPresenterInstance(Object object) {
+    InternalPresenter getPresenterInstanceForView(Object object) {
         Class<?> clazz = object.getClass();
         if (instanceMap.containsKey(clazz)) {
             return instanceMap.get(clazz);
         }
-        KnitPresenter presenterInstance = knitClassLoader.createPresentersInstance(object,modelManager);
+        InternalPresenter presenterInstance = knitClassLoader.createPresenterInstanceForView(object,modelManager);
         knitMemoryManager.registerInstance(presenterInstance);
         return presenterInstance;
     }
 
-    void handleLoadState(KnitPresenter knitPresenter){
+    InternalPresenter getPresenterInstanceForParent(Object object) {
+        InternalPresenter presenterInstance = knitClassLoader.createPresenterInstanceForParent(object);
+        knitMemoryManager.registerInstance(presenterInstance);
+        return presenterInstance;
+    }
+
+    void handleLoadState(InternalPresenter knitPresenter){
         if(knitPresenter.shouldLoad()){
             knitPresenter.load();
         }

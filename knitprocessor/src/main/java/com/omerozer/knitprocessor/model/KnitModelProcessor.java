@@ -37,6 +37,7 @@ public class KnitModelProcessor extends AbstractProcessor {
     private Set<KnitModelMirror> models;
     private Set<UserMirror> users;
     private Map<KnitModelMirror, Set<UserMirror>> modelToUserMap;
+    //public static Messager messager;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnvironment) {
@@ -44,6 +45,7 @@ public class KnitModelProcessor extends AbstractProcessor {
         this.models = new HashSet<>();
         this.users = new HashSet<>();
         this.modelToUserMap = new HashMap<>();
+        //messager = processingEnvironment.getMessager();
     }
 
     @Override
@@ -60,8 +62,6 @@ public class KnitModelProcessor extends AbstractProcessor {
             createModels(models, modelToUserMap);
             createModelMap(models);
         }
-
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,Integer.toString(modelToUserMap.size()));
 
         return true;
     }

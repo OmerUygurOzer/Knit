@@ -19,13 +19,13 @@ public class KnitEvents {
         view.setOnClickListener(new android.view.View.OnClickListener() {
             @Override
             public void onClick(android.view.View view) {
-                Knit.findPresenter(carrierObject);
                 KnitOnClickEvent event = onClickEventPool.getEvent();
                 event.setTag(tag);
                 event.setViewWeakReference(view);
-                KnitModel modelManager = Knit.findPresenter(carrierObject).getModelManager();
-                Knit.findPresenter(carrierObject).handle(onClickEventPool,event,modelManager);
+                InternalModel modelManager = Knit.findPresenterForView(carrierObject).getModelManager();
+                Knit.findPresenterForView(carrierObject).handle(onClickEventPool,event,modelManager);
             }
         });
     }
+
 }

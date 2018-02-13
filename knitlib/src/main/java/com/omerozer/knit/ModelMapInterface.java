@@ -7,5 +7,5 @@ import java.util.List;
  */
 
 interface ModelMapInterface {
-     List<KnitModel> getAll(KnitAsyncTaskHandler asyncTaskHandler);
+     List<InternalModel> getAll(KnitAsyncTaskHandler asyncTaskHandler);
 }

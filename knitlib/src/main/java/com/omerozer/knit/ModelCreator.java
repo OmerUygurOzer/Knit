@@ -5,7 +5,7 @@ package com.omerozer.knit;
  */
 
 class ModelCreator {
-    static ModelMapInterface create(Class<?> clazz,KnitClassLoader knitClassLoader){
-        return knitClassLoader.getModelMap(clazz);
+    static ModelMapInterface create(Class<?> clazz,KnitUtilsLoader knitUtilsLoader){
+        return knitUtilsLoader.getModelMap(clazz);
     }
 }

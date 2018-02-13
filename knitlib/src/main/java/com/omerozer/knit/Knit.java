@@ -18,11 +18,14 @@ public class Knit {
 
     private static KnitClassLoader knitClassLoader;
 
+    private static KnitUtilsLoader knitUtilsLoader;
+
     public static void init(Context context) {
+        knitUtilsLoader  = new KnitUtilsLoader();
         knitMemoryManager = new KnitMemoryManager(context);
         knitAsyncTaskHandler = new KnitAsyncTaskHandler();
-        knitClassLoader = new KnitClassLoader(Knit.class);
-        modelManager = new ModelManager(Knit.class,knitClassLoader,knitAsyncTaskHandler);
+        modelManager = new ModelManager(Knit.class,knitUtilsLoader,knitAsyncTaskHandler);
+        knitClassLoader = new KnitClassLoader(Knit.class,modelManager);
         presenterInstancePool = new PresenterInstancePool(knitClassLoader,knitMemoryManager,modelManager);
     }
 
@@ -31,11 +34,15 @@ public class Knit {
     }
 
     public static void dismiss(Object viewObject){
-        presenterInstancePool.getPresenterInstance(viewObject).releaseCurrentView();
+        presenterInstancePool.getPresenterInstanceForView(viewObject).onCurrentViewReleased();
     }
 
-    static KnitPresenter findPresenter(Object viewObject){
-        return presenterInstancePool.getPresenterInstance(viewObject);
+    static InternalPresenter findPresenterForView(Object viewObject){
+        return presenterInstancePool.getPresenterInstanceForView(viewObject);
+    }
+
+    static InternalPresenter findPresenterForParent(Object viewObject){
+        return presenterInstancePool.getPresenterInstanceForParent(viewObject);
     }
 
 

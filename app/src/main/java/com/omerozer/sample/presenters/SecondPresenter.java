@@ -1,9 +1,10 @@
 package com.omerozer.sample.presenters;
 
-import com.omerozer.knit.Mutator;
+import com.omerozer.knit.InternalModel;
+import com.omerozer.knit.KnitPresenter;
 import com.omerozer.knit.Presenter;
-import com.omerozer.knit.Seed;
-import com.omerozer.knit.mutators.Mutator1;
+import com.omerozer.knit.viewevents.ViewEventEnv;
+import com.omerozer.knit.viewevents.ViewEventPool;
 import com.omerozer.sample.views.SecondActivity;
 
 /**
@@ -11,26 +12,26 @@ import com.omerozer.sample.views.SecondActivity;
  */
 
 @Presenter(SecondActivity.class)
-public class SecondPresenter {
+public class SecondPresenter extends KnitPresenter {
 
-    @Seed("firstName")
-    String firstName = "Omer";
 
-    @Seed("rand")
-    String rand;
+    @Override
+    public void onCreate() {
 
-    @Seed("key")
-    String key = "Key";
+    }
 
-    @Seed("age")
-    int age = 28;
+    @Override
+    public void onViewApplied(Object viewObject) {
 
-    @Mutator("age")
-    Mutator1 mutateTestInteger = new Mutator1<Integer,Integer>() {
-        @Override
-        public Integer mutate(Integer source) {
-            return source + 1;
-        }
-    };
+    }
 
+    @Override
+    public void onCurrentViewReleased() {
+
+    }
+
+    @Override
+    public void handle(ViewEventPool eventPool, ViewEventEnv eventEnv, InternalModel modelManager) {
+
+    }
 }

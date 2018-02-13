@@ -11,21 +11,23 @@ public class KnitFileStrings {
     public static final String KNIT = "com.omerozer.knit.Knit";
 
     //PRESENTER
-    public static final String KNIT_PRESENTER = "com.omerozer.knit.KnitPresenter";
+    public static final String KNIT_PRESENTER = "com.omerozer.knit.InternalPresenter";
     public static final String KNIT_PRESENTER_POSTFIX = "_Presenter";
     public static final String KNIT_PRESENTER_LOAD_METHOD = "load";
     public static final String KNIT_PRESENTER_DESTROY_METHOD = "destroy";
     public static final String KNIT_PRESENTER_SHOULD_LOAD_METHOD = "shouldLoad";
-    public static final String KNIT_PRESENTER_APPLY_METHOD = "apply";
-    public static final String KNIT_PRESENTER_RELEASE_METHOD = "releaseCurrentView";
+    public static final String KNIT_PRESENTER_APPLY_METHOD = "onViewApplied";
+    public static final String KNIT_PRESENTER_RELEASE_METHOD = "onCurrentViewReleased";
     public static final String KNIT_PRESENTER_UPDATE_METHOD_POSTFIX = "_Update";
     public static final String KNIT_PRESENTER_GET_MODEL_MANAGER_METHOD = "getModelManager";
     public static final String KNIT_PRESENTER_SEED_FIELD_POSTFIX = "_Seed";
     public static final String KNIT_PRESENTER_MUTATOR_FIELD_POSTFIX = "_Mutator";
     public static final String KNIT_PRESENTER_HANDLER_FIELD_POSTFIX = "_Handler";
+    public static final String KNIT_PRESENTER_ONCREATE_METHOD = "onCreate";
+    public static final String KNIT_PRESENTER_GET_VIEW_METHOD = "getView";
 
     //MODEL
-    public static final String KNIT_MODEL = "com.omerozer.knit.KnitModel";
+    public static final String KNIT_MODEL = "com.omerozer.knit.InternalModel";
     public static final String KNIT_MODEL_POSTFIX = "_Model";
     public static final String KNIT_MODEL_REQUEST_METHOD = "request";
     public static final String KNIT_MODEL_EXPOSER_POSTFIX = "_Exposer";

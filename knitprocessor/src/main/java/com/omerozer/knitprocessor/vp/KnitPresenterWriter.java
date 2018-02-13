@@ -18,12 +18,15 @@ import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.Filer;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.VariableElement;
 
 /**
  * Created by omerozer on 2/2/18.
@@ -45,6 +48,11 @@ class KnitPresenterWriter {
 
         FieldSpec modelManagerField = FieldSpec
                 .builder(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL), "modelManager",
+                        Modifier.PRIVATE)
+                .build();
+
+        FieldSpec eventHandlerField = FieldSpec
+                .builder(ClassName.bestGuess(KnitFileStrings.KNIT_EVENT_HANDLER), "viewEventHandler",
                         Modifier.PRIVATE)
                 .build();
 
@@ -77,6 +85,21 @@ class KnitPresenterWriter {
                 .addStatement("return this.$L","modelManager")
                 .build();
 
+        MethodSpec getViewMethod = MethodSpec
+                .methodBuilder(KnitFileStrings.KNIT_PRESENTER_GET_VIEW_METHOD)
+                .returns(Object.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(Override.class)
+                .addStatement("return this.activeView.get()")
+                .build();
+
+        MethodSpec onCreateMethod = MethodSpec
+                .methodBuilder(KnitFileStrings.KNIT_PRESENTER_ONCREATE_METHOD)
+                .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(Override.class)
+                .addStatement("this.parent.use_onCreate()")
+                .build();
+
 
         TypeSpec.Builder clazzBuilder = TypeSpec
                 .classBuilder(presenterMirror.enclosingClass.getSimpleName()
@@ -87,21 +110,24 @@ class KnitPresenterWriter {
                 .addField(parentField)
                 .addField(loadedField)
                 .addField(modelManagerField)
+                .addField(eventHandlerField)
                 .addField(activeViewWeakRefField)
                 .addMethod(shouldLoadMethod)
-                .addMethod(getModelManagerMethod);
+                .addMethod(getModelManagerMethod)
+                .addMethod(onCreateMethod)
+                .addMethod(getViewMethod);
+
+
+
 
         createConstructor(clazzBuilder, presenterMirror);
         createApplyMethod(clazzBuilder, presenterMirror, map);
         createHandleMethod(clazzBuilder, presenterMirror, map);
         createRemoveMethod(clazzBuilder, presenterMirror);
-        createGetters(clazzBuilder, presenterMirror);
         createLoadMethod(clazzBuilder, presenterMirror);
         createDestroyMethod(clazzBuilder, presenterMirror);
-        createSeedFields(clazzBuilder, presenterMirror);
-        createMutatorFields(clazzBuilder, presenterMirror);
-        createHandlerFields(clazzBuilder, presenterMirror);
         createUpdatingMethods(clazzBuilder, presenterMirror, map);
+
 
         TypeSpec clazz = clazzBuilder.build();
 
@@ -131,31 +157,10 @@ class KnitPresenterWriter {
                                 + KnitFileStrings.KNIT_MODEL_EXPOSER_POSTFIX + "(($L)parent)",
                         presenterMirror.enclosingClass.getQualifiedName().toString())
                 .addStatement("this.modelManager = modelManager")
+                .addStatement("this.viewEventHandler = ($L)parent",KnitFileStrings.KNIT_EVENT_HANDLER)
                 .addModifiers(Modifier.PUBLIC);
 
-        for (String string : presenterMirror.seedingFields.keySet()) {
-            String incFieldName = presenterMirror.seedingFields.get(
-                    string).getSimpleName().toString();
-            constructorBuilder.addStatement(
-                    "this." + string + KnitFileStrings.KNIT_PRESENTER_SEED_FIELD_POSTFIX
-                            + " = this.parent.get_" + incFieldName + "()");
-        }
 
-        for (String string : presenterMirror.mutatorFields.keySet()) {
-            String incFieldName = presenterMirror.mutatorFields.get(
-                    string).getSimpleName().toString();
-            constructorBuilder.addStatement(
-                    "this." + string + KnitFileStrings.KNIT_PRESENTER_MUTATOR_FIELD_POSTFIX
-                            + " = this.parent.get_" + incFieldName + "()");
-        }
-
-        for (String string : presenterMirror.eventHandlerFields.keySet()) {
-            String incFieldName = presenterMirror.eventHandlerFields.get(
-                    string).getSimpleName().toString();
-            constructorBuilder.addStatement(
-                    "this." + string + KnitFileStrings.KNIT_PRESENTER_HANDLER_FIELD_POSTFIX
-                            + " = this.parent.get_" + incFieldName + "()");
-        }
 
         constructorBuilder.addStatement("this.loaded = false");
 
@@ -177,15 +182,8 @@ class KnitPresenterWriter {
                 .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL), "modelManager");
 
         handleMethodBuilder.addStatement("$L tag = eventEnv.getTag()",
-                String.class.getCanonicalName());
-
-        for (String string : presenterMirror.eventHandlerFields.keySet()) {
-            handleMethodBuilder.beginControlFlow("if(tag.equals($S))", string);
-            handleMethodBuilder.addStatement("this.$L$L.handle($L,$L,$L)", string,
-                    KnitFileStrings.KNIT_PRESENTER_HANDLER_FIELD_POSTFIX, "eventPool", "eventEnv",
-                    "modelManager");
-            handleMethodBuilder.endControlFlow();
-        }
+                String.class.getCanonicalName())
+                .addStatement("this.viewEventHandler.$L(eventPool,eventEnv,modelManager)",KnitFileStrings.KNIT_EVENT_HANDLE_METHOD);
 
         clazzBuilder.addMethod(handleMethodBuilder.build());
     }
@@ -203,17 +201,8 @@ class KnitPresenterWriter {
                 presenterMirror.targetView.toString(), presenterMirror.targetView.toString());
 
 
-        KnitViewMirror targetView = map.get(presenterMirror);
-
-        for (String string : targetView.leechingFields.keySet()) {
-            if (presenterMirror.seedingFields.keySet().contains(string)) {
-                applyMethodBuilder.addStatement("target.$L = $L_Seed",
-                        targetView.leechingFields.get(string).getSimpleName().toString(),
-                        string);
-
-            }
-        }
         applyMethodBuilder.addStatement("this.activeView = new WeakReference<>(target)");
+        applyMethodBuilder.addStatement("this.parent.use_onViewApplied(viewObject)");
 
         clazzBuilder.addMethod(applyMethodBuilder.build());
     }
@@ -224,6 +213,7 @@ class KnitPresenterWriter {
                 .methodBuilder(KnitFileStrings.KNIT_PRESENTER_RELEASE_METHOD)
                 .addModifiers(Modifier.PUBLIC)
                 .addStatement("this.activeView = null")
+                .addStatement("this.parent.use_onCurrentViewReleased()")
                 .addAnnotation(Override.class);
 
         clazzBuilder.addMethod(removeActiveView.build());
@@ -236,12 +226,7 @@ class KnitPresenterWriter {
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class);
 
-        String allSeeds = KnitFileStrings.createStringArrayField(
-                presenterMirror.seedingFields.keySet());
-
-        loadMethodBuilder.addStatement("this.modelManager.request(" + allSeeds + ",this)");
         loadMethodBuilder.addStatement("this.loaded = true");
-
         clazzBuilder.addMethod(loadMethodBuilder.build());
     }
 
@@ -253,166 +238,42 @@ class KnitPresenterWriter {
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class);
 
-        for (String string : presenterMirror.seedingFields.keySet()) {
-            destroyMethodBuilder.addStatement(
-                    "this." + string + KnitFileStrings.KNIT_PRESENTER_SEED_FIELD_POSTFIX
-                            + " = null");
-        }
         destroyMethodBuilder.addStatement("this.loaded = false");
 
         clazzBuilder.addMethod(destroyMethodBuilder.build());
     }
 
-    private static void createSeedFields(TypeSpec.Builder clazzBuilder,
-            KnitPresenterMirror presenterMirror) {
-        for (String string : presenterMirror.seedingFields.keySet()) {
-            FieldSpec seedField = FieldSpec
-                    .builder(Boxer.boxIfNeeded(presenterMirror.seedingFields.get(string)),
-                            string + KnitFileStrings.KNIT_PRESENTER_SEED_FIELD_POSTFIX)
-                    .addModifiers(Modifier.PRIVATE)
-                    .build();
-            clazzBuilder.addField(seedField);
-        }
-    }
-
-    private static void createMutatorFields(TypeSpec.Builder clazzBuilder,
-            KnitPresenterMirror presenterMirror) {
-
-        for (String string : presenterMirror.mutatorFields.keySet()) {
-            ParameterizedTypeName name = MutatorTypeNameCreator.create(string, presenterMirror);
-
-            FieldSpec seedField = FieldSpec
-                    .builder(name,
-                            string + KnitFileStrings.KNIT_PRESENTER_MUTATOR_FIELD_POSTFIX)
-                    .addModifiers(Modifier.PRIVATE)
-                    .build();
-            clazzBuilder.addField(seedField);
-        }
-    }
-
-    private static void createHandlerFields(TypeSpec.Builder clazzBuilder,
-            KnitPresenterMirror presenterMirror) {
-
-        for (String string : presenterMirror.eventHandlerFields.keySet()) {
-            FieldSpec seedField = FieldSpec
-                    .builder(ClassName.bestGuess(KnitFileStrings.KNIT_EVENT_HANDLER),
-                            string + KnitFileStrings.KNIT_PRESENTER_HANDLER_FIELD_POSTFIX)
-                    .addModifiers(Modifier.PRIVATE)
-                    .build();
-            clazzBuilder.addField(seedField);
-        }
-    }
-
-
-    private static void createGetters(TypeSpec.Builder clazzBuilder,
-            KnitPresenterMirror presenterMirror) {
-
-        for (String string : presenterMirror.seedingFields.keySet()) {
-            MethodSpec getterMethod = MethodSpec
-                    .methodBuilder("get" + string)
-                    .addAnnotation(AnnotationSpec.builder(Getter.class)
-                            .addMember("value", "$S", string)
-                            .build())
-                    .addModifiers(Modifier.PUBLIC)
-                    .returns(TypeName.get(presenterMirror.seedingFields.get(string).asType()))
-                    .addStatement("return this." + string + "_Seed")
-                    .build();
-            clazzBuilder.addMethod(getterMethod);
-        }
-
-    }
 
     private static void createUpdatingMethods(TypeSpec.Builder clazzBuilder,
             KnitPresenterMirror presenterMirror, Map<KnitPresenterMirror, KnitViewMirror> map) {
-        for (String string : presenterMirror.seedingFields.keySet()) {
-            MethodSpec.Builder seedUpdatingMethodBuilder = MethodSpec
-                    .methodBuilder(string + KnitFileStrings.KNIT_PRESENTER_UPDATE_METHOD_POSTFIX)
-                    .addModifiers(Modifier.PUBLIC)
-                    .addAnnotation(AnnotationSpec.builder(UseMethod.class)
+
+        for(String string : presenterMirror.updatingMethodsMap.keySet()){
+            MethodSpec.Builder updatingMethodBuilder = MethodSpec
+                    .methodBuilder(string+KnitFileStrings.KNIT_PRESENTER_UPDATE_METHOD_POSTFIX)
+                    .addModifiers(Modifier.PUBLIC);
+
+            ExecutableElement methodElement = presenterMirror.updatingMethodsMap.get(string);
+            int c = 0;
+            StringBuilder paramsText = new StringBuilder();
+            for(VariableElement param : methodElement.getParameters()){
+                paramsText.append("v");
+                paramsText.append(Integer.toString(c));
+                updatingMethodBuilder.addParameter(TypeName.get(param.asType()),"v"+Integer.toString(c));
+                if(c<methodElement.getParameters().size()-1){
+                    paramsText.append(",");
+                }
+                c++;
+            }
+            updatingMethodBuilder.addStatement("parent.$L$L($L)","use_",methodElement.getSimpleName(),paramsText.toString());
+            updatingMethodBuilder.addAnnotation(AnnotationSpec.builder(UseMethod.class)
                             .addMember("value", "$S", string)
-                            .build())
-                    .addParameter(Boxer.boxIfNeeded(presenterMirror.seedingFields.get(string)),
-                            "val");
-
-            seedUpdatingMethodBuilder.addStatement(
-                    "this." + string + KnitFileStrings.KNIT_PRESENTER_SEED_FIELD_POSTFIX
-                            + " = val");
-
-            Set<String> mutatedObjects = new HashSet<>();
-
-            for (String reverseMappedVal : reverseMutatorLookup(string, presenterMirror)) {
-                if (presenterMirror.mutatorFields.containsKey(reverseMappedVal)) {
-                    mutatedObjects.add(reverseMappedVal);
-                    String[] params = presenterMirror.mutatorParams.get(reverseMappedVal);
-                    StringBuilder paramsBlock = new StringBuilder();
-                    paramsBlock.append("(");
-                    if (!params[0].equals("")) {
-                        for (int i = 0; i < params.length; i++) {
-                            paramsBlock.append("this.");
-                            paramsBlock.append(params[i]);
-                            paramsBlock.append(KnitFileStrings.KNIT_PRESENTER_SEED_FIELD_POSTFIX);
-                            if (i < params.length - 1) {
-                                paramsBlock.append(",");
-                            }
-                        }
-                    } else {
-                        paramsBlock.append("this.");
-                        paramsBlock.append(reverseMappedVal);
-                        paramsBlock.append(KnitFileStrings.KNIT_PRESENTER_SEED_FIELD_POSTFIX);
-                    }
-                    paramsBlock.append(")");
-                    seedUpdatingMethodBuilder.addStatement(
-                            "this." + reverseMappedVal
-                                    + KnitFileStrings.KNIT_PRESENTER_SEED_FIELD_POSTFIX +
-                                    " = " + reverseMappedVal
-                                    + KnitFileStrings.KNIT_PRESENTER_MUTATOR_FIELD_POSTFIX
-                                    + ".mutate"
-                                    + paramsBlock.toString());
-                }
-            }
-
-            KnitViewMirror target = map.get(presenterMirror);
-            seedUpdatingMethodBuilder.beginControlFlow("if(activeView!=null)");
-
-            for (String updating : target.updatingMethods.keySet()) {
-                if (updating.equals(string)) {
-                    if (target.leechingFields.containsKey(string)) {
-                        seedUpdatingMethodBuilder.addStatement("activeView.get().$L = $L_Seed",
-                                target.leechingFields.get(string).getSimpleName(), string);
-                    }
-                    seedUpdatingMethodBuilder.addStatement("activeView.get().$L($L_Seed)",
-                            target.updatingMethods.get(updating).getSimpleName(), string);
-
-
-                }
-            }
-            for (String mutated : mutatedObjects) {
-                if (target.updatingMethods.containsKey(mutated)) {
-                    seedUpdatingMethodBuilder.addStatement("activeView.get().$L($L_Seed)",
-                            target.updatingMethods.get(mutated).getSimpleName(),
-                            mutated);
-                }
-            }
-
-            seedUpdatingMethodBuilder.endControlFlow();
-
-            clazzBuilder.addMethod(seedUpdatingMethodBuilder.build());
-        }
-    }
-
-    private static Set<String> reverseMutatorLookup(String string,
-            KnitPresenterMirror presenterMirror) {
-        Set<String> keys = new HashSet<>();
-        for (String s : presenterMirror.mutatorParams.keySet()) {
-            for (String param : presenterMirror.mutatorParams.get(s)) {
-                if (param.equals(string)) {
-                    keys.add(s);
-                }
-            }
+                            .build());
+            clazzBuilder.addMethod(updatingMethodBuilder.build());
         }
 
-        return keys;
     }
+
+
 
 
 }

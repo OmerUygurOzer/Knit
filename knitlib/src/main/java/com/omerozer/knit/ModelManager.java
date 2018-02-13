@@ -7,20 +7,21 @@ import java.util.Map;
  * Created by omerozer on 2/4/18.
  */
 
-public class ModelManager implements KnitModel {
+public class ModelManager implements InternalModel {
 
     private KnitAsyncTaskHandler knitAsyncTaskHandler;
 
-    private Map<String, KnitModel> valueToModelMap;
+    private Map<String, InternalModel> valueToModelMap;
     private String[] valuesHandled;
 
     private final Object requestLock = new Object();
 
-    public ModelManager(Class<?> clazz,KnitClassLoader knitClassLoader,KnitAsyncTaskHandler knitAsyncTaskHandler) {
+    public ModelManager(Class<?> clazz, KnitUtilsLoader knitUtilsLoader,
+            KnitAsyncTaskHandler knitAsyncTaskHandler) {
         this.knitAsyncTaskHandler = knitAsyncTaskHandler;
-        ModelMapInterface modelMap = ModelCreator.create(clazz,knitClassLoader);
+        ModelMapInterface modelMap = ModelCreator.create(clazz, knitUtilsLoader);
         this.valueToModelMap = new LinkedHashMap<>();
-        for (KnitModel model : modelMap.getAll(knitAsyncTaskHandler)) {
+        for (InternalModel model : modelMap.getAll(knitAsyncTaskHandler)) {
             for (String val : model.getHandledValues()) {
                 valueToModelMap.put(val, model);
             }
@@ -30,12 +31,10 @@ public class ModelManager implements KnitModel {
     }
 
     @Override
-    public void request(String[] params, KnitPresenter presenter) {
+    public void request(String data, InternalPresenter internalPresenter, Object... params) {
         synchronized (requestLock) {
-            for (String param : params) {
-                if(valueToModelMap.containsKey(param)){
-                    valueToModelMap.get(param).request(params, presenter);
-                }
+            if (valueToModelMap.containsKey(data)) {
+                valueToModelMap.get(data).request(data, internalPresenter, params);
             }
         }
     }

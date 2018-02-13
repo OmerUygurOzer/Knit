@@ -2,11 +2,8 @@ package com.omerozer.knitprocessor.vp;
 
 import com.omerozer.knit.KnitView;
 import com.omerozer.knit.Leech;
-import com.omerozer.knit.Mutator;
 import com.omerozer.knit.Presenter;
-import com.omerozer.knit.Seed;
 import com.omerozer.knit.Updating;
-import com.omerozer.knit.ViewEventHandler;
 import com.omerozer.knitprocessor.KnitAnnotations;
 
 import java.util.LinkedHashMap;
@@ -73,25 +70,11 @@ public class KnitPresenterProcessor extends AbstractProcessor {
             knitPresenterMirror.enclosingClass = clazz;
             knitPresenterMirror.targetView = getClassAnnotationValue(presenter, Presenter.class);
             for (Element element : clazz.getEnclosedElements()) {
-                if (element.getKind().isField()) {
-                    if (element.getAnnotation(Seed.class) != null) {
-                        knitPresenterMirror.seedingFields.put(
-                                element.getAnnotation(Seed.class).value(),
-                                (VariableElement) element);
-                    } else if (element.getAnnotation(Mutator.class) != null) {
-                        String fieldTag = element.getAnnotation(Mutator.class).value();
-                        knitPresenterMirror.mutatorFields.put(fieldTag, (VariableElement) element);
-                        String[] params = element.getAnnotation(Mutator.class).params();
-
-                        if (params[0].equals("")) {
-                            knitPresenterMirror.mutatorParams.put(fieldTag, new String[]{fieldTag});
-                        } else {
-                            knitPresenterMirror.mutatorParams.put(fieldTag, params);
-                        }
-                    } else if (element.getAnnotation(ViewEventHandler.class) != null) {
-                        String fieldTag = element.getAnnotation(ViewEventHandler.class).value();
-                        knitPresenterMirror.eventHandlerFields.put(fieldTag,
-                                (VariableElement) element);
+                if (element.getKind().equals(ElementKind.METHOD)) {
+                    if (element.getAnnotation(Updating.class) != null) {
+                        knitPresenterMirror.updatingMethodsMap.put(
+                                element.getAnnotation(Updating.class).value(),
+                                (ExecutableElement) element);
                     }
                 }
                 this.presenters.add(knitPresenterMirror);
