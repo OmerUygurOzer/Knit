@@ -1,7 +1,6 @@
 package com.omerozer.knitprocessor.vp;
 
 import com.omerozer.knit.KnitView;
-import com.omerozer.knit.Leech;
 import com.omerozer.knit.Presenter;
 import com.omerozer.knit.Updating;
 import com.omerozer.knitprocessor.KnitAnnotations;
@@ -88,10 +87,7 @@ public class KnitPresenterProcessor extends AbstractProcessor {
             KnitViewMirror knitViewMirror = new KnitViewMirror();
             knitViewMirror.enclosingClass = clazz;
             for (Element element : clazz.getEnclosedElements()) {
-                if (element.getKind().isField() && element.getAnnotation(Leech.class) != null) {
-                    knitViewMirror.leechingFields.put(element.getAnnotation(Leech.class).value(),
-                            (VariableElement) element);
-                } else if (element.getKind() == ElementKind.METHOD && element.getAnnotation(
+                if (element.getKind() == ElementKind.METHOD && element.getAnnotation(
                         Updating.class) != null) {
                     String fieldTag = element.getAnnotation(Updating.class).value();
                     knitViewMirror.updatingMethods.put(fieldTag, (ExecutableElement) element);

@@ -1,8 +1,6 @@
 package com.omerozer.knitprocessor.user;
 
-import com.omerozer.knit.Getter;
 import com.omerozer.knitprocessor.KnitFileStrings;
-import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;

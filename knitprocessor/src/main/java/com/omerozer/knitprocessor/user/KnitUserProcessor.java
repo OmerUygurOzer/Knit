@@ -1,6 +1,5 @@
 package com.omerozer.knitprocessor.user;
 
-import com.omerozer.knit.Getter;
 import com.omerozer.knit.Use;
 import com.omerozer.knit.UseMethod;
 import com.omerozer.knitprocessor.KnitAnnotations;
@@ -63,10 +62,6 @@ public class KnitUserProcessor extends AbstractProcessor {
                         UseMethod.class) != null) {
                     userMirror.method.add((ExecutableElement) element);
                     userMirror.requiredValues.add(element.getAnnotation(UseMethod.class).value());
-                }
-                if (element.getKind().equals(ElementKind.METHOD) && element.getAnnotation(
-                        Getter.class) != null) {
-                    userMirror.getterMap.put(element.getAnnotation(Getter.class).value(),(ExecutableElement)element);
                 }
             }
             this.userMirros.add(userMirror);

@@ -2,7 +2,6 @@ package com.omerozer.knitprocessor.model;
 
 import com.omerozer.knit.Generates;
 import com.omerozer.knit.GeneratesAsync;
-import com.omerozer.knit.Getter;
 import com.omerozer.knit.Model;
 import com.omerozer.knit.Use;
 import com.omerozer.knit.UseMethod;
@@ -16,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
@@ -107,10 +105,6 @@ public class KnitModelProcessor extends AbstractProcessor {
                         UseMethod.class) != null) {
                     userMirror.method.add((ExecutableElement) element);
                     userMirror.requiredValues.add(element.getAnnotation(UseMethod.class).value());
-                }
-                if (element.getKind().equals(ElementKind.METHOD) && element.getAnnotation(
-                        Getter.class) != null) {
-                    userMirror.getterMap.put(element.getAnnotation(Getter.class).value(),(ExecutableElement)element);
                 }
             }
             this.users.add(userMirror);

@@ -1,5 +1,7 @@
 package com.omerozer.sample.presenters;
 
+import android.os.Bundle;
+
 import com.omerozer.knit.InternalModel;
 import com.omerozer.knit.KnitPresenter;
 import com.omerozer.knit.Presenter;
@@ -12,7 +14,7 @@ import com.omerozer.sample.views.SecondActivity;
  */
 
 @Presenter(SecondActivity.class)
-public class SecondPresenter extends KnitPresenter {
+public class SecondPresenter extends KnitPresenter<SecondActivity> {
 
 
     @Override
@@ -21,7 +23,7 @@ public class SecondPresenter extends KnitPresenter {
     }
 
     @Override
-    public void onViewApplied(Object viewObject) {
+    public void onViewApplied(Object viewObject,Bundle bundle){
 
     }
 

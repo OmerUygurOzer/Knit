@@ -1,11 +1,8 @@
 package com.omerozer.knitprocessor.vp;
 
-import com.omerozer.knit.Getter;
 import com.omerozer.knit.Use;
 import com.omerozer.knit.UseMethod;
-import com.omerozer.knitprocessor.Boxer;
 import com.omerozer.knitprocessor.KnitFileStrings;
-import com.omerozer.knitprocessor.MutatorTypeNameCreator;
 import com.omerozer.knitprocessor.PackageStringExtractor;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
@@ -18,10 +15,7 @@ import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.ExecutableElement;
@@ -194,6 +188,7 @@ class KnitPresenterWriter {
         MethodSpec.Builder applyMethodBuilder = MethodSpec
                 .methodBuilder(KnitFileStrings.KNIT_PRESENTER_APPLY_METHOD)
                 .addParameter(TypeName.OBJECT, "viewObject")
+                .addParameter(ClassName.bestGuess(KnitFileStrings.ANDROID_BUNDLE),"data")
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class);
 
@@ -202,7 +197,7 @@ class KnitPresenterWriter {
 
 
         applyMethodBuilder.addStatement("this.activeView = new WeakReference<>(target)");
-        applyMethodBuilder.addStatement("this.parent.use_onViewApplied(viewObject)");
+        applyMethodBuilder.addStatement("this.parent.use_onViewApplied(viewObject,data)");
 
         clazzBuilder.addMethod(applyMethodBuilder.build());
     }

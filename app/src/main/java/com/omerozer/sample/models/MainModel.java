@@ -31,7 +31,7 @@ public class MainModel implements KnitModel {
     Generator1<String,String> generateTestTwoParams = new Generator1<String, String>() {
         @Override
         public String generate(String generate) {
-            return generate+"YAS";
+            return generate+"YAAAH";
         }
     };
 

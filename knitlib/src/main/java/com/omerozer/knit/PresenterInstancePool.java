@@ -1,5 +1,7 @@
 package com.omerozer.knit;
 
+import android.os.Bundle;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,9 +26,9 @@ public class PresenterInstancePool {
         this.modelManager = modelManager;
     }
 
-    void applyPresenterInstanceToView(Object viewObject){
+    void applyPresenterInstanceToView(Object viewObject,Bundle data){
         InternalPresenter presenter = getPresenterInstanceForView(viewObject);
-        presenter.onViewApplied(viewObject);
+        presenter.onViewApplied(viewObject,data);
         handleLoadState(presenter);
     }
 
