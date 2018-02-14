@@ -44,12 +44,10 @@ public class MainPresenter extends KnitPresenter<MainActivityContract> {
             requestData("test");
         }
 
-
-//        KnitNavigator
-//                .toActivity()
-//                .setContext(getContract())
-//                .toActivity(SecondActivity.class)
-//                .go();
+        KnitNavigator
+                .toActivity()
+                .target(SecondActivity.class)
+                .go();
 
         eventPool.pool(eventEnv);
     }

@@ -17,6 +17,12 @@ import java.lang.reflect.InvocationTargetException;
 
 public class KnitNavigator {
 
+    private static WeakReference<Context> contextRef;
+
+    static void init(Context context){
+        contextRef = new WeakReference<Context>(context);
+    }
+
     public static ActivityNavigator toActivity(){
         return new ActivityNavigator();
     }
@@ -30,16 +36,10 @@ public class KnitNavigator {
     }
 
     public static class ActivityNavigator extends Navitator{
-        private WeakReference<Context> contextWeakReference;
         private Class<? extends Activity> target;
         private Bundle bundle;
 
-        public ActivityNavigator setContext(Context context){
-            this.contextWeakReference = new WeakReference<Context>(context);
-            return this;
-        }
-
-        public ActivityNavigator toActivity(Class<? extends Activity> target){
+        public ActivityNavigator target(Class<? extends Activity> target){
             this.target = target;
             return this;
         }
@@ -50,9 +50,9 @@ public class KnitNavigator {
         }
 
         public void go(){
-            Intent intent = new Intent(this.contextWeakReference.get(),target);
+            Intent intent = new Intent(contextRef.get(),target);
             Knit.setDataForNavigation(this,bundle);
-            contextWeakReference.get().startActivity(intent);
+            contextRef.get().startActivity(intent);
         }
 
         @Override
@@ -62,23 +62,17 @@ public class KnitNavigator {
     }
 
     public static class FragmentNavigator extends Navitator{
-        private WeakReference<Context> contextWeakReference;
         private Class<? extends Fragment> target;
         private Bundle bundle;
         private FragmentManager fragmentManager;
         private int container;
-
-        public FragmentNavigator setContext(Context context){
-            this.contextWeakReference = new WeakReference<Context>(context);
-            return this;
-        }
 
         public FragmentNavigator addData(Bundle bundle){
             this.bundle = bundle;
             return this;
         }
 
-        public FragmentNavigator toFragment(Class<? extends Fragment> target){
+        public FragmentNavigator target(Class<? extends Fragment> target){
             this.target = target;
             return this;
         }

@@ -27,6 +27,7 @@ public class Knit {
     private static Map<Class<?>, Bundle> navigatorDataMap = new LinkedHashMap<>();
 
     public static void init(Context context) {
+        KnitNavigator.init(context);
         knitUtilsLoader = new KnitUtilsLoader();
         knitMemoryManager = new KnitMemoryManager(context);
         knitAsyncTaskHandler = new KnitAsyncTaskHandler();
