@@ -10,6 +10,7 @@ import com.omerozer.knit.Updating;
 import com.omerozer.knit.viewevents.ViewEventEnv;
 import com.omerozer.knit.viewevents.ViewEventPool;
 import com.omerozer.sample.views.MainActivity;
+import com.omerozer.sample.views.MainActivityContract;
 import com.omerozer.sample.views.SecondActivity;
 
 
@@ -18,7 +19,7 @@ import com.omerozer.sample.views.SecondActivity;
  */
 
 @Presenter(MainActivity.class)
-public class MainPresenter extends KnitPresenter<MainActivity> {
+public class MainPresenter extends KnitPresenter<MainActivityContract> {
 
 
     @Override
@@ -39,27 +40,28 @@ public class MainPresenter extends KnitPresenter<MainActivity> {
     @Override
     public void handle(ViewEventPool eventPool, ViewEventEnv eventEnv, InternalModel modelManager) {
         if(eventEnv.getTag().equals("button")){
-            getView().recMes("BUTTON PRESSED");
+            getContract().recMes("BUTTON PRESSED");
             requestData("test");
         }
 
-        KnitNavigator
-                .toActivity()
-                .setContext(getView())
-                .toActivity(SecondActivity.class)
-                .go();
+
+//        KnitNavigator
+//                .toActivity()
+//                .setContext(getContract())
+//                .toActivity(SecondActivity.class)
+//                .go();
 
         eventPool.pool(eventEnv);
     }
 
     @Updating("test")
     void updateData1(String data){
-        getView().recMes(data);
+        getContract().recMes(data);
     }
 
     @Updating("testN")
     void updateData2(String data){
-        getView().recMes(data);
+        getContract().recMes(data);
     }
 
 }

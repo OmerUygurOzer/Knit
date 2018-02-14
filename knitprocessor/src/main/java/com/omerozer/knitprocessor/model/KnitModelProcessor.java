@@ -1,5 +1,6 @@
 package com.omerozer.knitprocessor.model;
 
+import com.omerozer.knit.Collects;
 import com.omerozer.knit.Generates;
 import com.omerozer.knit.GeneratesAsync;
 import com.omerozer.knit.Model;
@@ -88,6 +89,10 @@ public class KnitModelProcessor extends AbstractProcessor {
                     } else if (element.getAnnotation(GeneratesAsync.class) != null) {
                         String[] params = element.getAnnotation(GeneratesAsync.class).value();
                         knitModelMirror.generateAsyncField.put(params, (VariableElement) element);
+                        knitModelMirror.vals.addAll(Arrays.asList(params));
+                    }else if(element.getAnnotation(Collects.class)!=null){
+                        String[] params = element.getAnnotation(Collects.class).value();
+                        knitModelMirror.collectorField.put(params, (VariableElement) element);
                         knitModelMirror.vals.addAll(Arrays.asList(params));
                     }
                 }

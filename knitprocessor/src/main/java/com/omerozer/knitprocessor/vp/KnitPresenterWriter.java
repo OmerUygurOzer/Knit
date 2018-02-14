@@ -50,12 +50,10 @@ class KnitPresenterWriter {
                         Modifier.PRIVATE)
                 .build();
 
-        ParameterizedTypeName activeViewWeakRefName = ParameterizedTypeName.get(
-                ClassName.bestGuess(WeakReference.class.getCanonicalName()),
-                TypeName.get(presenterMirror.targetView));
+        ClassName contractName = ClassName.bestGuess(presenterMirror.targetView.toString()+KnitFileStrings.KNIT_CONTRACT_POSTFIX);
 
         FieldSpec activeViewWeakRefField = FieldSpec
-                .builder(activeViewWeakRefName, "activeView")
+                .builder(contractName, "activeViewContract")
                 .addModifiers(Modifier.PRIVATE)
                 .build();
 
@@ -79,12 +77,12 @@ class KnitPresenterWriter {
                 .addStatement("return this.$L","modelManager")
                 .build();
 
-        MethodSpec getViewMethod = MethodSpec
+        MethodSpec getContractMethod = MethodSpec
                 .methodBuilder(KnitFileStrings.KNIT_PRESENTER_GET_VIEW_METHOD)
                 .returns(Object.class)
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class)
-                .addStatement("return this.activeView.get()")
+                .addStatement("return this.activeViewContract")
                 .build();
 
         MethodSpec onCreateMethod = MethodSpec
@@ -109,13 +107,13 @@ class KnitPresenterWriter {
                 .addMethod(shouldLoadMethod)
                 .addMethod(getModelManagerMethod)
                 .addMethod(onCreateMethod)
-                .addMethod(getViewMethod);
+                .addMethod(getContractMethod);
 
 
 
 
         createConstructor(clazzBuilder, presenterMirror);
-        createApplyMethod(clazzBuilder, presenterMirror, map);
+        createApplyMethod(clazzBuilder, presenterMirror, contractName);
         createHandleMethod(clazzBuilder, presenterMirror, map);
         createRemoveMethod(clazzBuilder, presenterMirror);
         createLoadMethod(clazzBuilder, presenterMirror);
@@ -183,7 +181,7 @@ class KnitPresenterWriter {
     }
 
     private static void createApplyMethod(TypeSpec.Builder clazzBuilder,
-            KnitPresenterMirror presenterMirror, Map<KnitPresenterMirror, KnitViewMirror> map) {
+            KnitPresenterMirror presenterMirror, ClassName name) {
 
         MethodSpec.Builder applyMethodBuilder = MethodSpec
                 .methodBuilder(KnitFileStrings.KNIT_PRESENTER_APPLY_METHOD)
@@ -196,7 +194,7 @@ class KnitPresenterWriter {
                 presenterMirror.targetView.toString(), presenterMirror.targetView.toString());
 
 
-        applyMethodBuilder.addStatement("this.activeView = new WeakReference<>(target)");
+        applyMethodBuilder.addStatement("this.activeViewContract = new $L(target)",name);
         applyMethodBuilder.addStatement("this.parent.use_onViewApplied(viewObject,data)");
 
         clazzBuilder.addMethod(applyMethodBuilder.build());
@@ -207,7 +205,7 @@ class KnitPresenterWriter {
         MethodSpec.Builder removeActiveView = MethodSpec
                 .methodBuilder(KnitFileStrings.KNIT_PRESENTER_RELEASE_METHOD)
                 .addModifiers(Modifier.PUBLIC)
-                .addStatement("this.activeView = null")
+                .addStatement("this.activeViewContract = null")
                 .addStatement("this.parent.use_onCurrentViewReleased()")
                 .addAnnotation(Override.class);
 

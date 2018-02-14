@@ -1,7 +1,21 @@
 package com.omerozer.knit;
 
+import com.omerozer.knit.generators.Callback;
+
 /**
  * Created by omerozer on 2/12/18.
  */
 
-public interface KnitModel extends ModelInterface  {}
+public abstract class KnitModel implements ModelInterface  {
+
+    InternalModel modelManager;
+
+    void setModelManager(InternalModel internalModel){
+        this.modelManager = internalModel;
+    }
+
+    protected void request(String data,Callback callback,Object... params){
+        modelManager.request(data,callback,params);
+    }
+
+}

@@ -87,10 +87,9 @@ public class KnitPresenterProcessor extends AbstractProcessor {
             KnitViewMirror knitViewMirror = new KnitViewMirror();
             knitViewMirror.enclosingClass = clazz;
             for (Element element : clazz.getEnclosedElements()) {
-                if (element.getKind() == ElementKind.METHOD && element.getAnnotation(
-                        Updating.class) != null) {
-                    String fieldTag = element.getAnnotation(Updating.class).value();
-                    knitViewMirror.updatingMethods.put(fieldTag, (ExecutableElement) element);
+                if (element.getKind() == ElementKind.METHOD && AndroidViewMethodsFilter.filter(
+                        element)) {
+                    knitViewMirror.methods.add((ExecutableElement) element);
                 }
             }
             this.views.add(knitViewMirror);
@@ -137,7 +136,9 @@ public class KnitPresenterProcessor extends AbstractProcessor {
 
 
     private void createViews(Set<KnitViewMirror> views) {
-
+        for (KnitViewMirror viewMirror : views) {
+            ContractWriter.write(processingEnv.getFiler(),viewMirror);
+        }
     }
 
 

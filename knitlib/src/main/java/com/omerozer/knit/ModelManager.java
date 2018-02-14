@@ -1,5 +1,7 @@
 package com.omerozer.knit;
 
+import com.omerozer.knit.generators.Callback;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -24,6 +26,7 @@ public class ModelManager implements InternalModel {
         for (InternalModel model : modelMap.getAll(knitAsyncTaskHandler)) {
             for (String val : model.getHandledValues()) {
                 valueToModelMap.put(val, model);
+                model.getParent().setModelManager(this);
                 model.onCreate();
             }
         }
@@ -40,6 +43,20 @@ public class ModelManager implements InternalModel {
                 valueToModelMap.get(data).request(data, internalPresenter, params);
             }
         }
+    }
+
+    @Override
+    public void request(String data, Callback callback, Object... params) {
+        synchronized (requestLock) {
+            if (valueToModelMap.containsKey(data)) {
+                valueToModelMap.get(data).request(data, callback, params);
+            }
+        }
+    }
+
+    @Override
+    public KnitModel getParent() {
+        return null;
     }
 
     @Override

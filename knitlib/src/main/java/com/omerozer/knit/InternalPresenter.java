@@ -11,6 +11,6 @@ public abstract class InternalPresenter implements MemoryEntity,EventHandler,Pre
 
     public abstract InternalModel getModelManager();
 
-    public abstract Object getView();
+    public abstract Object getContract();
 
 }

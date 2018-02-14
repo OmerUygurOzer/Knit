@@ -20,6 +20,8 @@ class KnitModelMirror {
 
     public Map<String[],VariableElement> generateAsyncField = new LinkedHashMap<>();
 
+    public Map<String[],VariableElement> collectorField = new LinkedHashMap<>();
+
     public Set<String> vals = new LinkedHashSet<>();
 
 }

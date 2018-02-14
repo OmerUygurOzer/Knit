@@ -2,6 +2,7 @@ package com.omerozer.knitprocessor.model;
 
 import com.omerozer.knitprocessor.KnitFileStrings;
 import com.omerozer.knitprocessor.model.KnitModelMirror;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
@@ -50,7 +51,7 @@ class ModelExposerWriter {
         MethodSpec getParentMethod = MethodSpec
                 .methodBuilder("getParent")
                 .addModifiers(Modifier.PUBLIC)
-                .returns(TypeName.get(modelMirror.enclosingClass.asType()))
+                .returns(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL_EXT))
                 .addStatement("return this.parent")
                 .build();
 

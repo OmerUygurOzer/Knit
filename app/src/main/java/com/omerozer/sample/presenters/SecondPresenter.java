@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.omerozer.knit.InternalModel;
 import com.omerozer.knit.KnitPresenter;
 import com.omerozer.knit.Presenter;
+import com.omerozer.knit.Updating;
 import com.omerozer.knit.viewevents.ViewEventEnv;
 import com.omerozer.knit.viewevents.ViewEventPool;
 import com.omerozer.sample.views.SecondActivity;
@@ -24,7 +25,7 @@ public class SecondPresenter extends KnitPresenter<SecondActivity> {
 
     @Override
     public void onViewApplied(Object viewObject,Bundle bundle){
-
+        requestData("umbrella");
     }
 
     @Override
@@ -35,5 +36,10 @@ public class SecondPresenter extends KnitPresenter<SecondActivity> {
     @Override
     public void handle(ViewEventPool eventPool, ViewEventEnv eventEnv, InternalModel modelManager) {
 
+    }
+
+    @Updating("umbrella")
+    void updateData2(String data){
+        getContract().recMes(data);
     }
 }

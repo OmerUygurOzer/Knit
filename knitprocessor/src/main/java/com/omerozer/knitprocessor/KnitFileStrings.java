@@ -24,14 +24,16 @@ public class KnitFileStrings {
     public static final String KNIT_PRESENTER_MUTATOR_FIELD_POSTFIX = "_Mutator";
     public static final String KNIT_PRESENTER_HANDLER_FIELD_POSTFIX = "_Handler";
     public static final String KNIT_PRESENTER_ONCREATE_METHOD = "onCreate";
-    public static final String KNIT_PRESENTER_GET_VIEW_METHOD = "getView";
+    public static final String KNIT_PRESENTER_GET_VIEW_METHOD = "getContract";
 
     //MODEL
     public static final String KNIT_MODEL = "com.omerozer.knit.InternalModel";
+    public static final String KNIT_MODEL_EXT = "com.omerozer.knit.KnitModel";
     public static final String KNIT_MODEL_POSTFIX = "_Model";
     public static final String KNIT_MODEL_REQUEST_METHOD = "request";
     public static final String KNIT_MODEL_EXPOSER_POSTFIX = "_Exposer";
     public static final String KNIT_MODEL_GETHANDLEDVALUES = "getHandledValues";
+    public static final String KNIT_MODEL_GET_PARENT_METHOD = "getParent";
 
     //USER
     public static final String KNIT_USER = "com.omerozer.knit.KnitUser";
@@ -47,6 +49,11 @@ public class KnitFileStrings {
     public static final String KNIT_EVENT_HANDLE_METHOD = "handle";
     public static final String KNIT_EVENT_VIEW_EVENT_POOL = "com.omerozer.knit.viewevents.ViewEventPool";
     public static final String KNIT_EVENT_VIEW_EVENT_ENV = "com.omerozer.knit.viewevents.ViewEventEnv";
+    public static final String KNIT_CALLBACK = "com.omerozer.knit.generators.Callback";
+    public static final String KNIT_SUBMITTER = "com.omerozer.knit.collectors.Submitter";
+
+    //CONTRACT
+    public static final String KNIT_CONTRACT_POSTFIX = "Contract";
 
     //ANDROID
     public static final String ANDROID_HANDLER = "android.os.Handler";

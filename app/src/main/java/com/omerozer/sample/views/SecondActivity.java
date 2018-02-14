@@ -36,6 +36,9 @@ public class SecondActivity extends AppCompatActivity {
         Knit.dismiss(this);
     }
 
+    public void recMes(String message){
+        ((TextView)findViewById(R.id.textView_rand)).setText(message);
+    }
 
 
 }
