@@ -32,8 +32,7 @@ public class Knit {
         knitAsyncTaskHandler = new KnitAsyncTaskHandler();
         modelManager = new ModelManager(Knit.class, knitUtilsLoader, knitAsyncTaskHandler);
         knitClassLoader = new KnitClassLoader(Knit.class, modelManager);
-        presenterInstancePool = new PresenterInstancePool(knitClassLoader, knitMemoryManager,
-                modelManager);
+        presenterInstancePool = new PresenterInstancePool(knitClassLoader, knitMemoryManager, modelManager);
     }
 
     public static void show(Object viewObject) {
