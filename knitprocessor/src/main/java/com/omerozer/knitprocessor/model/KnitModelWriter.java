@@ -64,6 +64,13 @@ class KnitModelWriter {
                 .addStatement("return " + handledValsArray)
                 .build();
 
+        MethodSpec onCreateMethod = MethodSpec
+                .methodBuilder(KnitFileStrings.KNIT_PRESENTER_ONCREATE_METHOD)
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addStatement("this.parentExposer.getParent().onCreate()")
+                .build();
+
         FieldSpec parentExposerField = FieldSpec
                 .builder(ClassName.bestGuess(
                         modelMirror.enclosingClass.getQualifiedName().toString()
@@ -92,7 +99,7 @@ class KnitModelWriter {
         clazzBuilder.addField(asyncHandlerField);
         clazzBuilder.addField(uiThreadHandlerField);
         clazzBuilder.addField(instanceMapField);
-
+        clazzBuilder.addMethod(onCreateMethod);
         createRequestMethod(clazzBuilder, modelMirror, map);
         createGeneratingFields(clazzBuilder, modelMirror);
         createConstructor(clazzBuilder, modelMirror);

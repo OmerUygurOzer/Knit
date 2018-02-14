@@ -43,4 +43,9 @@ public class ModelManager implements InternalModel {
     public String[] getHandledValues() {
         return valuesHandled;
     }
+
+    @Override
+    public void onCreate() {
+
+    }
 }

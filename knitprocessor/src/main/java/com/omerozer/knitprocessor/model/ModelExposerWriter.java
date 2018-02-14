@@ -46,6 +46,16 @@ class ModelExposerWriter {
                 clazzBuilder.addMethod(getter);
             }
         }
+
+        MethodSpec getParentMethod = MethodSpec
+                .methodBuilder("getParent")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.get(modelMirror.enclosingClass.asType()))
+                .addStatement("return this.parent")
+                .build();
+
+
+        clazzBuilder.addMethod(getParentMethod);
         clazzBuilder.addField(parentField);
         clazzBuilder.addMethod(constructor);
 

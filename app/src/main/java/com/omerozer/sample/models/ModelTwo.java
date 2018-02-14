@@ -1,5 +1,6 @@
 package com.omerozer.sample.models;
 
+import com.omerozer.knit.KnitModel;
 import com.omerozer.knit.Model;
 
 /**
@@ -7,5 +8,9 @@ import com.omerozer.knit.Model;
  */
 
 @Model
-public class ModelTwo {
+public class ModelTwo implements KnitModel {
+    @Override
+    public void onCreate() {
+
+    }
 }
