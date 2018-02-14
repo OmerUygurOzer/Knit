@@ -24,10 +24,13 @@ public class ModelManager implements InternalModel {
         for (InternalModel model : modelMap.getAll(knitAsyncTaskHandler)) {
             for (String val : model.getHandledValues()) {
                 valueToModelMap.put(val, model);
+                model.onCreate();
             }
         }
         this.valuesHandled = new String[valueToModelMap.size()];
         this.valuesHandled = valueToModelMap.keySet().toArray(valuesHandled);
+
+
     }
 
     @Override
