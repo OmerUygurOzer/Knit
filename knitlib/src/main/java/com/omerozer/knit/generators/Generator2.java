@@ -5,5 +5,5 @@ package com.omerozer.knit.generators;
  */
 
 public interface Generator2<A,T,K> extends ValueGenerator {
-    K generate(T param1,K param2);
+    A generate(T param1,K param2);
 }
