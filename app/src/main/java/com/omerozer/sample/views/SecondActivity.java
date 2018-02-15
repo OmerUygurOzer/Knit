@@ -40,5 +40,9 @@ public class SecondActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.textView_rand)).setText(message);
     }
 
+    public String getEditText(){
+        return "test";
+    }
+
 
 }

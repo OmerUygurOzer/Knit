@@ -59,7 +59,13 @@ public class ContractWriter {
                 c++;
             }
 
-            methodBuilder.addStatement("this.parent.get().$L($L)",executableElement.getSimpleName(),paramBlock);
+            if(executableElement.getReturnType().toString().contains("void")){
+                methodBuilder.addStatement("this.parent.get().$L($L)",executableElement.getSimpleName(),paramBlock);
+            }else{
+                methodBuilder.returns(TypeName.get(executableElement.getReturnType()));
+                methodBuilder.addStatement("return this.parent.get().$L($L)",executableElement.getSimpleName(),paramBlock);
+            }
+
             contractClassBuilder.addMethod(methodBuilder.build());
 
         }
