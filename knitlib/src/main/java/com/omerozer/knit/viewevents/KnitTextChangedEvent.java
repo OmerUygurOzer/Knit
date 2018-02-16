@@ -71,4 +71,18 @@ public class KnitTextChangedEvent extends ViewEventEnv {
     public int getI2(){
         return getDataBundle().getInt(I2);
     }
+
+    public void setI(int i){
+        getDataBundle().putInt(I,i);
+    }
+
+    public void setI1(int i1){
+        getDataBundle().putInt(I1,i1);
+    }
+
+    public void setI2(int i2){
+        getDataBundle().putInt(I2,i2);
+    }
+
+
 }

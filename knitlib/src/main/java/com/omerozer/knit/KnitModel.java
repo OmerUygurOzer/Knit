@@ -18,4 +18,23 @@ public abstract class KnitModel implements ModelInterface  {
         modelManager.request(data,callback,params);
     }
 
+    @Override
+    public void onCreate() {
+
+    }
+
+    @Override
+    public void load() {
+
+    }
+
+    @Override
+    public void destroy() {
+
+    }
+
+    @Override
+    public boolean shouldLoad() {
+        return false;
+    }
 }

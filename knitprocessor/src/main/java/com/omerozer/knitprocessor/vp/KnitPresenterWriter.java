@@ -50,6 +50,16 @@ class KnitPresenterWriter {
                         Modifier.PRIVATE)
                 .build();
 
+        FieldSpec updateablesField = FieldSpec
+                .builder(String[].class,"updateables")
+                .addModifiers(Modifier.PRIVATE)
+                .build();
+
+        FieldSpec navigatorField = FieldSpec
+                .builder(ClassName.bestGuess(KnitFileStrings.KNIT_NAVIGATOR),"navigator")
+                .addModifiers(Modifier.PRIVATE)
+                .build();
+
         ClassName contractName = ClassName.bestGuess(presenterMirror.targetView.toString()+KnitFileStrings.KNIT_CONTRACT_POSTFIX);
 
         FieldSpec activeViewWeakRefField = FieldSpec
@@ -92,6 +102,22 @@ class KnitPresenterWriter {
                 .addStatement("this.parent.use_onCreate()")
                 .build();
 
+        MethodSpec getUpdatablesMethod = MethodSpec
+                .methodBuilder(KnitFileStrings.KNIT_GET_UPDATEABLES_METHOD)
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(String[].class)
+                .addStatement("return updateables")
+                .build();
+
+        MethodSpec getNavigator = MethodSpec
+                .methodBuilder(KnitFileStrings.KNIT_GET_NAVIGATOR_METHOD)
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(ClassName.bestGuess(KnitFileStrings.KNIT_NAVIGATOR))
+                .addStatement("return navigator")
+                .build();
+
 
         TypeSpec.Builder clazzBuilder = TypeSpec
                 .classBuilder(presenterMirror.enclosingClass.getSimpleName()
@@ -104,10 +130,14 @@ class KnitPresenterWriter {
                 .addField(modelManagerField)
                 .addField(eventHandlerField)
                 .addField(activeViewWeakRefField)
+                .addField(updateablesField)
+                .addField(navigatorField)
                 .addMethod(shouldLoadMethod)
                 .addMethod(getModelManagerMethod)
                 .addMethod(onCreateMethod)
-                .addMethod(getContractMethod);
+                .addMethod(getUpdatablesMethod)
+                .addMethod(getContractMethod)
+                .addMethod(getNavigator);
 
 
 
@@ -143,6 +173,7 @@ class KnitPresenterWriter {
         MethodSpec.Builder constructorBuilder = MethodSpec
                 .constructorBuilder()
                 .addParameter(Object.class, "parent")
+                .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_NAVIGATOR),"navigator")
                 .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL), "modelManager")
                 .addStatement(
                         "this.parent = new " + presenterMirror.enclosingClass.getQualifiedName()
@@ -150,9 +181,9 @@ class KnitPresenterWriter {
                         presenterMirror.enclosingClass.getQualifiedName().toString())
                 .addStatement("this.modelManager = modelManager")
                 .addStatement("this.viewEventHandler = ($L)parent",KnitFileStrings.KNIT_EVENT_HANDLER)
+                .addStatement("this.updateables = $L",KnitFileStrings.createStringArrayField(presenterMirror.updatingMethodsMap.keySet()))
+                .addStatement("this.navigator = navigator")
                 .addModifiers(Modifier.PUBLIC);
-
-
 
         constructorBuilder.addStatement("this.loaded = false");
 

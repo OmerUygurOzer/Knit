@@ -22,6 +22,8 @@ class KnitModelMirror {
 
     public Map<String[],VariableElement> collectorField = new LinkedHashMap<>();
 
+    public Map<String[],VariableElement> inputterField = new LinkedHashMap<>();
+
     public Set<String> vals = new LinkedHashSet<>();
 
 }

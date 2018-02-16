@@ -13,6 +13,11 @@ public abstract class KnitPresenter<T> implements EventHandler, PresenterInterfa
         instance.getModelManager().request(data, instance, params);
     }
 
+    protected void inputData(String data, Object... params) {
+        InternalPresenter instance = Knit.findPresenterForParent(this);
+        instance.getModelManager().input(data, params);
+    }
+
     protected T getContract() {
         return (T) Knit.findPresenterForParent(this).getContract();
     }
@@ -21,5 +26,27 @@ public abstract class KnitPresenter<T> implements EventHandler, PresenterInterfa
         return Knit.findPresenterForParent(this).getModelManager();
     }
 
+    protected KnitNavigator getNavigator(){
+        return Knit.findPresenterForParent(this).getNavigator();
+    }
 
+    @Override
+    public void onCreate() {
+
+    }
+
+    @Override
+    public void load() {
+
+    }
+
+    @Override
+    public void destroy() {
+
+    }
+
+    @Override
+    public boolean shouldLoad() {
+        return false;
+    }
 }

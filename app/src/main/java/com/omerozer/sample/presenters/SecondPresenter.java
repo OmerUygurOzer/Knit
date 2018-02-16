@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.omerozer.knit.InternalModel;
 import com.omerozer.knit.KnitPresenter;
+import com.omerozer.knit.KnitResponse;
 import com.omerozer.knit.Presenter;
 import com.omerozer.knit.Updating;
 import com.omerozer.knit.viewevents.ViewEventEnv;
@@ -39,7 +40,7 @@ public class SecondPresenter extends KnitPresenter<SecondActivity> {
     }
 
     @Updating("umbrella")
-    void updateData2(String data){
-        getContract().recMes(data);
+    void updateData2(KnitResponse<String> data){
+        getContract().recMes(data.getBody());
     }
 }

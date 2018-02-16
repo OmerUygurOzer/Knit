@@ -9,7 +9,7 @@ import java.util.Map;
  * Created by omerozer on 2/4/18.
  */
 
-public class ModelManager implements InternalModel {
+public class ModelManager extends InternalModel {
 
     private KnitAsyncTaskHandler knitAsyncTaskHandler;
 
@@ -32,8 +32,6 @@ public class ModelManager implements InternalModel {
         }
         this.valuesHandled = new String[valueToModelMap.size()];
         this.valuesHandled = valueToModelMap.keySet().toArray(valuesHandled);
-
-
     }
 
     @Override
@@ -55,6 +53,15 @@ public class ModelManager implements InternalModel {
     }
 
     @Override
+    public void input(String data, Object... params) {
+        synchronized (requestLock) {
+            if (valueToModelMap.containsKey(data)) {
+                valueToModelMap.get(data).input(data, params);
+            }
+        }
+    }
+
+    @Override
     public KnitModel getParent() {
         return null;
     }
@@ -62,10 +69,5 @@ public class ModelManager implements InternalModel {
     @Override
     public String[] getHandledValues() {
         return valuesHandled;
-    }
-
-    @Override
-    public void onCreate() {
-
     }
 }

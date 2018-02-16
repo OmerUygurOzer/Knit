@@ -19,16 +19,20 @@ public class PresenterInstancePool {
 
     private ModelManager modelManager;
 
-    PresenterInstancePool(KnitClassLoader knitClassLoader,KnitMemoryManager knitMemoryManager,ModelManager modelManager) {
+    private KnitNavigator navigator;
+
+    PresenterInstancePool(KnitClassLoader knitClassLoader, KnitMemoryManager knitMemoryManager,
+            KnitNavigator navigator, ModelManager modelManager) {
         this.knitClassLoader = knitClassLoader;
         this.knitMemoryManager = knitMemoryManager;
         this.instanceMap = new HashMap<>();
         this.modelManager = modelManager;
+        this.navigator = navigator;
     }
 
-    void applyPresenterInstanceToView(Object viewObject,Bundle data){
+    void applyPresenterInstanceToView(Object viewObject, Bundle data) {
         InternalPresenter presenter = getPresenterInstanceForView(viewObject);
-        presenter.onViewApplied(viewObject,data);
+        presenter.onViewApplied(viewObject, data);
         handleLoadState(presenter);
     }
 
@@ -38,19 +42,22 @@ public class PresenterInstancePool {
         if (instanceMap.containsKey(clazz)) {
             return instanceMap.get(clazz);
         }
-        InternalPresenter presenterInstance = knitClassLoader.createPresenterInstanceForView(object,modelManager);
+        InternalPresenter presenterInstance = knitClassLoader.createPresenterInstanceForView(object,
+                navigator, modelManager);
         knitMemoryManager.registerInstance(presenterInstance);
+        presenterInstance.onCreate();
         return presenterInstance;
     }
 
     InternalPresenter getPresenterInstanceForParent(Object object) {
-        InternalPresenter presenterInstance = knitClassLoader.createPresenterInstanceForParent(object);
+        InternalPresenter presenterInstance = knitClassLoader.createPresenterInstanceForParent(
+                object);
         knitMemoryManager.registerInstance(presenterInstance);
         return presenterInstance;
     }
 
-    void handleLoadState(InternalPresenter knitPresenter){
-        if(knitPresenter.shouldLoad()){
+    void handleLoadState(InternalPresenter knitPresenter) {
+        if (knitPresenter.shouldLoad()) {
             knitPresenter.load();
         }
     }

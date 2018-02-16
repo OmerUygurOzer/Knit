@@ -50,6 +50,7 @@ public class ViewToPresenterMapWriter {
 
         MethodSpec.Builder constructorBuilder = MethodSpec
                 .constructorBuilder()
+                .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_NAVIGATOR),"navigator")
                 .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL),"modelManager")
                 .addStatement("parentToPresenterMap = new $L<>()", HashMap.class.getCanonicalName())
                 .addStatement("viewToPresenterMap = new $L<>()", HashMap.class.getCanonicalName());
@@ -57,7 +58,7 @@ public class ViewToPresenterMapWriter {
         constructorBuilder.addStatement("$L presenter",KnitFileStrings.KNIT_PRESENTER);
         for(KnitPresenterMirror knitPresenterMirror : map.keySet()){
                 PackageElement element = (PackageElement)map.get(knitPresenterMirror).enclosingClass.getEnclosingElement();
-                constructorBuilder.addStatement("presenter = new $L.$L$L(new $L(),modelManager)",element.getQualifiedName(),knitPresenterMirror.enclosingClass.getSimpleName(),KnitFileStrings.KNIT_PRESENTER_POSTFIX,knitPresenterMirror.enclosingClass.getQualifiedName());
+                constructorBuilder.addStatement("presenter = new $L.$L$L(new $L(),navigator,modelManager)",element.getQualifiedName(),knitPresenterMirror.enclosingClass.getSimpleName(),KnitFileStrings.KNIT_PRESENTER_POSTFIX,knitPresenterMirror.enclosingClass.getQualifiedName());
                 constructorBuilder.addStatement("viewToPresenterMap.put($L.class.getCanonicalName(),$L)",map.get(knitPresenterMirror).enclosingClass.getQualifiedName(),"presenter");
                 constructorBuilder.addStatement("parentToPresenterMap.put($L.class.getCanonicalName(),$L)",knitPresenterMirror.enclosingClass.getQualifiedName(),"presenter");
         }
@@ -84,6 +85,7 @@ public class ViewToPresenterMapWriter {
         MethodSpec.Builder createPresenterForViewMethodBuilder = MethodSpec
                 .methodBuilder("createPresenterForView")
                 .addParameter(Object.class,"viewObject")
+                .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_NAVIGATOR),"navigator")
                 .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL),"modelManager")
                 .addModifiers(Modifier.PUBLIC)
                 .returns(ClassName.bestGuess(KnitFileStrings.KNIT_PRESENTER))

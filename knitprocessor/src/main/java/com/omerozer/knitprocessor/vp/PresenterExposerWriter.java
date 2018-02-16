@@ -1,6 +1,8 @@
 package com.omerozer.knitprocessor.vp;
 
+import com.omerozer.knitprocessor.InterfaceMethodsCreatorForExposers;
 import com.omerozer.knitprocessor.KnitFileStrings;
+import com.omerozer.knitprocessor.KnitMethodsFilter;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
@@ -48,7 +50,7 @@ public class PresenterExposerWriter {
                         .build();
 
                 clazzBuilder.addMethod(getter);
-            }else if(element.getKind().equals(ElementKind.METHOD)){
+            }else if(element.getKind().equals(ElementKind.METHOD) && KnitMethodsFilter.filter(element)){
                 ExecutableElement methodElement = (ExecutableElement)element;
                 MethodSpec.Builder userMethodBuilder = MethodSpec
                         .methodBuilder("use_"+element.getSimpleName().toString())
@@ -69,6 +71,10 @@ public class PresenterExposerWriter {
                 clazzBuilder.addMethod(userMethodBuilder.build());
             }
         }
+
+        clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnCreateMethod());
+        clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnViewAppliedMethod());
+        clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnCurrentViewReleased());
 
 
         clazzBuilder.addField(parentField);

@@ -17,41 +17,51 @@ import java.lang.reflect.InvocationTargetException;
 
 public class KnitNavigator {
 
-    private static WeakReference<Context> contextRef;
+    private static KnitNavigator instance;
 
-    static void init(Context context){
-        contextRef = new WeakReference<Context>(context);
+    static KnitNavigator getInstance(){
+        if (instance == null) {
+            instance = new KnitNavigator();
+        }
+        return instance;
     }
 
-    public static ActivityNavigator toActivity(){
+    private WeakReference<Context> contextRef;
+
+    public ActivityNavigator toActivity() {
         return new ActivityNavigator();
     }
 
-    public static FragmentNavigator toFragment(){
+    public FragmentNavigator toFragment() {
         return new FragmentNavigator();
     }
 
-    static abstract class Navitator{
-       public abstract Class<?> getTarget();
+    void setContext(Context context) {
+        contextRef = new WeakReference<Context>(context);
     }
 
-    public static class ActivityNavigator extends Navitator{
+
+    abstract class Navitator {
+        public abstract Class<?> getTarget();
+    }
+
+    public class ActivityNavigator extends Navitator {
         private Class<? extends Activity> target;
         private Bundle bundle;
 
-        public ActivityNavigator target(Class<? extends Activity> target){
+        public ActivityNavigator target(Class<? extends Activity> target) {
             this.target = target;
             return this;
         }
 
-        public ActivityNavigator addData(Bundle bundle){
+        public ActivityNavigator addData(Bundle bundle) {
             this.bundle = bundle;
             return this;
         }
 
-        public void go(){
-            Intent intent = new Intent(contextRef.get(),target);
-            Knit.setDataForNavigation(this,bundle);
+        public void go() {
+            Intent intent = new Intent(contextRef.get(), target);
+            Knit.setDataForNavigation(this, bundle);
             contextRef.get().startActivity(intent);
         }
 
@@ -61,40 +71,40 @@ public class KnitNavigator {
         }
     }
 
-    public static class FragmentNavigator extends Navitator{
+    public class FragmentNavigator extends Navitator {
         private Class<? extends Fragment> target;
         private Bundle bundle;
         private FragmentManager fragmentManager;
         private int container;
 
-        public FragmentNavigator addData(Bundle bundle){
+        public FragmentNavigator addData(Bundle bundle) {
             this.bundle = bundle;
             return this;
         }
 
-        public FragmentNavigator target(Class<? extends Fragment> target){
+        public FragmentNavigator target(Class<? extends Fragment> target) {
             this.target = target;
             return this;
         }
 
-        public FragmentNavigator intoView(int id){
+        public FragmentNavigator intoView(int id) {
             this.container = id;
             return this;
         }
 
-        public FragmentNavigator usingManager(FragmentManager fragmentManager){
+        public FragmentNavigator usingManager(FragmentManager fragmentManager) {
             this.fragmentManager = fragmentManager;
             return this;
         }
 
-        public void go(){
+        public void go() {
             Constructor constructor;
             Fragment instance = null;
             try {
                 constructor = target.getConstructor();
                 instance = (Fragment) constructor.newInstance();
                 fragmentManager.beginTransaction()
-                        .replace(container,instance)
+                        .replace(container, instance)
                         .commit();
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
@@ -108,14 +118,11 @@ public class KnitNavigator {
         }
 
 
-
-
         @Override
         public Class<?> getTarget() {
             return target;
         }
     }
-
 
 
 }

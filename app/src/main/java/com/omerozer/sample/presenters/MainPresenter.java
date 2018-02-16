@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.omerozer.knit.InternalModel;
 import com.omerozer.knit.KnitNavigator;
 import com.omerozer.knit.KnitPresenter;
+import com.omerozer.knit.KnitResponse;
 import com.omerozer.knit.Presenter;
 import com.omerozer.knit.Updating;
 import com.omerozer.knit.viewevents.ViewEventEnv;
@@ -20,12 +21,6 @@ import com.omerozer.sample.views.SecondActivity;
 
 @Presenter(MainActivity.class)
 public class MainPresenter extends KnitPresenter<MainActivityContract> {
-
-
-    @Override
-    public void onCreate() {
-
-    }
 
     @Override
     public void onViewApplied(Object viewObject,Bundle data){
@@ -44,7 +39,7 @@ public class MainPresenter extends KnitPresenter<MainActivityContract> {
             requestData("test");
         }
 
-        KnitNavigator
+        getNavigator()
                 .toActivity()
                 .target(SecondActivity.class)
                 .go();
@@ -53,13 +48,13 @@ public class MainPresenter extends KnitPresenter<MainActivityContract> {
     }
 
     @Updating("test")
-    void updateData1(String data){
-        getContract().recMes(data);
+    void updateData1(KnitResponse<String> data){
+        getContract().recMes(data.getBody());
     }
 
     @Updating("testN")
-    void updateData2(String data){
-        getContract().recMes(data);
+    void updateData2(KnitResponse<String> data){
+        getContract().recMes(data.getBody());
     }
 
 }

@@ -3,6 +3,7 @@ package com.omerozer.knitprocessor.model;
 import com.omerozer.knit.Collects;
 import com.omerozer.knit.Generates;
 import com.omerozer.knit.GeneratesAsync;
+import com.omerozer.knit.Inputs;
 import com.omerozer.knit.Model;
 import com.omerozer.knit.Use;
 import com.omerozer.knit.UseMethod;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
@@ -36,7 +38,7 @@ public class KnitModelProcessor extends AbstractProcessor {
     private Set<KnitModelMirror> models;
     private Set<UserMirror> users;
     private Map<KnitModelMirror, Set<UserMirror>> modelToUserMap;
-    //public static Messager messager;
+    public static Messager messager;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnvironment) {
@@ -44,7 +46,7 @@ public class KnitModelProcessor extends AbstractProcessor {
         this.models = new HashSet<>();
         this.users = new HashSet<>();
         this.modelToUserMap = new HashMap<>();
-        //messager = processingEnvironment.getMessager();
+        messager = processingEnvironment.getMessager();
     }
 
     @Override
@@ -93,6 +95,10 @@ public class KnitModelProcessor extends AbstractProcessor {
                     }else if(element.getAnnotation(Collects.class)!=null){
                         String[] params = element.getAnnotation(Collects.class).value();
                         knitModelMirror.collectorField.put(params, (VariableElement) element);
+                        knitModelMirror.vals.addAll(Arrays.asList(params));
+                    }else if(element.getAnnotation(Inputs.class)!=null){
+                        String[] params = element.getAnnotation(Inputs.class).value();
+                        knitModelMirror.inputterField.put(params, (VariableElement) element);
                         knitModelMirror.vals.addAll(Arrays.asList(params));
                     }
                 }

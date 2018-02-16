@@ -19,8 +19,8 @@ public class KnitClassLoader {
 
     private ViewToPresenterMapInterface viewToPresenterMap;
 
-    public KnitClassLoader(Class<?> clazz,InternalModel modelManager){
-        this.viewToPresenterMap = getViewToPresenterMap(clazz,modelManager);
+    public KnitClassLoader(Class<?> clazz,KnitNavigator navigator,InternalModel modelManager){
+        this.viewToPresenterMap = getViewToPresenterMap(clazz,navigator,modelManager);
     }
 
     private Constructor<?> getConstructorForPresenter(Class<?> clazz) {
@@ -45,8 +45,8 @@ public class KnitClassLoader {
     }
 
 
-    InternalPresenter createPresenterInstanceForView(Object parent, InternalModel modelManager){
-        return viewToPresenterMap.createPresenterForView(parent,modelManager);
+    InternalPresenter createPresenterInstanceForView(Object parent,KnitNavigator navigator ,InternalModel modelManager){
+        return viewToPresenterMap.createPresenterForView(parent,navigator,modelManager);
     }
 
     InternalPresenter createPresenterInstanceForParent(Object parent){
@@ -61,7 +61,7 @@ public class KnitClassLoader {
 
         try {
             Class<?> presenter = classLoader.loadClass(KNIT_VIEW_PRESENTER_MAP);
-            Constructor<?> constructor = presenter.getConstructor(InternalModel.class);
+            Constructor<?> constructor = presenter.getConstructor(KnitNavigator.class,InternalModel.class);
 
             return constructor;
 
@@ -74,9 +74,9 @@ public class KnitClassLoader {
         return null;
     }
 
-    private ViewToPresenterMapInterface getViewToPresenterMap(Class<?> clazz,InternalModel modelManager){
+    private ViewToPresenterMapInterface getViewToPresenterMap(Class<?> clazz,KnitNavigator navigator,InternalModel modelManager){
         try {
-            return (ViewToPresenterMapInterface)getViewToPresenterConstructor(clazz).newInstance(modelManager);
+            return (ViewToPresenterMapInterface)getViewToPresenterConstructor(clazz).newInstance(navigator,modelManager);
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {

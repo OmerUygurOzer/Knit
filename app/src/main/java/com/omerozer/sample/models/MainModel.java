@@ -2,6 +2,7 @@ package com.omerozer.sample.models;
 
 import com.omerozer.knit.Generates;
 import com.omerozer.knit.KnitModel;
+import com.omerozer.knit.KnitResponse;
 import com.omerozer.knit.Model;
 import com.omerozer.knit.generators.Generator0;
 
@@ -19,12 +20,10 @@ public class MainModel extends KnitModel {
 
     @Generates("test")
     Generator0<String> generateTestString = new Generator0<String>() {
+
         @Override
-        public String generate() {
-
-
-
-            return "TEST STRING";
+        public KnitResponse<String> generate() {
+            return new KnitResponse<>("TEEEESST STRING");
         }
     };
 

@@ -11,6 +11,10 @@ public abstract class InternalPresenter implements MemoryEntity,EventHandler,Pre
 
     public abstract InternalModel getModelManager();
 
+    public abstract KnitNavigator getNavigator();
+
     public abstract Object getContract();
+
+    public abstract String[] getUpdatableFields();
 
 }

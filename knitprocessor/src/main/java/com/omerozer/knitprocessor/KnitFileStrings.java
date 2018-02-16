@@ -7,6 +7,7 @@ import java.util.Collection;
  */
 
 public class KnitFileStrings {
+
     public static final String KNIT_PACKAGE = "com.omerozer.knit";
     public static final String KNIT = "com.omerozer.knit.Knit";
 
@@ -20,11 +21,9 @@ public class KnitFileStrings {
     public static final String KNIT_PRESENTER_RELEASE_METHOD = "onCurrentViewReleased";
     public static final String KNIT_PRESENTER_UPDATE_METHOD_POSTFIX = "_Update";
     public static final String KNIT_PRESENTER_GET_MODEL_MANAGER_METHOD = "getModelManager";
-    public static final String KNIT_PRESENTER_SEED_FIELD_POSTFIX = "_Seed";
-    public static final String KNIT_PRESENTER_MUTATOR_FIELD_POSTFIX = "_Mutator";
-    public static final String KNIT_PRESENTER_HANDLER_FIELD_POSTFIX = "_Handler";
     public static final String KNIT_PRESENTER_ONCREATE_METHOD = "onCreate";
     public static final String KNIT_PRESENTER_GET_VIEW_METHOD = "getContract";
+    public static final String KNIT_GET_UPDATEABLES_METHOD = "getUpdatableFields";
 
     //MODEL
     public static final String KNIT_MODEL = "com.omerozer.knit.InternalModel";
@@ -34,6 +33,8 @@ public class KnitFileStrings {
     public static final String KNIT_MODEL_EXPOSER_POSTFIX = "_Exposer";
     public static final String KNIT_MODEL_GETHANDLEDVALUES = "getHandledValues";
     public static final String KNIT_MODEL_GET_PARENT_METHOD = "getParent";
+    public static final String KNIT_MODEL_INPUT_METHOD = "input";
+    public static final String KNIT_GET_NAVIGATOR_METHOD = "getNavigator";
 
     //USER
     public static final String KNIT_USER = "com.omerozer.knit.KnitUser";
@@ -51,6 +52,9 @@ public class KnitFileStrings {
     public static final String KNIT_EVENT_VIEW_EVENT_ENV = "com.omerozer.knit.viewevents.ViewEventEnv";
     public static final String KNIT_CALLBACK = "com.omerozer.knit.generators.Callback";
     public static final String KNIT_SUBMITTER = "com.omerozer.knit.collectors.Submitter";
+    public static final String KNIT_RESPONSE = "com.omerozer.knit.KnitResponse";
+    public static final String KNIT_NAVIGATOR = "com.omerozer.knit.KnitNavigator";
+
 
     //CONTRACT
     public static final String KNIT_CONTRACT_POSTFIX = "Contract";

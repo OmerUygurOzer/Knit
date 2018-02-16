@@ -1,9 +1,11 @@
 package com.omerozer.knit.generators;
 
+import com.omerozer.knit.KnitResponse;
+
 /**
  * Created by omerozer on 2/4/18.
  */
 
 public interface Callback<K> {
-    void response(K response);
+    void response(KnitResponse<K> response);
 }

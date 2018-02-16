@@ -28,19 +28,20 @@ public class Knit {
 
     private static Map<Class<?>, Bundle> navigatorDataMap = new LinkedHashMap<>();
 
-    private static WeakReference<? extends Activity> currentTopActivity;
+    private static KnitNavigator navigator;
 
     public static void init(Context context) {
         knitUtilsLoader = new KnitUtilsLoader();
         knitMemoryManager = new KnitMemoryManager(context);
+        navigator = KnitNavigator.getInstance();
         knitAsyncTaskHandler = new KnitAsyncTaskHandler();
         modelManager = new ModelManager(Knit.class, knitUtilsLoader, knitAsyncTaskHandler);
-        knitClassLoader = new KnitClassLoader(Knit.class, modelManager);
-        presenterInstancePool = new PresenterInstancePool(knitClassLoader, knitMemoryManager, modelManager);
+        knitClassLoader = new KnitClassLoader(Knit.class, navigator,modelManager);
+        presenterInstancePool = new PresenterInstancePool(knitClassLoader, knitMemoryManager, navigator,modelManager);
     }
 
     public static void show(Object viewObject) {
-        if(viewObject instanceof Activity){KnitNavigator.init((Activity)viewObject);}
+        if(viewObject instanceof Activity){navigator.setContext ((Activity)viewObject);}
         Class<?> target = viewObject.getClass();
         presenterInstancePool.applyPresenterInstanceToView(viewObject,
                 navigatorDataMap.containsKey(target) ? navigatorDataMap.get(target) : null);
@@ -62,6 +63,10 @@ public class Knit {
         if (bundle != null) {
             navigatorDataMap.put(navigator.getTarget(), bundle);
         }
+    }
+
+    static InternalModel getModelManager(){
+        return modelManager;
     }
 
 
