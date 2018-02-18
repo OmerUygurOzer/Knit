@@ -24,7 +24,7 @@ public class MainPresenter extends KnitPresenter<MainActivityContract> {
 
     @Override
     public void onViewApplied(Object viewObject,Bundle data){
-        requestData("testN","BOO ");
+        requestData("test");
     }
 
     @Override
@@ -53,8 +53,9 @@ public class MainPresenter extends KnitPresenter<MainActivityContract> {
     }
 
     @Updating("testN")
-    void updateData2(KnitResponse<String> data){
+    void updateData1N(KnitResponse<String> data){
         getContract().recMes(data.getBody());
     }
+
 
 }

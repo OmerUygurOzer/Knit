@@ -54,7 +54,7 @@ public class KnitUtilsLoader {
 
         try {
             Class<?> presenterMapClazz = classLoader.loadClass(KNIT_VIEW_PRESENTER_MAP);
-            Constructor<?> constructor = presenterMapClazz.getConstructor(KnitNavigator.class,InternalModel.class);
+            Constructor<?> constructor = presenterMapClazz.getConstructor();
 
             return constructor;
 

@@ -13,7 +13,11 @@ public class UserCounter {
     }
 
     public void release() {
-        count = count > 0 ? count-- : 0;
+        count = count > 0 ? count-1 : 0;
+    }
+
+    public int getCount(){
+        return count;
     }
 
     public boolean isUsed() {

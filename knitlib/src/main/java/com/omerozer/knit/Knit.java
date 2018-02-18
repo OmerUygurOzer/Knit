@@ -1,14 +1,10 @@
 package com.omerozer.knit;
 
-import android.app.Activity;
-import android.content.Context;
-import android.os.Bundle;
+import android.app.Application;
 
 import com.omerozer.knit.components.KnitMemoryManager;
 import com.omerozer.knit.components.ModelManager;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+import com.omerozer.knit.components.graph.UsageGraph;
 
 /**
  * Created by omerozer on 2/1/18.
@@ -16,53 +12,52 @@ import java.util.Map;
 
 public class Knit {
 
-    private static PresenterInstancePool presenterInstancePool;
+    private static Knit instance;
 
-    private static KnitMemoryManager knitMemoryManager;
+    public static void init(Application application) {
+        instance = new Knit(application);
+    }
 
-    private static KnitAsyncTaskHandler knitAsyncTaskHandler;
+    public static Knit getInstance(){
+        return instance;
+    }
 
-    private static ModelManager modelManager;
+    private UsageGraph userGraph;
 
-    private static Map<Class<?>, Bundle> navigatorDataMap = new LinkedHashMap<>();
+    private KnitAsyncTaskHandler knitAsyncTaskHandler;
 
-    private static KnitNavigator navigator;
+    private ModelManager modelManager;
 
-    public static void init(Context context) {
-        //knitMemoryManager = new KnitMemoryManager(context);
-        navigator = KnitNavigator.getInstance();
+    private KnitNavigator navigator;
+
+    private Knit(Application application){
+        modelManager = new ModelManager();
         knitAsyncTaskHandler = new KnitAsyncTaskHandler();
-        //modelManager = new ModelManager(Knit.class, knitUtilsLoader, knitAsyncTaskHandler);
-        //knitClassLoader = new KnitClassLoader(Knit.class, navigator,modelManager);
-        //presenterInstancePool = new PresenterInstancePool(knitClassLoader, knitMemoryManager, navigator,modelManager);
+        navigator = KnitNavigator.getInstance();
+        userGraph = new UsageGraph(this,knitAsyncTaskHandler,navigator,modelManager);
+        application.registerComponentCallbacks(new KnitMemoryManager(userGraph));
+        application.registerActivityLifecycleCallbacks(new KnitAppListener(this));
+        KnitEvents.init(this);
     }
 
-    public static void show(Object viewObject) {
-        if(viewObject instanceof Activity){navigator.setContext ((Activity)viewObject);}
-        Class<?> target = viewObject.getClass();
-        presenterInstancePool.applyPresenterInstanceToView(viewObject,
-                navigatorDataMap.containsKey(target) ? navigatorDataMap.get(target) : null);
+    public void show(Object viewObject) {
+        navigator.navigatedTo(viewObject);
+        userGraph.startViewAndItsComponents(viewObject,navigator.getDataForTarget(viewObject));
     }
 
-    public static void dismiss(Object viewObject) {
-        presenterInstancePool.getPresenterInstanceForView(viewObject).onCurrentViewReleased();
+    public void dismiss(Object viewObject) {
+       userGraph.stopViewAndItsComponents(viewObject);
     }
 
-    static InternalPresenter findPresenterForView(Object viewObject) {
-        return presenterInstancePool.getPresenterInstanceForView(viewObject);
+    InternalPresenter findPresenterForView(Object viewObject) {
+        return userGraph.getPresenterForView(viewObject);
     }
 
-    static InternalPresenter findPresenterForParent(Object viewObject) {
-        return presenterInstancePool.getPresenterInstanceForParent(viewObject);
+    InternalPresenter findPresenterForParent(Object parentPresenter) {
+        return userGraph.getPresenterForObject(parentPresenter);
     }
 
-    static void setDataForNavigation(KnitNavigator.Navitator navigator, Bundle bundle) {
-        if (bundle != null) {
-            navigatorDataMap.put(navigator.getTarget(), bundle);
-        }
-    }
-
-    static InternalModel getModelManager(){
+    InternalModel getModelManager(){
         return modelManager;
     }
 

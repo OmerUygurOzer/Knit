@@ -171,13 +171,14 @@ class KnitPresenterWriter {
 
         MethodSpec.Builder constructorBuilder = MethodSpec
                 .constructorBuilder()
+                .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT),"knitInstance")
                 .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_NAVIGATOR),"navigator")
                 .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL), "modelManager")
-                .addStatement("java.lang.Object parent = new $L()",presenterMirror.enclosingClass.getQualifiedName())
+                .addStatement("$L parent = new $L()",presenterMirror.enclosingClass.getQualifiedName(),presenterMirror.enclosingClass.getQualifiedName())
                 .addStatement(
                         "this.parent = new " + presenterMirror.enclosingClass.getQualifiedName()
-                                + KnitFileStrings.KNIT_MODEL_EXPOSER_POSTFIX + "(($L)parent)",
-                        presenterMirror.enclosingClass.getQualifiedName().toString())
+                                + KnitFileStrings.KNIT_MODEL_EXPOSER_POSTFIX + "(parent)")
+                .addStatement("parent.setKnit(knitInstance)")
                 .addStatement("this.modelManager = modelManager")
                 .addStatement("this.viewEventHandler = ($L)parent",KnitFileStrings.KNIT_EVENT_HANDLER)
                 .addStatement("this.updateables = $L",KnitFileStrings.createStringArrayField(presenterMirror.updatingMethodsMap.keySet()))

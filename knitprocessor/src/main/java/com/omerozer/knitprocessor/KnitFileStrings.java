@@ -1,6 +1,9 @@
 package com.omerozer.knitprocessor;
 
+import com.squareup.javapoet.ClassName;
+
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by omerozer on 2/3/18.
@@ -58,6 +61,9 @@ public class KnitFileStrings {
     public static final String KNIT_SUBMITTER = "com.omerozer.knit.collectors.Submitter";
     public static final String KNIT_RESPONSE = "com.omerozer.knit.KnitResponse";
     public static final String KNIT_NAVIGATOR = "com.omerozer.knit.KnitNavigator";
+    public static final ClassName TYPE_NAME_CLASS = ClassName.bestGuess(Class.class.getCanonicalName());
+    public static final ClassName TYPE_NAME_STRING = ClassName.bestGuess(String.class.getCanonicalName());
+    public static final ClassName TYPE_NAME_LIST = ClassName.bestGuess(List.class.getCanonicalName());
 
 
     //CONTRACT

@@ -1,5 +1,9 @@
 package com.omerozer.knitprocessor.vp;
 
+import static com.omerozer.knitprocessor.KnitFileStrings.TYPE_NAME_CLASS;
+import static com.omerozer.knitprocessor.KnitFileStrings.TYPE_NAME_LIST;
+import static com.omerozer.knitprocessor.KnitFileStrings.TYPE_NAME_STRING;
+
 import com.omerozer.knitprocessor.KnitFileStrings;
 import com.omerozer.knitprocessor.PackageStringExtractor;
 import com.squareup.javapoet.ClassName;
@@ -31,9 +35,9 @@ public class ViewToPresenterMapWriter {
 
         MethodSpec.Builder findPresenterForClassMethodBuilder = MethodSpec
                 .methodBuilder("getPresenterClassForView")
-                .addParameter(ClassName.bestGuess(Class.class.getCanonicalName()), "viewClass")
+                .addParameter(TYPE_NAME_CLASS, "viewClass")
                 .addModifiers(Modifier.PUBLIC)
-                .returns(Class.class)
+                .returns(TYPE_NAME_CLASS)
                 .addAnnotation(Override.class);
 
 
@@ -52,8 +56,7 @@ public class ViewToPresenterMapWriter {
 
         ParameterizedTypeName viewClassName = ParameterizedTypeName.get(ClassName.bestGuess(Class.class.getCanonicalName()),wildcardTypeName);
 
-        ParameterizedTypeName returnTypeForGetAll = ParameterizedTypeName.get(
-                ClassName.bestGuess(List.class.getCanonicalName()), viewClassName);
+        ParameterizedTypeName returnTypeForGetAll = ParameterizedTypeName.get(TYPE_NAME_LIST, viewClassName);
 
         MethodSpec.Builder getAllViewsMethodBuilder = MethodSpec
                 .methodBuilder("getAllViews")
@@ -81,13 +84,11 @@ public class ViewToPresenterMapWriter {
         viewToPresenterMapBuilder.addMethod(getAllViewsMethodBuilder.build());
 
 
-        ParameterizedTypeName returnTypeForGeneratedVals = ParameterizedTypeName.get(
-                ClassName.bestGuess(List.class.getCanonicalName()),
-                ClassName.bestGuess(String.class.getCanonicalName()));
+        ParameterizedTypeName returnTypeForGeneratedVals = ParameterizedTypeName.get(TYPE_NAME_LIST, TYPE_NAME_STRING);
 
         MethodSpec.Builder getUpdatingValuesMethodBuilder = MethodSpec
                 .methodBuilder("getUpdatingValues")
-                .addParameter(ClassName.bestGuess(Class.class.getCanonicalName()),"clazz")
+                .addParameter(TYPE_NAME_CLASS,"clazz")
                 .addAnnotation(Override.class)
                 .returns(returnTypeForGeneratedVals)
                 .addModifiers(Modifier.PUBLIC);
@@ -118,6 +119,24 @@ public class ViewToPresenterMapWriter {
 
         viewToPresenterMapBuilder.addMethod(getUpdatingValuesMethodBuilder.build());
 
+
+        MethodSpec.Builder getPresenterForParentMethodBuilder = MethodSpec
+                .methodBuilder("getPresenterClassForPresenter")
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(TYPE_NAME_CLASS,"parentClass")
+                .returns(TYPE_NAME_CLASS);
+
+        for(KnitPresenterMirror presenterMirror : map.keySet()){
+            String packageString = PackageStringExtractor.extract(
+                    map.get(presenterMirror).enclosingClass.asType());
+            getPresenterForParentMethodBuilder.beginControlFlow("if(parentClass.equals($L.class))",presenterMirror.enclosingClass.getQualifiedName());
+            getPresenterForParentMethodBuilder.addStatement("return $L.$L$L.class",packageString,presenterMirror.enclosingClass.getSimpleName(),"_Presenter");
+            getPresenterForParentMethodBuilder.endControlFlow();
+        }
+        getPresenterForParentMethodBuilder.addStatement("return null");
+
+        viewToPresenterMapBuilder.addMethod(getPresenterForParentMethodBuilder.build());
 
         JavaFile javaFile = JavaFile.builder(KnitFileStrings.KNIT_PACKAGE,
                 viewToPresenterMapBuilder.build()).build();

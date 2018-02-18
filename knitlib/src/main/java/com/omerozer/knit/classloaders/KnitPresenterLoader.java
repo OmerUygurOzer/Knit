@@ -2,6 +2,7 @@ package com.omerozer.knit.classloaders;
 
 import com.omerozer.knit.InternalModel;
 import com.omerozer.knit.InternalPresenter;
+import com.omerozer.knit.Knit;
 import com.omerozer.knit.KnitAsyncTaskHandler;
 import com.omerozer.knit.KnitNavigator;
 import com.omerozer.knit.ViewToPresenterMapInterface;
@@ -19,11 +20,14 @@ public class KnitPresenterLoader {
 
     private Map<Class<?>, Constructor<?>> cache;
 
+    private Knit knitInstance;
+
     private KnitNavigator navigator;
 
     private InternalModel modelManager;
 
-    public KnitPresenterLoader(KnitNavigator navigator, InternalModel modelManager) {
+    public KnitPresenterLoader(Knit knit,KnitNavigator navigator, InternalModel modelManager) {
+        this.knitInstance = knit;
         this.navigator = navigator;
         this.modelManager = modelManager;
         this.cache = new HashMap<>();
@@ -32,7 +36,7 @@ public class KnitPresenterLoader {
     public InternalPresenter loadPresenter(Class<?> presenterClass) {
         try {
             return (InternalPresenter) findConstructorForPresenter(presenterClass).newInstance(
-                    navigator, modelManager);
+                    knitInstance,navigator, modelManager);
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -48,8 +52,7 @@ public class KnitPresenterLoader {
             return cache.get(presenterClazz);
         }
         try {
-            Constructor<?> constructor = presenterClazz.getConstructor(Object.class,
-                    KnitNavigator.class, InternalModel.class);
+            Constructor<?> constructor = presenterClazz.getConstructor(Knit.class,KnitNavigator.class, InternalModel.class);
             cache.put(presenterClazz, constructor);
             return constructor;
         } catch (NoSuchMethodException e) {

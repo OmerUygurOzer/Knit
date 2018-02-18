@@ -18,7 +18,7 @@ public class KnitMemoryManager implements ComponentCallbacks2 {
 
     private UsageGraph usageGraph;
 
-    KnitMemoryManager(UsageGraph usageGraph) {
+    public KnitMemoryManager(UsageGraph usageGraph) {
         this.usageGraph = usageGraph;
     }
 

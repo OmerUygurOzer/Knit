@@ -7,7 +7,8 @@ import java.util.List;
  */
 
 public interface ViewToPresenterMapInterface {
-    Class getPresenterClassForView(Class viewObject);
+    Class getPresenterClassForView(Class viewClass);
+    Class getPresenterClassForPresenter(Class parentClass);
     List<Class<?>> getAllViews();
     List<String> getUpdatingValues(Class clazz);
 }

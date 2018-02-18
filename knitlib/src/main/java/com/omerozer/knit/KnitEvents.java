@@ -18,11 +18,11 @@ import com.omerozer.knit.viewevents.KnitTextChangedEvent;
 
 public class KnitEvents {
 
-    private static KnitOnClickEventPool onClickEventPool = new KnitOnClickEventPool();
-    private static KnitOnTextChangedEventPool onTextChangedEventPool =
-            new KnitOnTextChangedEventPool();
-    private static KnitOnFocusChangedEventPool onFocusChangedEventPool =
-            new KnitOnFocusChangedEventPool();
+    private static Knit knitInstance;
+
+    static void init(Knit knit){
+        knitInstance = knit;
+    }
 
     public static void onClick(final String tag, final Object carrierObject, View view) {
         view.setOnClickListener(new android.view.View.OnClickListener() {
@@ -31,11 +31,16 @@ public class KnitEvents {
                 KnitOnClickEvent event = onClickEventPool.getEvent();
                 event.setTag(tag);
                 event.setViewWeakReference(view);
-                Knit.findPresenterForView(carrierObject).handle(onClickEventPool, event,
-                        Knit.getModelManager());
+                knitInstance.findPresenterForView(carrierObject).handle(onClickEventPool, event, knitInstance.getModelManager());
             }
         });
     }
+    private static KnitOnClickEventPool onClickEventPool = new KnitOnClickEventPool();
+    private static KnitOnTextChangedEventPool onTextChangedEventPool =
+            new KnitOnTextChangedEventPool();
+
+    private static KnitOnFocusChangedEventPool onFocusChangedEventPool =
+            new KnitOnFocusChangedEventPool();
 
     public static void onTextChanged(final String tag, final Object carrierObject,
             final EditText view) {
@@ -50,8 +55,8 @@ public class KnitEvents {
                 event.setI(i);
                 event.setI1(i1);
                 event.setI2(i2);
-                Knit.findPresenterForView(carrierObject).handle(onTextChangedEventPool, event,
-                        Knit.getModelManager());
+                knitInstance.findPresenterForView(carrierObject).handle(onTextChangedEventPool, event,
+                        knitInstance.getModelManager());
                 view.addTextChangedListener(this);
             }
 
@@ -65,8 +70,8 @@ public class KnitEvents {
                 event.setI(i);
                 event.setI1(i1);
                 event.setI2(i2);
-                Knit.findPresenterForView(carrierObject).handle(onTextChangedEventPool, event,
-                        Knit.getModelManager());
+                knitInstance.findPresenterForView(carrierObject).handle(onTextChangedEventPool, event,
+                        knitInstance.getModelManager());
                 view.addTextChangedListener(this);
             }
 
@@ -77,8 +82,8 @@ public class KnitEvents {
                 event.setTag(tag);
                 event.setState(KnitTextChangedEvent.State.AFTER);
                 event.setAfterEditable(editable);
-                Knit.findPresenterForView(carrierObject).handle(onTextChangedEventPool, event,
-                        Knit.getModelManager());
+                knitInstance.findPresenterForView(carrierObject).handle(onTextChangedEventPool, event,
+                        knitInstance.getModelManager());
                 view.addTextChangedListener(this);
             }
         };
@@ -93,8 +98,8 @@ public class KnitEvents {
                 KnitOnFocusChangedEvent event = onFocusChangedEventPool.getEvent();
                 event.setTag(tag);
                 event.setFocus(b);
-                Knit.findPresenterForView(carrierObject).handle(onFocusChangedEventPool, event,
-                        Knit.getModelManager());
+                knitInstance.findPresenterForView(carrierObject).handle(onFocusChangedEventPool, event,
+                        knitInstance.getModelManager());
             }
         });
     }

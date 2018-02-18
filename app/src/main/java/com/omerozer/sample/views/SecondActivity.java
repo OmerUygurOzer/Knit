@@ -20,20 +20,6 @@ public class SecondActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
-        Knit.show(this);
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Knit.show(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Knit.dismiss(this);
     }
 
     public void recMes(String message){

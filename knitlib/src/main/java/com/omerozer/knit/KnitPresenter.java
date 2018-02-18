@@ -12,26 +12,32 @@ import com.omerozer.knit.viewevents.handlers.EventHandler;
 
 public abstract class KnitPresenter<T> implements EventHandler, PresenterInterface {
 
+    private Knit knitInstance;
+
+    public void setKnit(Knit knit) {
+        this.knitInstance = knit;
+    }
+
     protected void requestData(String data, Object... params) {
-        InternalPresenter instance = Knit.findPresenterForParent(this);
+        InternalPresenter instance = knitInstance.findPresenterForParent(this);
         instance.getModelManager().request(data, instance, params);
     }
 
     protected void inputData(String data, Object... params) {
-        InternalPresenter instance = Knit.findPresenterForParent(this);
+        InternalPresenter instance = knitInstance.findPresenterForParent(this);
         instance.getModelManager().input(data, params);
     }
 
     protected T getContract() {
-        return (T) Knit.findPresenterForParent(this).getContract();
+        return (T) knitInstance.findPresenterForParent(this).getContract();
     }
 
     protected InternalModel getModelManager() {
-        return Knit.findPresenterForParent(this).getModelManager();
+        return knitInstance.findPresenterForParent(this).getModelManager();
     }
 
-    protected KnitNavigator getNavigator(){
-        return Knit.findPresenterForParent(this).getNavigator();
+    protected KnitNavigator getNavigator() {
+        return knitInstance.findPresenterForParent(this).getNavigator();
     }
 
     @Override
@@ -72,5 +78,12 @@ public abstract class KnitPresenter<T> implements EventHandler, PresenterInterfa
     @Override
     public void onCurrentViewReleased() {
 
+    }
+
+    private Knit getKnit() {
+        if (knitInstance == null) {
+            knitInstance = Knit.getInstance();
+        }
+        return knitInstance;
     }
 }

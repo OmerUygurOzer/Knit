@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/knitannotations" />
             <option value="$PROJECT_DIR$/knitlib" />
             <option value="$PROJECT_DIR$/knitprocessor" />
+            <option value="$PROJECT_DIR$/knittestkit" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

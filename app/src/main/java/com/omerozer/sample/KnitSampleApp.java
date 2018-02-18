@@ -21,45 +21,5 @@ public class KnitSampleApp extends Application {
     public void onCreate() {
         super.onCreate();
         Knit.init(this);
-        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
-            @Override
-            public void onActivityCreated(Activity activity, Bundle bundle) {
-
-            }
-
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onActivityStarted(Activity activity) {
-
-            }
-
-            @Override
-            public void onActivityResumed(Activity activity) {
-
-            }
-
-            @Override
-            public void onActivityPaused(Activity activity) {
-
-            }
-
-            @Override
-            public void onActivityStopped(Activity activity) {
-
-            }
-
-            @Override
-            public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
-
-            }
-
-            @Override
-            public void onActivityDestroyed(Activity activity) {
-
-            }
-        });
-
-
-
     }
 }

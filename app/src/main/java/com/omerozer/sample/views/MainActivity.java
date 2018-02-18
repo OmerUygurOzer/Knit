@@ -25,20 +25,9 @@ public class MainActivity extends AppCompatActivity {
         KnitEvents.onClick("button",this,button);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Knit.show(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Knit.dismiss(this);
-    }
 
     public void recMes(String message){
-        ((TextView)findViewById(R.id.textView_t)).setText(message);
+        ((TextView)findViewById(R.id.textView_t)).setText("TEEST");
     }
 
     public void showToast(String message){

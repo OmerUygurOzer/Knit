@@ -38,6 +38,12 @@ public class ModelManager extends InternalModel {
         }
     }
 
+    public void unregisterComponentTag(ComponentTag componentTag) {
+        for (String val : usageGraph.getModelWithTag(componentTag).getHandledValues()) {
+            valueToModelMap.remove(val);
+        }
+    }
+
     @Override
     public void request(String data, InternalPresenter internalPresenter, Object... params) {
         synchronized (requestLock) {

@@ -1,5 +1,7 @@
 package com.omerozer.knitprocessor.model;
 
+import static com.omerozer.knitprocessor.KnitFileStrings.*;
+
 import com.omerozer.knitprocessor.KnitFileStrings;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
@@ -32,11 +34,9 @@ public class ModelMapWriter {
         WildcardTypeName wildcardTypeName = WildcardTypeName.subtypeOf(
                 ClassName.bestGuess(KnitFileStrings.KNIT_MODEL));
 
-        ParameterizedTypeName classTypeName = ParameterizedTypeName.get(
-                ClassName.bestGuess(Class.class.getCanonicalName()), wildcardTypeName);
+        ParameterizedTypeName classTypeName = ParameterizedTypeName.get(TYPE_NAME_CLASS, wildcardTypeName);
 
-        ParameterizedTypeName returnTypeForGetAll = ParameterizedTypeName.get(
-                ClassName.bestGuess(List.class.getCanonicalName()), classTypeName);
+        ParameterizedTypeName returnTypeForGetAll = ParameterizedTypeName.get(TYPE_NAME_LIST, classTypeName);
 
         int c = 0;
         StringBuilder stringBuilder = new StringBuilder();
@@ -63,13 +63,11 @@ public class ModelMapWriter {
 
         modelMapBuilder.addMethod(getAllMethod);
 
-        ParameterizedTypeName returnTypeForGeneratedVals = ParameterizedTypeName.get(
-                ClassName.bestGuess(List.class.getCanonicalName()),
-                ClassName.bestGuess(String.class.getCanonicalName()));
+        ParameterizedTypeName returnTypeForGeneratedVals = ParameterizedTypeName.get(TYPE_NAME_LIST, TYPE_NAME_STRING);
 
         MethodSpec.Builder getGeneratedValuesMethodBuilder = MethodSpec
                 .methodBuilder("getGeneratedValues")
-                .addParameter(ClassName.bestGuess(Class.class.getCanonicalName()),"clazz")
+                .addParameter(TYPE_NAME_CLASS,"clazz")
                 .addAnnotation(Override.class)
                 .returns(returnTypeForGeneratedVals)
                 .addModifiers(Modifier.PUBLIC);

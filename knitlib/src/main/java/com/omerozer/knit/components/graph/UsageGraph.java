@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.omerozer.knit.InternalModel;
 import com.omerozer.knit.InternalPresenter;
+import com.omerozer.knit.Knit;
 import com.omerozer.knit.KnitAsyncTaskHandler;
 import com.omerozer.knit.KnitNavigator;
 import com.omerozer.knit.MemoryEntity;
@@ -27,6 +28,8 @@ import java.util.Set;
  */
 
 public class UsageGraph {
+
+    private Knit knitInstance;
 
     private ViewToPresenterMapInterface viewToPresenterMap;
 
@@ -54,15 +57,15 @@ public class UsageGraph {
 
     private Set<ComponentTag> activePresenterTags;
 
-    public UsageGraph(Class<?> base, KnitAsyncTaskHandler asyncTaskHandler, KnitNavigator navigator,
+    public UsageGraph(Knit knitInstance, KnitAsyncTaskHandler asyncTaskHandler, KnitNavigator navigator,
             ModelManager modelManager) {
         this.knitUtilsLoader = new KnitUtilsLoader();
         this.modelManager = modelManager;
         this.modelManager.setUsageGraph(this);
-        this.viewToPresenterMap = knitUtilsLoader.getViewToPresenterMap(base);
-        this.modelMap = knitUtilsLoader.getModelMap(base);
+        this.viewToPresenterMap = knitUtilsLoader.getViewToPresenterMap(knitInstance.getClass());
+        this.modelMap = knitUtilsLoader.getModelMap(knitInstance.getClass());
         this.knitModelLoader = new KnitModelLoader(asyncTaskHandler);
-        this.knitPresenterLoader = new KnitPresenterLoader(navigator, modelManager);
+        this.knitPresenterLoader = new KnitPresenterLoader(knitInstance,navigator, modelManager);
         this.counterMap = new HashMap<>();
         this.graphBase = new HashMap<>();
         this.clazzToTagMap = new HashMap<>();
@@ -124,6 +127,13 @@ public class UsageGraph {
         return (InternalPresenter) instanceMap.get(componentTag);
     }
 
+    public InternalPresenter getPresenterForObject(Object presenterObject){
+        return (InternalPresenter) instanceMap.get(clazzToTagMap.get(viewToPresenterMap.getPresenterClassForPresenter(presenterObject.getClass())));
+    }
+
+    public InternalPresenter getPresenterForView(Object viewObject){
+        return (InternalPresenter)instanceMap.get(clazzToTagMap.get(viewToPresenterMap.getPresenterClassForView(viewObject.getClass())));
+    }
 
     public void startViewAndItsComponents(Object viewObject, Bundle data) {
         recurseTraverseTheGraphAndStartIfNeeded(clazzToTagMap.get(viewObject.getClass()),
@@ -136,6 +146,9 @@ public class UsageGraph {
     }
 
     private void recurseForStart(EntityNode entityNode, Object viewObject, Bundle data) {
+        for (EntityNode node : entityNode.next) {
+            recurseForStart(node, viewObject, data);
+        }
         switch (entityNode.type) {
             case MODEL:
                 if (!counterMap.get(entityNode.tag).isUsed()) {
@@ -150,8 +163,7 @@ public class UsageGraph {
 
             case PRESENTER:
                 if (!counterMap.get(entityNode.tag).isUsed()) {
-                    InternalPresenter internalPresenter = knitPresenterLoader.loadPresenter(
-                            tagToClazzMap.get(entityNode.tag));
+                    InternalPresenter internalPresenter = knitPresenterLoader.loadPresenter(tagToClazzMap.get(entityNode.tag));
                     instanceMap.put(entityNode.tag, internalPresenter);
                     activePresenterTags.add(entityNode.tag);
                     internalPresenter.onCreate();
@@ -161,9 +173,7 @@ public class UsageGraph {
                 break;
         }
         counterMap.get(entityNode.tag).use();
-        for (EntityNode node : entityNode.next) {
-            recurseForStart(node, viewObject, data);
-        }
+
     }
 
     public void stopViewAndItsComponents(Object viewObject) {
@@ -182,6 +192,7 @@ public class UsageGraph {
                     instanceMap.get(entityNode.tag).onDestroy();
                     instanceMap.remove(entityNode.tag);
                     activeModelTags.remove(entityNode.tag);
+                    modelManager.unregisterComponentTag(entityNode.tag);
                 }
 
                 break;

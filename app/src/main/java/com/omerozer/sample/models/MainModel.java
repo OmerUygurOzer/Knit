@@ -1,5 +1,7 @@
 package com.omerozer.sample.models;
 
+import android.util.Log;
+
 import com.omerozer.knit.Generates;
 import com.omerozer.knit.KnitModel;
 import com.omerozer.knit.KnitResponse;
@@ -15,7 +17,14 @@ public class MainModel extends KnitModel {
 
     @Override
     public void onCreate() {
+        super.onCreate();
+        Log.d("KNIT_TEST","MAIN MODEL CREATED");
+    }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("KNIT_TEST","MAIN MODEL DESTROYED");
     }
 
     @Generates("test")
