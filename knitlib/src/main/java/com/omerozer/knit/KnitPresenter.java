@@ -14,30 +14,58 @@ public abstract class KnitPresenter<T> implements EventHandler, PresenterInterfa
 
     private Knit knitInstance;
 
+    private InternalModel modelManager;
+
+    private KnitNavigator navigator;
+
+    private Object contract;
+
     public void setKnit(Knit knit) {
         this.knitInstance = knit;
     }
 
     protected void requestData(String data, Object... params) {
         InternalPresenter instance = knitInstance.findPresenterForParent(this);
-        instance.getModelManager().request(data, instance, params);
+        getModelManager().request(data, instance, params);
     }
 
     protected void inputData(String data, Object... params) {
-        InternalPresenter instance = knitInstance.findPresenterForParent(this);
-        instance.getModelManager().input(data, params);
+        getModelManager().input(data, params);
     }
 
     protected T getContract() {
-        return (T) knitInstance.findPresenterForParent(this).getContract();
+        if(contract == null){
+            contract = knitInstance.findPresenterForParent(this).getContract();
+        }
+        return (T) contract;
     }
 
     protected InternalModel getModelManager() {
-        return knitInstance.findPresenterForParent(this).getModelManager();
+        if(modelManager == null){
+            modelManager = knitInstance.findPresenterForParent(this).getModelManager();
+        }
+
+        return modelManager;
+    }
+
+    void setModelManager(InternalModel modelManager) {
+        this.modelManager = modelManager;
+    }
+
+    void setNavigator(KnitNavigator navigator) {
+        this.navigator = navigator;
+    }
+
+    void setContract(Object contract) {
+        this.contract = contract;
     }
 
     protected KnitNavigator getNavigator() {
-        return knitInstance.findPresenterForParent(this).getNavigator();
+        if(navigator == null){
+            navigator =  knitInstance.findPresenterForParent(this).getNavigator();
+        }
+        return navigator;
+
     }
 
     @Override
@@ -80,10 +108,4 @@ public abstract class KnitPresenter<T> implements EventHandler, PresenterInterfa
 
     }
 
-    private Knit getKnit() {
-        if (knitInstance == null) {
-            knitInstance = Knit.getInstance();
-        }
-        return knitInstance;
-    }
 }

@@ -18,7 +18,7 @@ public class Knit {
         instance = new Knit(application);
     }
 
-    public static Knit getInstance(){
+    static Knit getInstance(){
         return instance;
     }
 
@@ -40,12 +40,12 @@ public class Knit {
         KnitEvents.init(this);
     }
 
-    public void show(Object viewObject) {
+    void show(Object viewObject) {
         navigator.navigatedTo(viewObject);
         userGraph.startViewAndItsComponents(viewObject,navigator.getDataForTarget(viewObject));
     }
 
-    public void dismiss(Object viewObject) {
+    void dismiss(Object viewObject) {
        userGraph.stopViewAndItsComponents(viewObject);
     }
 

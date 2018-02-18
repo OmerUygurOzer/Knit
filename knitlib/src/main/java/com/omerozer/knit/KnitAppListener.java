@@ -35,6 +35,8 @@ public class KnitAppListener extends
         }
     }
 
+
+
     @Override
     public void onActivityStarted(Activity activity) {
         knit.show(activity);

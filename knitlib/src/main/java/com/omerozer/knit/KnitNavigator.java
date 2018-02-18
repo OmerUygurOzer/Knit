@@ -52,11 +52,11 @@ public class KnitNavigator {
     }
 
 
-    abstract class Navitator {
+    abstract class Navigator {
         public abstract Class<?> getTarget();
     }
 
-    public class ActivityNavigator extends Navitator {
+    public class ActivityNavigator extends Navigator {
         private Class<? extends Activity> target;
         private Bundle bundle;
 
@@ -84,7 +84,7 @@ public class KnitNavigator {
         }
     }
 
-    public class FragmentNavigator extends Navitator {
+    public class FragmentNavigator extends Navigator {
         private Class<? extends Fragment> target;
         private Bundle bundle;
         private FragmentManager fragmentManager;
