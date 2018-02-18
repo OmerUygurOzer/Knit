@@ -1,8 +1,11 @@
-package com.omerozer.knit;
+package com.omerozer.knit.components;
 
 import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.res.Configuration;
+
+import com.omerozer.knit.MemoryEntity;
+import com.omerozer.knit.components.graph.UsageGraph;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -13,22 +16,10 @@ import java.util.Set;
 
 public class KnitMemoryManager implements ComponentCallbacks2 {
 
-    private Set<MemoryEntity> entities;
+    private UsageGraph usageGraph;
 
-    KnitMemoryManager(Context context) {
-        this.entities = new LinkedHashSet<>();
-    }
-
-    void registerInstance(MemoryEntity entity) {
-        this.entities.add(entity);
-    }
-
-    void evictEntity(MemoryEntity entity) {
-        this.entities.remove(entity);
-    }
-
-    boolean contains(MemoryEntity entity) {
-        return entities.contains(entity);
+    KnitMemoryManager(UsageGraph usageGraph) {
+        this.usageGraph = usageGraph;
     }
 
     @Override
@@ -47,7 +38,7 @@ public class KnitMemoryManager implements ComponentCallbacks2 {
 
     private void handleMemoryLevel(int i) {
         if (i == ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
-            for (MemoryEntity entity : entities) {
+            for (MemoryEntity entity : usageGraph.activeEntities()) {
                 entity.onMemoryLow();
             }
         }

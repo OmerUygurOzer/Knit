@@ -22,12 +22,12 @@ public class SecondPresenter extends KnitPresenter<SecondActivity> {
 
     @Override
     public void onViewApplied(Object viewObject,Bundle bundle){
-        requestData("umbrella");
+        requestData("testN","PARAMSENT");
     }
 
 
 
-    @Updating("umbrella")
+    @Updating("testN")
     void updateData2(KnitResponse<String> data){
         getContract().recMes(data.getBody());
     }

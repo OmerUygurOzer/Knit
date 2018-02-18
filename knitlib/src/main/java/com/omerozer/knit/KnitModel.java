@@ -10,7 +10,7 @@ public abstract class KnitModel implements ModelInterface  {
 
     InternalModel modelManager;
 
-    void setModelManager(InternalModel internalModel){
+    public void setModelManager(InternalModel internalModel){
         this.modelManager = internalModel;
     }
 

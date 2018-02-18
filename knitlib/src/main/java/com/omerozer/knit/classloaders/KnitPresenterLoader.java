@@ -17,22 +17,22 @@ import java.util.Map;
 
 public class KnitPresenterLoader {
 
-
-    private ViewToPresenterMapInterface viewToPresenterMap;
+    private Map<Class<?>, Constructor<?>> cache;
 
     private KnitNavigator navigator;
 
     private InternalModel modelManager;
 
-    public KnitPresenterLoader(ViewToPresenterMapInterface viewToPresenterMap, KnitNavigator navigator, InternalModel modelManager) {
-        this.viewToPresenterMap = viewToPresenterMap;
+    public KnitPresenterLoader(KnitNavigator navigator, InternalModel modelManager) {
         this.navigator = navigator;
         this.modelManager = modelManager;
+        this.cache = new HashMap<>();
     }
 
-    public InternalPresenter loadPresenterForView(Object presenterObject){
+    public InternalPresenter loadPresenter(Class<?> presenterClass) {
         try {
-            return (InternalPresenter) findConstructorForPresenter(viewToPresenterMap.getPresenterClassForView(presenterObject.getClass())).newInstance(presenterObject,navigator,modelManager);
+            return (InternalPresenter) findConstructorForPresenter(presenterClass).newInstance(
+                    navigator, modelManager);
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -43,9 +43,15 @@ public class KnitPresenterLoader {
         return null;
     }
 
-    private Constructor<?> findConstructorForPresenter(Class<?> presenterClazz){
+    private Constructor<?> findConstructorForPresenter(Class<?> presenterClazz) {
+        if (cache.containsKey(presenterClazz)) {
+            return cache.get(presenterClazz);
+        }
         try {
-            return   presenterClazz.getConstructor(Object.class,KnitNavigator.class,InternalModel.class);
+            Constructor<?> constructor = presenterClazz.getConstructor(Object.class,
+                    KnitNavigator.class, InternalModel.class);
+            cache.put(presenterClazz, constructor);
+            return constructor;
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }

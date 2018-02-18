@@ -1,4 +1,4 @@
-package com.omerozer.knit.graph;
+package com.omerozer.knit.components.graph;
 
 /**
  * Created by omerozer on 2/16/18.

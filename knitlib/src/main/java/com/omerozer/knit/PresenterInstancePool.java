@@ -2,6 +2,9 @@ package com.omerozer.knit;
 
 import android.os.Bundle;
 
+import com.omerozer.knit.components.KnitMemoryManager;
+import com.omerozer.knit.components.ModelManager;
+
 import java.util.HashMap;
 import java.util.Map;
 

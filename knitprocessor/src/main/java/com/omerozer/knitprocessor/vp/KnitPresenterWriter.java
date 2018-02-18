@@ -171,9 +171,9 @@ class KnitPresenterWriter {
 
         MethodSpec.Builder constructorBuilder = MethodSpec
                 .constructorBuilder()
-                .addParameter(Object.class, "parent")
                 .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_NAVIGATOR),"navigator")
                 .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL), "modelManager")
+                .addStatement("java.lang.Object parent = new $L()",presenterMirror.enclosingClass.getQualifiedName())
                 .addStatement(
                         "this.parent = new " + presenterMirror.enclosingClass.getQualifiedName()
                                 + KnitFileStrings.KNIT_MODEL_EXPOSER_POSTFIX + "(($L)parent)",

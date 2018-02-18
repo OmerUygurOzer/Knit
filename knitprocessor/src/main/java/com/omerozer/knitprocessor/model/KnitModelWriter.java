@@ -185,7 +185,7 @@ class KnitModelWriter {
         MethodSpec.Builder constructorBuilder = MethodSpec
                 .constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(Object.class, "parent")
+                .addStatement("java.lang.Object parent = new $L()",modelMirror.enclosingClass.getQualifiedName())
                 .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_ASYNC_TASK), "asyncHandler")
                 .addStatement("this.parentExposer = new "
                                 + modelMirror.enclosingClass.getQualifiedName().toString()

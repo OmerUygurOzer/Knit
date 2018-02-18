@@ -4,7 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.omerozer.knit.classloaders.KnitUtilsLoader;
+import com.omerozer.knit.components.KnitMemoryManager;
+import com.omerozer.knit.components.ModelManager;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,15 +24,12 @@ public class Knit {
 
     private static ModelManager modelManager;
 
-    private static KnitUtilsLoader knitUtilsLoader;
-
     private static Map<Class<?>, Bundle> navigatorDataMap = new LinkedHashMap<>();
 
     private static KnitNavigator navigator;
 
     public static void init(Context context) {
-        knitUtilsLoader = new KnitUtilsLoader();
-        knitMemoryManager = new KnitMemoryManager(context);
+        //knitMemoryManager = new KnitMemoryManager(context);
         navigator = KnitNavigator.getInstance();
         knitAsyncTaskHandler = new KnitAsyncTaskHandler();
         //modelManager = new ModelManager(Knit.class, knitUtilsLoader, knitAsyncTaskHandler);

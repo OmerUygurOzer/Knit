@@ -14,22 +14,19 @@ import java.util.Map;
  */
 
 public class KnitModelLoader {
-    
-    private Map<Class<? extends KnitModel>,Constructor<?>> cache;
-    
-    private Class<?> base;
-    
+
+    private Map<Class<?>, Constructor<?>> cache;
+
     private KnitAsyncTaskHandler asyncTaskHandler;
-    
-    public KnitModelLoader(Class<?> base, KnitAsyncTaskHandler asyncTaskHandler){
+
+    public KnitModelLoader(KnitAsyncTaskHandler asyncTaskHandler) {
         this.cache = new HashMap<>();
-        this.base = base;
         this.asyncTaskHandler = asyncTaskHandler;
     }
-    
-    public InternalModel loadModel(Object modelObject){
+
+    public InternalModel loadModel(Class<?> modelClazz) {
         try {
-            return (InternalModel) findConstructorForModel(modelObject.getClass()).newInstance(modelObject,asyncTaskHandler);
+            return (InternalModel) findConstructorForModel(modelClazz).newInstance(asyncTaskHandler);
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -39,21 +36,21 @@ public class KnitModelLoader {
         }
         return null;
     }
-    
-    private Constructor<?> findConstructorForModel(Class<?> modelClazz){
-        ClassLoader classLoader = base.getClassLoader();
-        String name = modelClazz.getCanonicalName();
-        Class<?> loadedModel = null;
+
+    private Constructor<?> findConstructorForModel(Class<?> modelClazz) {
+
+        if(cache.containsKey(modelClazz)){
+            return cache.get(modelClazz);
+        }
 
         try {
-            loadedModel = classLoader.loadClass(name);
-            return loadedModel.getConstructor(Object.class,KnitAsyncTaskHandler.class);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            Constructor<?> constructor = modelClazz.getConstructor(KnitAsyncTaskHandler.class);
+            cache.put(modelClazz,constructor);
+            return constructor;
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
         return null;
     }
-    
+
 }
