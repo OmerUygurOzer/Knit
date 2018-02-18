@@ -6,6 +6,7 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.WildcardTypeName;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -22,29 +23,30 @@ import javax.lang.model.element.Modifier;
 public class ModelMapWriter {
     static void write(Filer filer, Set<KnitModelMirror> modelMirrors) {
 
-        String[] models = new String[modelMirrors.size()];
-        int i = 0;
-        for(KnitModelMirror knitModelMirror: modelMirrors){
-            models[i++] = "("+ KnitFileStrings.KNIT_MODEL + ")"+"new " + knitModelMirror.enclosingClass.getQualifiedName() + KnitFileStrings.KNIT_MODEL_POSTFIX+"("  +"new " +knitModelMirror.enclosingClass.getQualifiedName() +"()"+  ",asyncTaskHandler)";
-        }
 
         TypeSpec.Builder modelMapBuilder = TypeSpec
                 .classBuilder("ModelMap")
                 .addSuperinterface(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL_MAP_INTERFACE))
                 .addModifiers(Modifier.PUBLIC);
 
-
-        ParameterizedTypeName returnType = ParameterizedTypeName.get(
-                ClassName.bestGuess(List.class.getCanonicalName()),
+        WildcardTypeName wildcardTypeName = WildcardTypeName.subtypeOf(
                 ClassName.bestGuess(KnitFileStrings.KNIT_MODEL));
+
+        ParameterizedTypeName classTypeName = ParameterizedTypeName.get(
+                ClassName.bestGuess(Class.class.getCanonicalName()), wildcardTypeName);
+
+        ParameterizedTypeName returnTypeForGetAll = ParameterizedTypeName.get(
+                ClassName.bestGuess(List.class.getCanonicalName()), classTypeName);
 
         int c = 0;
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("java.util.Arrays.asList(");
-        for(KnitModelMirror modelMirror: modelMirrors){
-            stringBuilder.append("$L");
+        for (KnitModelMirror modelMirror : modelMirrors) {
+            stringBuilder.append(modelMirror.enclosingClass.getQualifiedName());
+            stringBuilder.append("_Model");
+            stringBuilder.append(".class");
 
-            if(c<modelMirrors.size()-1){
+            if (c < modelMirrors.size() - 1) {
                 stringBuilder.append(",");
             }
             c++;
@@ -54,15 +56,52 @@ public class ModelMapWriter {
         MethodSpec getAllMethod = MethodSpec
                 .methodBuilder("getAll")
                 .addAnnotation(Override.class)
-                .returns(returnType)
-                .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_ASYNC_TASK),"asyncTaskHandler")
-                .addStatement("return "+stringBuilder.toString(),models)
+                .returns(returnTypeForGetAll)
+                .addStatement("return " + stringBuilder.toString())
                 .addModifiers(Modifier.PUBLIC)
                 .build();
 
         modelMapBuilder.addMethod(getAllMethod);
 
-        JavaFile javaFile = JavaFile.builder(KnitFileStrings.KNIT_PACKAGE,modelMapBuilder.build()).build();
+        ParameterizedTypeName returnTypeForGeneratedVals = ParameterizedTypeName.get(
+                ClassName.bestGuess(List.class.getCanonicalName()),
+                ClassName.bestGuess(String.class.getCanonicalName()));
+
+        MethodSpec.Builder getGeneratedValuesMethodBuilder = MethodSpec
+                .methodBuilder("getGeneratedValues")
+                .addParameter(ClassName.bestGuess(Class.class.getCanonicalName()),"clazz")
+                .addAnnotation(Override.class)
+                .returns(returnTypeForGeneratedVals)
+                .addModifiers(Modifier.PUBLIC);
+
+        for(KnitModelMirror knitModelMirror: modelMirrors) {
+            c = 0;
+            stringBuilder = new StringBuilder();
+            stringBuilder.append("java.util.Arrays.asList(");
+            for (String field : knitModelMirror.vals) {
+                stringBuilder.append("\"");
+                stringBuilder.append(field);
+                stringBuilder.append("\"");
+                if (c < knitModelMirror.vals.size() - 1) {
+                    stringBuilder.append(",");
+                }
+                c++;
+            }
+            stringBuilder.append(")");
+
+            getGeneratedValuesMethodBuilder.beginControlFlow("if(clazz.equals($L$L.class))",knitModelMirror.enclosingClass.getQualifiedName(),"_Model");
+            getGeneratedValuesMethodBuilder.addStatement("return $L",stringBuilder.toString());
+            getGeneratedValuesMethodBuilder.endControlFlow();
+        }
+
+        getGeneratedValuesMethodBuilder.addStatement("return null");
+
+
+
+        modelMapBuilder.addMethod(getGeneratedValuesMethodBuilder.build());
+
+        JavaFile javaFile = JavaFile.builder(KnitFileStrings.KNIT_PACKAGE,
+                modelMapBuilder.build()).build();
 
         try {
             javaFile.writeTo(filer);

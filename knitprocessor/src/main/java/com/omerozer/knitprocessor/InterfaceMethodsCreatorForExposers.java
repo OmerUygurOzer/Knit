@@ -19,6 +19,30 @@ public class InterfaceMethodsCreatorForExposers {
                 .build();
     }
 
+    public static MethodSpec getOnDestroyMethod(){
+        return MethodSpec
+                .methodBuilder("use_onDestroy")
+                .addModifiers(Modifier.PUBLIC)
+                .addStatement("parent.onDestroy()")
+                .build();
+    }
+
+    public static MethodSpec getOnLoadMethod(){
+        return MethodSpec
+                .methodBuilder("use_onLoad")
+                .addModifiers(Modifier.PUBLIC)
+                .addStatement("parent.onLoad()")
+                .build();
+    }
+
+    public static MethodSpec getOnMemoryLow(){
+        return MethodSpec
+                .methodBuilder("use_onMemoryLow")
+                .addModifiers(Modifier.PUBLIC)
+                .addStatement("parent.onMemoryLow()")
+                .build();
+    }
+
     public static MethodSpec getOnViewAppliedMethod(){
         return MethodSpec
                 .methodBuilder("use_onViewApplied")

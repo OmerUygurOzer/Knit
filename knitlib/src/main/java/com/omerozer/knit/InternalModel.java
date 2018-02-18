@@ -23,12 +23,17 @@ public abstract class InternalModel implements ModelInterface {
     }
 
     @Override
-    public void load() {
+    public void onLoad() {
 
     }
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
+
+    }
+
+    @Override
+    public void onMemoryLow() {
 
     }
 

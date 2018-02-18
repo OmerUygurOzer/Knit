@@ -6,7 +6,8 @@ package com.omerozer.knit;
 
 public interface MemoryEntity {
     void onCreate();
-    void load();
-    void destroy();
+    void onLoad();
+    void onMemoryLow();
+    void onDestroy();
     boolean shouldLoad();
 }

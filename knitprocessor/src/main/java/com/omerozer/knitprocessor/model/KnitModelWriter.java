@@ -23,9 +23,7 @@ import javax.annotation.processing.Filer;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.tools.Diagnostic;
 
 /**
  * Created by omerozer on 2/4/18.
@@ -70,10 +68,31 @@ class KnitModelWriter {
                 .build();
 
         MethodSpec onCreateMethod = MethodSpec
-                .methodBuilder(KnitFileStrings.KNIT_PRESENTER_ONCREATE_METHOD)
+                .methodBuilder(KnitFileStrings.KNIT_ME_ONCREATE_METHOD)
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
-                .addStatement("this.parentExposer.getParent().onCreate()")
+                .addStatement("this.parentExposer.use_$L()",KnitFileStrings.KNIT_ME_ONCREATE_METHOD)
+                .build();
+
+        MethodSpec onDestroyMethod = MethodSpec
+                .methodBuilder(KnitFileStrings.KNIT_ME_DESTROY_METHOD)
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addStatement("this.parentExposer.use_$L()",KnitFileStrings.KNIT_ME_DESTROY_METHOD)
+                .build();
+
+        MethodSpec onLoadMethod = MethodSpec
+                .methodBuilder(KnitFileStrings.KNIT_ME_LOAD_METHOD)
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addStatement("this.parentExposer.use_$L()",KnitFileStrings.KNIT_ME_LOAD_METHOD)
+                .build();
+
+        MethodSpec onMemoryLow = MethodSpec
+                .methodBuilder(KnitFileStrings.KNIT_ME_MEMORY_LOW_METHOD)
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addStatement("this.parentExposer.use_$L()",KnitFileStrings.KNIT_ME_MEMORY_LOW_METHOD)
                 .build();
 
         MethodSpec getParentMethod = MethodSpec
@@ -120,6 +139,9 @@ class KnitModelWriter {
         createInputMethod(clazzBuilder, modelMirror);
 
         clazzBuilder.addMethod(getHandledValsMethod);
+        clazzBuilder.addMethod(onDestroyMethod);
+        clazzBuilder.addMethod(onLoadMethod);
+        clazzBuilder.addMethod(onMemoryLow);
         clazzBuilder.addMethod(getParentMethod);
 
 

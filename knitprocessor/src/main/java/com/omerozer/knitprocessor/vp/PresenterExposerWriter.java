@@ -75,6 +75,9 @@ public class PresenterExposerWriter {
         clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnCreateMethod());
         clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnViewAppliedMethod());
         clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnCurrentViewReleased());
+        clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnLoadMethod());
+        clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnMemoryLow());
+        clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnDestroyMethod());
 
 
         clazzBuilder.addField(parentField);

@@ -19,25 +19,13 @@ import com.omerozer.sample.views.SecondActivity;
 public class SecondPresenter extends KnitPresenter<SecondActivity> {
 
 
-    @Override
-    public void onCreate() {
-
-    }
 
     @Override
     public void onViewApplied(Object viewObject,Bundle bundle){
         requestData("umbrella");
     }
 
-    @Override
-    public void onCurrentViewReleased() {
 
-    }
-
-    @Override
-    public void handle(ViewEventPool eventPool, ViewEventEnv eventEnv, InternalModel modelManager) {
-
-    }
 
     @Updating("umbrella")
     void updateData2(KnitResponse<String> data){

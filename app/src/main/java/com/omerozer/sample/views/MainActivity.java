@@ -1,5 +1,6 @@
 package com.omerozer.sample.views;
 
+import android.app.Application;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;

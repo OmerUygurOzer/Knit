@@ -1,5 +1,9 @@
 package com.omerozer.knit;
 
+import android.os.Bundle;
+
+import com.omerozer.knit.viewevents.ViewEventEnv;
+import com.omerozer.knit.viewevents.ViewEventPool;
 import com.omerozer.knit.viewevents.handlers.EventHandler;
 
 /**
@@ -31,22 +35,42 @@ public abstract class KnitPresenter<T> implements EventHandler, PresenterInterfa
     }
 
     @Override
+    public void handle(ViewEventPool eventPool, ViewEventEnv eventEnv, InternalModel modelManager) {
+
+    }
+
+    @Override
     public void onCreate() {
 
     }
 
     @Override
-    public void load() {
+    public void onLoad() {
 
     }
 
     @Override
-    public void destroy() {
+    public void onDestroy() {
 
     }
 
     @Override
     public boolean shouldLoad() {
         return false;
+    }
+
+    @Override
+    public void onMemoryLow() {
+
+    }
+
+    @Override
+    public void onViewApplied(Object viewObject, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onCurrentViewReleased() {
+
     }
 }

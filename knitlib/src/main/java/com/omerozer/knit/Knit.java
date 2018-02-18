@@ -4,7 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 
-import java.lang.ref.WeakReference;
+import com.omerozer.knit.classloaders.KnitUtilsLoader;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -22,8 +23,6 @@ public class Knit {
 
     private static ModelManager modelManager;
 
-    private static KnitClassLoader knitClassLoader;
-
     private static KnitUtilsLoader knitUtilsLoader;
 
     private static Map<Class<?>, Bundle> navigatorDataMap = new LinkedHashMap<>();
@@ -35,9 +34,9 @@ public class Knit {
         knitMemoryManager = new KnitMemoryManager(context);
         navigator = KnitNavigator.getInstance();
         knitAsyncTaskHandler = new KnitAsyncTaskHandler();
-        modelManager = new ModelManager(Knit.class, knitUtilsLoader, knitAsyncTaskHandler);
-        knitClassLoader = new KnitClassLoader(Knit.class, navigator,modelManager);
-        presenterInstancePool = new PresenterInstancePool(knitClassLoader, knitMemoryManager, navigator,modelManager);
+        //modelManager = new ModelManager(Knit.class, knitUtilsLoader, knitAsyncTaskHandler);
+        //knitClassLoader = new KnitClassLoader(Knit.class, navigator,modelManager);
+        //presenterInstancePool = new PresenterInstancePool(knitClassLoader, knitMemoryManager, navigator,modelManager);
     }
 
     public static void show(Object viewObject) {

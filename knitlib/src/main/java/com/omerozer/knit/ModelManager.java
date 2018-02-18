@@ -1,5 +1,6 @@
 package com.omerozer.knit;
 
+import com.omerozer.knit.classloaders.KnitUtilsLoader;
 import com.omerozer.knit.generators.Callback;
 
 import java.util.LinkedHashMap;
@@ -23,13 +24,13 @@ public class ModelManager extends InternalModel {
         this.knitAsyncTaskHandler = knitAsyncTaskHandler;
         ModelMapInterface modelMap = ModelCreator.create(clazz, knitUtilsLoader);
         this.valueToModelMap = new LinkedHashMap<>();
-        for (InternalModel model : modelMap.getAll(knitAsyncTaskHandler)) {
-            for (String val : model.getHandledValues()) {
-                valueToModelMap.put(val, model);
-                model.getParent().setModelManager(this);
-                model.onCreate();
-            }
-        }
+//        for (InternalModel model : modelMap.getAll(knitAsyncTaskHandler)) {
+//            for (String val : model.getHandledValues()) {
+//                valueToModelMap.put(val, model);
+//                model.getParent().setModelManager(this);
+//                model.onCreate();
+//            }
+//        }
         this.valuesHandled = new String[valueToModelMap.size()];
         this.valuesHandled = valueToModelMap.keySet().toArray(valuesHandled);
     }

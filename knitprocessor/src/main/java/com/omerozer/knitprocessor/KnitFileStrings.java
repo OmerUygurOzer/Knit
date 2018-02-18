@@ -14,16 +14,20 @@ public class KnitFileStrings {
     //PRESENTER
     public static final String KNIT_PRESENTER = "com.omerozer.knit.InternalPresenter";
     public static final String KNIT_PRESENTER_POSTFIX = "_Presenter";
-    public static final String KNIT_PRESENTER_LOAD_METHOD = "load";
-    public static final String KNIT_PRESENTER_DESTROY_METHOD = "destroy";
-    public static final String KNIT_PRESENTER_SHOULD_LOAD_METHOD = "shouldLoad";
-    public static final String KNIT_PRESENTER_APPLY_METHOD = "onViewApplied";
-    public static final String KNIT_PRESENTER_RELEASE_METHOD = "onCurrentViewReleased";
     public static final String KNIT_PRESENTER_UPDATE_METHOD_POSTFIX = "_Update";
     public static final String KNIT_PRESENTER_GET_MODEL_MANAGER_METHOD = "getModelManager";
-    public static final String KNIT_PRESENTER_ONCREATE_METHOD = "onCreate";
+
     public static final String KNIT_PRESENTER_GET_VIEW_METHOD = "getContract";
     public static final String KNIT_GET_UPDATEABLES_METHOD = "getUpdatableFields";
+    public static final String KNIT_PRESENTER_APPLY_METHOD = "onViewApplied";
+    public static final String KNIT_PRESENTER_RELEASE_METHOD = "onCurrentViewReleased";
+
+    //MEMORY ENTITY
+    public static final String KNIT_ME_ONCREATE_METHOD = "onCreate";
+    public static final String KNIT_ME_LOAD_METHOD = "onLoad";
+    public static final String KNIT_ME_DESTROY_METHOD = "onDestroy";
+    public static final String KNIT_ME_SHOULD_LOAD_METHOD = "shouldLoad";
+    public static final String KNIT_ME_MEMORY_LOW_METHOD = "onMemoryLow";
 
     //MODEL
     public static final String KNIT_MODEL = "com.omerozer.knit.InternalModel";

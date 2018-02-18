@@ -48,7 +48,7 @@ public class KnitMemoryManager implements ComponentCallbacks2 {
     private void handleMemoryLevel(int i) {
         if (i == ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
             for (MemoryEntity entity : entities) {
-                entity.destroy();
+                entity.onMemoryLow();
             }
         }
     }

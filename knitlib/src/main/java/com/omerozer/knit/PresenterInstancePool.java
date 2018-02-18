@@ -11,7 +11,6 @@ import java.util.Map;
 
 public class PresenterInstancePool {
 
-    private KnitClassLoader knitClassLoader;
 
     private KnitMemoryManager knitMemoryManager;
 
@@ -21,9 +20,8 @@ public class PresenterInstancePool {
 
     private KnitNavigator navigator;
 
-    PresenterInstancePool(KnitClassLoader knitClassLoader, KnitMemoryManager knitMemoryManager,
+    PresenterInstancePool( KnitMemoryManager knitMemoryManager,
             KnitNavigator navigator, ModelManager modelManager) {
-        this.knitClassLoader = knitClassLoader;
         this.knitMemoryManager = knitMemoryManager;
         this.instanceMap = new HashMap<>();
         this.modelManager = modelManager;
@@ -42,23 +40,22 @@ public class PresenterInstancePool {
         if (instanceMap.containsKey(clazz)) {
             return instanceMap.get(clazz);
         }
-        InternalPresenter presenterInstance = knitClassLoader.createPresenterInstanceForView(object,
-                navigator, modelManager);
+        InternalPresenter presenterInstance =null;// = knitClassLoader.createPresenterInstanceForView(object,
+                //navigator, modelManager);
         knitMemoryManager.registerInstance(presenterInstance);
         presenterInstance.onCreate();
         return presenterInstance;
     }
 
     InternalPresenter getPresenterInstanceForParent(Object object) {
-        InternalPresenter presenterInstance = knitClassLoader.createPresenterInstanceForParent(
-                object);
+        InternalPresenter presenterInstance = null;// knitClassLoader.createPresenterInstanceForParent(object);
         knitMemoryManager.registerInstance(presenterInstance);
         return presenterInstance;
     }
 
     void handleLoadState(InternalPresenter knitPresenter) {
         if (knitPresenter.shouldLoad()) {
-            knitPresenter.load();
+            knitPresenter.onLoad();
         }
     }
 

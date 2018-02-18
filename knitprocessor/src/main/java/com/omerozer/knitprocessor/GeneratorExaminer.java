@@ -19,9 +19,7 @@ public class GeneratorExaminer {
     public static List<String> getGenerateTypes(VariableElement variableElement){
 
         String typeString = variableElement.asType().toString();
-        KnitModelProcessor.messager.printMessage(Diagnostic.Kind.WARNING,typeString);
         typeString = typeString.substring(typeString.indexOf('<')+1,typeString.lastIndexOf(">"));
-        KnitModelProcessor.messager.printMessage(Diagnostic.Kind.WARNING,typeString);
         List<String> params = new ArrayList<>();
 
         if(!typeString.contains(",")){

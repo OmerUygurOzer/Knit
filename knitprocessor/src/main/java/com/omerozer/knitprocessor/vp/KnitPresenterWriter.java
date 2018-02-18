@@ -9,12 +9,10 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.Map;
 
 import javax.annotation.processing.Filer;
@@ -71,7 +69,7 @@ class KnitPresenterWriter {
         MethodSpec shouldLoadMethod;
 
         MethodSpec.Builder shouldLoadMethodBuilder = MethodSpec
-                .methodBuilder(KnitFileStrings.KNIT_PRESENTER_SHOULD_LOAD_METHOD)
+                .methodBuilder(KnitFileStrings.KNIT_ME_SHOULD_LOAD_METHOD)
                 .returns(TypeName.BOOLEAN)
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class)
@@ -96,7 +94,7 @@ class KnitPresenterWriter {
                 .build();
 
         MethodSpec onCreateMethod = MethodSpec
-                .methodBuilder(KnitFileStrings.KNIT_PRESENTER_ONCREATE_METHOD)
+                .methodBuilder(KnitFileStrings.KNIT_ME_ONCREATE_METHOD)
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class)
                 .addStatement("this.parent.use_onCreate()")
@@ -149,6 +147,7 @@ class KnitPresenterWriter {
         createLoadMethod(clazzBuilder, presenterMirror);
         createDestroyMethod(clazzBuilder, presenterMirror);
         createUpdatingMethods(clazzBuilder, presenterMirror, map);
+        createOnMemoryLowMethod(clazzBuilder,presenterMirror);
 
 
         TypeSpec clazz = clazzBuilder.build();
@@ -246,10 +245,11 @@ class KnitPresenterWriter {
     private static void createLoadMethod(TypeSpec.Builder clazzBuilder,
             KnitPresenterMirror presenterMirror) {
         MethodSpec.Builder loadMethodBuilder = MethodSpec
-                .methodBuilder(KnitFileStrings.KNIT_PRESENTER_LOAD_METHOD)
+                .methodBuilder(KnitFileStrings.KNIT_ME_LOAD_METHOD)
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class);
 
+        loadMethodBuilder.addStatement("this.parent.use_onLoad()");
         loadMethodBuilder.addStatement("this.loaded = true");
         clazzBuilder.addMethod(loadMethodBuilder.build());
     }
@@ -258,13 +258,24 @@ class KnitPresenterWriter {
             KnitPresenterMirror presenterMirror) {
 
         MethodSpec.Builder destroyMethodBuilder = MethodSpec
-                .methodBuilder(KnitFileStrings.KNIT_PRESENTER_DESTROY_METHOD)
+                .methodBuilder(KnitFileStrings.KNIT_ME_DESTROY_METHOD)
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class);
 
-        destroyMethodBuilder.addStatement("this.loaded = false");
-
+        destroyMethodBuilder.addStatement("this.parent.use_onDestroy()");
         clazzBuilder.addMethod(destroyMethodBuilder.build());
+    }
+
+    private static void createOnMemoryLowMethod(TypeSpec.Builder clazzBuilder,
+            KnitPresenterMirror presenterMirror){
+        MethodSpec.Builder onMemoryLowMethodBuilder = MethodSpec
+                .methodBuilder(KnitFileStrings.KNIT_ME_MEMORY_LOW_METHOD)
+                .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(Override.class);
+
+        onMemoryLowMethodBuilder.addStatement("this.parent.use_onMemoryLow()");
+        onMemoryLowMethodBuilder.addStatement("this.loaded = false");
+        clazzBuilder.addMethod(onMemoryLowMethodBuilder.build());
     }
 
 

@@ -1,13 +1,13 @@
 package com.omerozer.knit;
 
+import java.util.List;
+
 /**
  * Created by omerozer on 2/6/18.
  */
 
 public interface ViewToPresenterMapInterface {
-    String getPresenterClass(String view);
-
-    InternalPresenter createPresenterForView(Object viewObject,KnitNavigator navigator,InternalModel modelManager);
-
-    InternalPresenter getPresenterForParent(Object parentObject);
+    Class getPresenterClassForView(Class viewObject);
+    List<Class<?>> getAllViews();
+    List<String> getUpdatingValues(Class clazz);
 }
