@@ -1,9 +1,9 @@
 package com.omerozer.sample.presenters;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.omerozer.knit.InternalModel;
-import com.omerozer.knit.KnitNavigator;
 import com.omerozer.knit.KnitPresenter;
 import com.omerozer.knit.KnitResponse;
 import com.omerozer.knit.Presenter;
@@ -33,16 +33,29 @@ public class MainPresenter extends KnitPresenter<MainActivityContract> {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.d("KNIT_TEST","PRESENTER MAIN CREATED");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("KNIT_TEST","PRESENTER MAIN DESTROYED");
+    }
+
+    @Override
     public void handle(ViewEventPool eventPool, ViewEventEnv eventEnv, InternalModel modelManager) {
         if(eventEnv.getTag().equals("button")){
+
             getContract().recMes("BUTTON PRESSED");
             requestData("test");
-        }
+            getNavigator()
+                    .toActivity()
+                    .target(SecondActivity.class)
+                    .go();
 
-        getNavigator()
-                .toActivity()
-                .target(SecondActivity.class)
-                .go();
+        }
 
         eventPool.pool(eventEnv);
     }

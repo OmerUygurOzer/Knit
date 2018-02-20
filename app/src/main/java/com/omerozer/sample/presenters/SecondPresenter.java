@@ -20,11 +20,15 @@ import com.omerozer.sample.views.SecondActivityContract;
 @Presenter(SecondActivity.class)
 public class SecondPresenter extends KnitPresenter<SecondActivityContract> {
 
-
-
     @Override
     public void onViewApplied(Object viewObject,Bundle bundle){
         requestData("testN","PARAMSENT");
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.d("KNIT_TEST","PRESENTER TWO CREATED");
     }
 
     @Override

@@ -13,33 +13,34 @@ import android.view.View;
  * Created by omerozer on 2/18/18.
  */
 
-public class KnitAppListener extends
-        FragmentManager.FragmentLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
+public class KnitAppListener implements Application.ActivityLifecycleCallbacks {
 
     private Knit knit;
 
     private FragmentManager.FragmentLifecycleCallbacks supportFragmentCallbacks;
     private android.app.FragmentManager.FragmentLifecycleCallbacks oFragmentCallbacks;
 
-    KnitAppListener(Knit knit){
+    KnitAppListener(Knit knit) {
         this.knit = knit;
     }
 
     @SuppressLint("NewApi")
     @Override
     public void onActivityCreated(Activity activity, Bundle bundle) {
-        if(activity instanceof AppCompatActivity){
-            ((AppCompatActivity)activity).getSupportFragmentManager().registerFragmentLifecycleCallbacks(getSupportFragmentCallbacks(),true);
-        }else{
-            activity.getFragmentManager().registerFragmentLifecycleCallbacks(getoFragmentCallbacks(),true);
+        if (activity instanceof AppCompatActivity) {
+            ((AppCompatActivity) activity).getSupportFragmentManager()
+                    .registerFragmentLifecycleCallbacks(
+                    getSupportFragmentCallbacks(), true);
+        } else {
+            activity.getFragmentManager().registerFragmentLifecycleCallbacks(
+                    getoFragmentCallbacks(), true);
         }
     }
 
 
-
     @Override
     public void onActivityStarted(Activity activity) {
-        knit.show(activity);
+        knit.initViewDependencies(activity);
     }
 
     @Override
@@ -64,24 +65,11 @@ public class KnitAppListener extends
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-        knit.dismiss(activity);
+        knit.destroyViewDependencies(activity);
     }
 
-    @Override
-    public void onFragmentViewCreated(FragmentManager fm, Fragment f, View v,
-            Bundle savedInstanceState) {
-        super.onFragmentViewCreated(fm, f, v, savedInstanceState);
-        knit.show(f);
-    }
-
-    @Override
-    public void onFragmentDestroyed(FragmentManager fm, Fragment f) {
-        super.onFragmentDestroyed(fm, f);
-        knit.dismiss(f);
-    }
-
-    private FragmentManager.FragmentLifecycleCallbacks getSupportFragmentCallbacks(){
-        if(supportFragmentCallbacks==null){
+    private FragmentManager.FragmentLifecycleCallbacks getSupportFragmentCallbacks() {
+        if (supportFragmentCallbacks == null) {
             supportFragmentCallbacks = new FragmentManager.FragmentLifecycleCallbacks() {
                 @Override
                 public void onFragmentViewCreated(FragmentManager fm, Fragment f, View v,
@@ -99,20 +87,22 @@ public class KnitAppListener extends
     }
 
     @SuppressLint("NewApi")
-    private android.app.FragmentManager.FragmentLifecycleCallbacks getoFragmentCallbacks(){
-        if(oFragmentCallbacks==null){
+    private android.app.FragmentManager.FragmentLifecycleCallbacks getoFragmentCallbacks() {
+        if (oFragmentCallbacks == null) {
             oFragmentCallbacks = new android.app.FragmentManager.FragmentLifecycleCallbacks() {
                 @Override
                 public void onFragmentViewCreated(android.app.FragmentManager fm,
                         android.app.Fragment f, View v,
                         Bundle savedInstanceState) {
                     super.onFragmentViewCreated(fm, f, v, savedInstanceState);
+                    knit.initViewDependencies(f);
                 }
 
                 @Override
                 public void onFragmentDestroyed(android.app.FragmentManager fm,
                         android.app.Fragment f) {
                     super.onFragmentDestroyed(fm, f);
+                    knit.destroyViewDependencies(f);
                 }
             };
         }

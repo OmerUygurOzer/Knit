@@ -17,12 +17,18 @@ public class KnitTestKit {
     public static class PresenterBuilder<T extends KnitPresenter>{
 
         private Class<T> clazz;
+        private Knit knit;
         private InternalModel modelManager;
         private KnitNavigator navigator;
         private Object contract;
 
         PresenterBuilder<T> from(Class<T> clazz){
             this.clazz = clazz;
+            return this;
+        }
+
+        public PresenterBuilder<T> setKnit(Knit knit){
+            this.knit = knit;
             return this;
         }
 
@@ -44,6 +50,7 @@ public class KnitTestKit {
         public T build(){
             try {
                 T presenter = (T)clazz.getConstructor().newInstance();
+                presenter.setKnit(knit);
                 presenter.setContract(contract);
                 presenter.setModelManager(modelManager);
                 presenter.setNavigator(navigator);

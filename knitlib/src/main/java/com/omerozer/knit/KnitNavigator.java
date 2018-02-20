@@ -113,6 +113,9 @@ public class KnitNavigator {
         public void go() {
             Constructor constructor;
             Fragment instance = null;
+            if (bundle != null) {
+                navigatorDataMap.put(target, bundle);
+            }
             try {
                 constructor = target.getConstructor();
                 instance = (Fragment) constructor.newInstance();

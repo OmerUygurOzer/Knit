@@ -39,6 +39,9 @@ public class ModelManager extends InternalModel {
     }
 
     public void unregisterComponentTag(ComponentTag componentTag) {
+        if(usageGraph.getModelWithTag(componentTag)==null){
+            return;
+        }
         for (String val : usageGraph.getModelWithTag(componentTag).getHandledValues()) {
             valueToModelMap.remove(val);
         }

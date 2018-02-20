@@ -1,13 +1,11 @@
 package com.omerozer.sample.views;
 
-import android.app.Application;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.omerozer.knit.Knit;
 import com.omerozer.knit.KnitEvents;
 import com.omerozer.knit.KnitView;
 import com.omerozer.sample.R;
@@ -24,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
         this.button = (Button)findViewById(R.id.btn_next) ;
         KnitEvents.onClick("button",this,button);
     }
-
 
     public void recMes(String message){
         ((TextView)findViewById(R.id.textView_t)).setText("TEEST");

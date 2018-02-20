@@ -33,5 +33,7 @@ dependencies {
     implementation project(path: ':knitlib')
     testImplementation project(path: ':knittestkit')
 
+    testCompile "org.mockito:mockito-core:2.15.0"
+
     annotationProcessor project(path: ':knitprocessor')
 }

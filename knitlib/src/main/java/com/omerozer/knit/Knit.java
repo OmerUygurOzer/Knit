@@ -40,12 +40,12 @@ public class Knit {
         KnitEvents.init(this);
     }
 
-    void show(Object viewObject) {
+    void initViewDependencies(Object viewObject) {
         navigator.navigatedTo(viewObject);
         userGraph.startViewAndItsComponents(viewObject,navigator.getDataForTarget(viewObject));
     }
 
-    void dismiss(Object viewObject) {
+    void destroyViewDependencies(Object viewObject) {
        userGraph.stopViewAndItsComponents(viewObject);
     }
 

@@ -136,7 +136,11 @@ public class UsageGraph {
     }
 
     public void startViewAndItsComponents(Object viewObject, Bundle data) {
-        recurseTraverseTheGraphAndStartIfNeeded(clazzToTagMap.get(viewObject.getClass()),
+        Class<?> clazz = viewObject.getClass();
+        if(!clazzToTagMap.containsKey(clazz)){
+            return;
+        }
+        recurseTraverseTheGraphAndStartIfNeeded(clazzToTagMap.get(clazz),
                 viewObject, data);
     }
 
@@ -168,8 +172,7 @@ public class UsageGraph {
                     activePresenterTags.add(entityNode.tag);
                     internalPresenter.onCreate();
                 }
-                ((InternalPresenter) instanceMap.get(entityNode.tag)).onViewApplied(viewObject,
-                        data);
+                ((InternalPresenter) instanceMap.get(entityNode.tag)).onViewApplied(viewObject, data);
                 break;
         }
         counterMap.get(entityNode.tag).use();
