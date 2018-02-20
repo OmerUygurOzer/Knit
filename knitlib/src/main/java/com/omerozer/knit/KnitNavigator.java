@@ -75,6 +75,7 @@ public class KnitNavigator {
             if (bundle != null) {
                 navigatorDataMap.put(target, bundle);
             }
+
             contextRef.get().startActivity(intent);
         }
 

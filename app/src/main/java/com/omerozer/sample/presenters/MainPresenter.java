@@ -61,12 +61,12 @@ public class MainPresenter extends KnitPresenter<MainActivityContract> {
     }
 
     @Updating("test")
-    void updateData1(KnitResponse<String> data){
+    public void updateData1(KnitResponse<String> data){
         getContract().recMes(data.getBody());
     }
 
     @Updating("testN")
-    void updateData1N(KnitResponse<String> data){
+    public void updateData1N(KnitResponse<String> data){
         getContract().recMes(data.getBody());
     }
 

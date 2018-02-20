@@ -24,13 +24,18 @@ public abstract class ViewEventPool<T extends ViewEventEnv> {
     }
 
     public void pool(T event){
-        if(events.size()< MAX){
+        if(events.size()< getPoolSize()){
             events.clear();
             events.push(event);
         }
     }
 
     protected abstract T createNewInstance();
+
+    protected int getPoolSize(){
+        return MAX;
+    }
+
 
 
 

@@ -10,7 +10,7 @@ import com.omerozer.knit.viewevents.ViewEventPool;
  * Created by omerozer on 2/19/18.
  */
 
-public class NullValues {
+public final class NullValues {
 
     public static final Object[] NULL_PARAMS = new Object[0];
 

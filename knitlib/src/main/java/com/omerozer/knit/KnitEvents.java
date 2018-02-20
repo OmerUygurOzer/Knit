@@ -16,13 +16,17 @@ import com.omerozer.knit.viewevents.KnitTextChangedEvent;
  * Created by omerozer on 2/2/18.
  */
 
-public class KnitEvents {
+public final class KnitEvents {
 
     private static Knit knitInstance;
 
     static void init(Knit knit){
         knitInstance = knit;
     }
+
+    private final static KnitOnClickEventPool onClickEventPool = new KnitOnClickEventPool();
+    private final static KnitOnTextChangedEventPool onTextChangedEventPool = new KnitOnTextChangedEventPool();
+    private final static KnitOnFocusChangedEventPool onFocusChangedEventPool = new KnitOnFocusChangedEventPool();
 
     public static void onClick(final String tag, final Object carrierObject, View view) {
         view.setOnClickListener(new android.view.View.OnClickListener() {
@@ -35,12 +39,8 @@ public class KnitEvents {
             }
         });
     }
-    private static KnitOnClickEventPool onClickEventPool = new KnitOnClickEventPool();
-    private static KnitOnTextChangedEventPool onTextChangedEventPool =
-            new KnitOnTextChangedEventPool();
 
-    private static KnitOnFocusChangedEventPool onFocusChangedEventPool =
-            new KnitOnFocusChangedEventPool();
+
 
     public static void onTextChanged(final String tag, final Object carrierObject,
             final EditText view) {

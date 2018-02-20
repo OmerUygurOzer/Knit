@@ -10,7 +10,7 @@ import com.omerozer.knit.components.graph.UsageGraph;
  * Created by omerozer on 2/1/18.
  */
 
-public class Knit {
+public final class Knit {
 
     private static Knit instance;
 

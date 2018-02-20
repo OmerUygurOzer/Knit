@@ -9,4 +9,9 @@ public class KnitOnTextChangedEventPool extends ViewEventPool<KnitTextChangedEve
     protected KnitTextChangedEvent createNewInstance() {
         return new KnitTextChangedEvent();
     }
+
+    @Override
+    protected int getPoolSize() {
+        return 3;
+    }
 }

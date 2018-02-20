@@ -10,4 +10,6 @@ public class KnitOnClickEventPool extends ViewEventPool<KnitOnClickEvent> {
     protected KnitOnClickEvent createNewInstance() {
         return new KnitOnClickEvent();
     }
+
+
 }

@@ -94,9 +94,32 @@ public class ModelMapWriter {
 
         getGeneratedValuesMethodBuilder.addStatement("return null");
 
-
-
         modelMapBuilder.addMethod(getGeneratedValuesMethodBuilder.build());
+
+        WildcardTypeName internalModelSubTypeName = WildcardTypeName.subtypeOf(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL));
+
+        ParameterizedTypeName internalModelClassName = ParameterizedTypeName.get(KnitFileStrings.TYPE_NAME_CLASS,internalModelSubTypeName);
+
+        WildcardTypeName knitModelSubType = WildcardTypeName.subtypeOf(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL_EXT));
+
+        ParameterizedTypeName knitModelClassName = ParameterizedTypeName.get(KnitFileStrings.TYPE_NAME_CLASS,knitModelSubType);
+
+        MethodSpec.Builder getModelClassForModelMethodBuilder = MethodSpec
+                .methodBuilder("getModelClassForModel")
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(internalModelClassName)
+                .addParameter(knitModelClassName,"modelClazz");
+
+        for(KnitModelMirror modelMirror : modelMirrors){
+            getModelClassForModelMethodBuilder.beginControlFlow("if($L.class.equals(modelClazz))",modelMirror.enclosingClass.getQualifiedName());
+            getModelClassForModelMethodBuilder.addStatement("return $L_Model.class",modelMirror.enclosingClass.getQualifiedName());
+            getModelClassForModelMethodBuilder.endControlFlow();
+        }
+
+        getModelClassForModelMethodBuilder.addStatement("return null");
+
+        modelMapBuilder.addMethod(getModelClassForModelMethodBuilder.build());
 
         JavaFile javaFile = JavaFile.builder(KnitFileStrings.KNIT_PACKAGE,
                 modelMapBuilder.build()).build();

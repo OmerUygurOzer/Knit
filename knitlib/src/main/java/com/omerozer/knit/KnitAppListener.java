@@ -13,7 +13,7 @@ import android.view.View;
  * Created by omerozer on 2/18/18.
  */
 
-public class KnitAppListener implements Application.ActivityLifecycleCallbacks {
+public final class KnitAppListener implements Application.ActivityLifecycleCallbacks {
 
     private Knit knit;
 

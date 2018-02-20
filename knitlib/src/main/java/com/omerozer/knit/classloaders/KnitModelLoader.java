@@ -1,8 +1,11 @@
 package com.omerozer.knit.classloaders;
 
 import com.omerozer.knit.InternalModel;
+import com.omerozer.knit.Knit;
 import com.omerozer.knit.KnitAsyncTaskHandler;
 import com.omerozer.knit.KnitModel;
+import com.omerozer.knit.ModelMapInterface;
+import com.omerozer.knit.components.ModelManager;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -19,9 +22,12 @@ public class KnitModelLoader {
 
     private KnitAsyncTaskHandler asyncTaskHandler;
 
+    private ModelMapInterface modelMap;
+
     public KnitModelLoader(KnitAsyncTaskHandler asyncTaskHandler) {
         this.cache = new HashMap<>();
         this.asyncTaskHandler = asyncTaskHandler;
+        modelMap = new KnitUtilsLoader().getModelMap(Knit.class);
     }
 
     public InternalModel loadModel(Class<?> modelClazz) {
@@ -35,6 +41,10 @@ public class KnitModelLoader {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public Class<? extends InternalModel> getModelForModel(Class<? extends KnitModel> clazz){
+        return modelMap.getModelClassForModel(clazz);
     }
 
     private Constructor<?> findConstructorForModel(Class<?> modelClazz) {

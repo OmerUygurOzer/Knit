@@ -9,4 +9,9 @@ public class KnitOnFocusChangedEventPool extends ViewEventPool<KnitOnFocusChange
     protected KnitOnFocusChangedEvent createNewInstance() {
         return new KnitOnFocusChangedEvent();
     }
+
+    @Override
+    protected int getPoolSize() {
+        return 2;
+    }
 }
