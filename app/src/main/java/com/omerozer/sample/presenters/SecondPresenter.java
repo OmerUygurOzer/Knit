@@ -23,7 +23,7 @@ public class SecondPresenter extends KnitPresenter<SecondActivityContract> {
     @Override
     public void onViewApplied(Object viewObject,Bundle bundle){
         super.onViewApplied(viewObject,bundle);
-        requestData("testN","PARAMSENT");
+        requestData("testN","PARAM_SENT");
     }
 
     @Override

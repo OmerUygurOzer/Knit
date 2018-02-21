@@ -4,7 +4,7 @@ package com.omerozer.knit.components;
  * Created by omerozer on 2/17/18.
  */
 
-public class ComponentTag {
+public final class ComponentTag {
 
     private static Short baseTag = Short.MIN_VALUE;
 

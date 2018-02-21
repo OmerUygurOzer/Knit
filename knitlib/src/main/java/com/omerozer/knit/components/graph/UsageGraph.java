@@ -1,7 +1,6 @@
 package com.omerozer.knit.components.graph;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import com.omerozer.knit.InternalModel;
 import com.omerozer.knit.InternalPresenter;
@@ -139,7 +138,6 @@ public class UsageGraph {
     void attachViewToComponent(Object viewObject,Bundle bundle){
         for(EntityNode presenter:graphBase.get(clazzToTagMap.get(viewObject.getClass())).next){
             if(instanceMap.containsKey(presenter.tag)){
-                Log.d("KNIT_TEST","ATTACHING");
                 ((InternalPresenter) instanceMap.get(presenter.tag)).onViewApplied(viewObject,bundle);
             }
         }
@@ -148,7 +146,6 @@ public class UsageGraph {
     public void releaseViewFromComponent(Object viewObject){
         for(EntityNode presenter:graphBase.get(clazzToTagMap.get(viewObject.getClass())).next){
             if(instanceMap.containsKey(presenter.tag)){
-                Log.d("KNIT_TEST","DETACHING");
                 ((InternalPresenter) instanceMap.get(presenter.tag)).onCurrentViewReleased();
             }
         }
@@ -157,7 +154,6 @@ public class UsageGraph {
     private boolean isComponentCreated(Object viewObject){
         for(EntityNode entityNode:graphBase.get(clazzToTagMap.get(viewObject.getClass())).next){
             if(instanceMap.containsKey(entityNode.tag)){
-                Log.d("KNIT_TEST","COMPONENT_READY");
                 return true;
             }
         }
