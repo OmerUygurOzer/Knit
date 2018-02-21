@@ -27,7 +27,6 @@ public final class TestModelManager extends ModelManager {
             dataToModelMap.put(val,internalModel);
         }
         return internalModel.getParent();
-
     }
 
     protected <T> void requestThreadSafe(String data, final ImmutableHolder<T> holder, Object... params){

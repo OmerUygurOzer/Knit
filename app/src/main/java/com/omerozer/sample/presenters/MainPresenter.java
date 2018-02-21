@@ -24,12 +24,13 @@ public class MainPresenter extends KnitPresenter<MainActivityContract> {
 
     @Override
     public void onViewApplied(Object viewObject,Bundle data){
+        super.onViewApplied(viewObject,data);
         requestData("test");
     }
 
     @Override
     public void onCurrentViewReleased() {
-
+        super.onCurrentViewReleased();
     }
 
     @Override
@@ -49,7 +50,9 @@ public class MainPresenter extends KnitPresenter<MainActivityContract> {
         if(eventEnv.getTag().equals("button")){
 
             getContract().recMes("BUTTON PRESSED");
+
             requestData("test");
+
             getNavigator()
                     .toActivity()
                     .target(SecondActivity.class)

@@ -6,11 +6,15 @@ import com.omerozer.knit.viewevents.ViewEventEnv;
 import com.omerozer.knit.viewevents.ViewEventPool;
 import com.omerozer.knit.viewevents.handlers.EventHandler;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Created by omerozer on 2/12/18.
  */
 
 public abstract class KnitPresenter<T> implements EventHandler, PresenterInterface {
+
+    private WeakReference<Object> viewObjectRef;
 
     private Knit knitInstance;
 
@@ -24,9 +28,22 @@ public abstract class KnitPresenter<T> implements EventHandler, PresenterInterfa
         this.knitInstance = knit;
     }
 
+    @Override
+    public void onViewApplied(Object viewObject, Bundle bundle) {
+        this.viewObjectRef = new WeakReference<Object>(viewObject);
+    }
+
+    private Object getView(){
+        return viewObjectRef.get();
+    }
+
     protected void requestData(String data, Object... params) {
         InternalPresenter instance = knitInstance.findPresenterForParent(this);
         getModelManager().request(data, instance, params);
+    }
+
+    protected void destroyComponent(){
+        knitInstance.destoryComponent(viewObjectRef.get());
     }
 
     protected void inputData(String data, Object... params) {
@@ -98,14 +115,11 @@ public abstract class KnitPresenter<T> implements EventHandler, PresenterInterfa
 
     }
 
-    @Override
-    public void onViewApplied(Object viewObject, Bundle bundle) {
 
-    }
 
     @Override
     public void onCurrentViewReleased() {
-
+        contract = null;
     }
 
 }

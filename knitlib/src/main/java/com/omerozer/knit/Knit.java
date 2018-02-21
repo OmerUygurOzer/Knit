@@ -40,13 +40,18 @@ public final class Knit {
         KnitEvents.init(this);
     }
 
+
     void initViewDependencies(Object viewObject) {
         navigator.navigatedTo(viewObject);
         userGraph.startViewAndItsComponents(viewObject,navigator.getDataForTarget(viewObject));
     }
 
-    void destroyViewDependencies(Object viewObject) {
-       userGraph.stopViewAndItsComponents(viewObject);
+    void releaseViewFromComponent(Object viewObject) {
+       userGraph.releaseViewFromComponent(viewObject);
+    }
+
+    void destoryComponent(Object viewObject){
+        userGraph.stopViewAndItsComponents(viewObject);
     }
 
     InternalPresenter findPresenterForView(Object viewObject) {

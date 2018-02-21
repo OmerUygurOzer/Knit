@@ -65,7 +65,7 @@ public final class KnitAppListener implements Application.ActivityLifecycleCallb
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-        knit.destroyViewDependencies(activity);
+        knit.releaseViewFromComponent(activity);
     }
 
     private FragmentManager.FragmentLifecycleCallbacks getSupportFragmentCallbacks() {
@@ -102,7 +102,7 @@ public final class KnitAppListener implements Application.ActivityLifecycleCallb
                 public void onFragmentDestroyed(android.app.FragmentManager fm,
                         android.app.Fragment f) {
                     super.onFragmentDestroyed(fm, f);
-                    knit.destroyViewDependencies(f);
+                    knit.releaseViewFromComponent(f);
                 }
             };
         }

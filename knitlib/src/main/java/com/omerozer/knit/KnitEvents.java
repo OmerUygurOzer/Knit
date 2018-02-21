@@ -40,8 +40,6 @@ public final class KnitEvents {
         });
     }
 
-
-
     public static void onTextChanged(final String tag, final Object carrierObject,
             final EditText view) {
         final TextWatcher watcher = new TextWatcher() {
