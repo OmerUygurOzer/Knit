@@ -18,7 +18,7 @@ public final class Knit {
         instance = new Knit(application);
     }
 
-    static Knit getInstance(){
+    public static Knit getInstance(){
         return instance;
     }
 

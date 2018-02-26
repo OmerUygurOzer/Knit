@@ -13,4 +13,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 public @interface Generates {
     String[] value() default "";
+    KnitSchedulers runOn() default KnitSchedulers.IMMEDIATE;
 }
