@@ -1,5 +1,7 @@
 package com.omerozer.knit;
 
+import com.omerozer.knit.schedulers.SchedulerProvider;
+
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -17,13 +19,15 @@ public abstract class KnitModelTest<T extends KnitModel>{
 
     @Before
     public void init(){
-        modelManager = new TestModelManager();
+        modelManager = new TestModelManager(getSchedulerProvider());
         setup();
     }
 
     public void setup(){
 
     }
+
+    protected abstract SchedulerProvider getSchedulerProvider();
 
     protected TestModelManager accessModelManager(){
         return modelManager;

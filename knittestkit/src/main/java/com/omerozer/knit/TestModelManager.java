@@ -3,6 +3,7 @@ package com.omerozer.knit;
 import com.omerozer.knit.classloaders.KnitModelLoader;
 import com.omerozer.knit.components.ModelManager;
 import com.omerozer.knit.generators.Callback;
+import com.omerozer.knit.schedulers.SchedulerProvider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +17,9 @@ public final class TestModelManager extends ModelManager {
     private Map<String,InternalModel> dataToModelMap = new HashMap<>();
     private KnitModelLoader modelLoader;
 
-    public TestModelManager(){
+    public TestModelManager(SchedulerProvider schedulerProvider){
         this.dataToModelMap = new HashMap<>();
-        this.modelLoader = new KnitModelLoader(new TestSchedulers());
+        this.modelLoader = new KnitModelLoader(schedulerProvider==null? new TestSchedulers() : schedulerProvider);
     }
 
     KnitModel registerModel(Class<? extends KnitModel> model){
