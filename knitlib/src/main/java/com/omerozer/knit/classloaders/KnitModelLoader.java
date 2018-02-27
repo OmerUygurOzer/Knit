@@ -6,6 +6,7 @@ import com.omerozer.knit.KnitAsyncTaskHandler;
 import com.omerozer.knit.KnitModel;
 import com.omerozer.knit.ModelMapInterface;
 import com.omerozer.knit.components.ModelManager;
+import com.omerozer.knit.schedulers.SchedulerProvider;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -20,19 +21,19 @@ public class KnitModelLoader {
 
     private Map<Class<?>, Constructor<?>> cache;
 
-    private KnitAsyncTaskHandler asyncTaskHandler;
+    private SchedulerProvider schedulerProvider;
 
     private ModelMapInterface modelMap;
 
-    public KnitModelLoader(KnitAsyncTaskHandler asyncTaskHandler) {
+    public KnitModelLoader(SchedulerProvider schedulerProvider) {
         this.cache = new HashMap<>();
-        this.asyncTaskHandler = asyncTaskHandler;
+        this.schedulerProvider = schedulerProvider;
         modelMap = new KnitUtilsLoader().getModelMap(Knit.class);
     }
 
     public InternalModel loadModel(Class<?> modelClazz) {
         try {
-            return (InternalModel) findConstructorForModel(modelClazz).newInstance(asyncTaskHandler);
+            return (InternalModel) findConstructorForModel(modelClazz).newInstance(schedulerProvider);
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -54,7 +55,7 @@ public class KnitModelLoader {
         }
 
         try {
-            Constructor<?> constructor = modelClazz.getConstructor(KnitAsyncTaskHandler.class);
+            Constructor<?> constructor = modelClazz.getConstructor(SchedulerProvider.class);
             cache.put(modelClazz,constructor);
             return constructor;
         } catch (NoSuchMethodException e) {

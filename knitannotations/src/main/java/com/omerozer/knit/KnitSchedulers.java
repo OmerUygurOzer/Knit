@@ -5,7 +5,18 @@ package com.omerozer.knit;
  */
 
 public enum KnitSchedulers {
-    IMMEDIATE,
-    IO,
-    HEAVY;
+    MAIN("main()"),
+    IMMEDIATE("immediate()"),
+    IO("io()"),
+    HEAVY("heavy()");
+
+    String method;
+
+    KnitSchedulers(String method){
+        this.method = method;
+    }
+
+    public String getMethod(){
+        return this.method;
+    }
 }

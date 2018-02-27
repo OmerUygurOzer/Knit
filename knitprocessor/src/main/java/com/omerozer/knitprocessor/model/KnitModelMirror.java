@@ -1,5 +1,7 @@
 package com.omerozer.knitprocessor.model;
 
+import com.omerozer.knit.KnitSchedulers;
+
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -16,9 +18,7 @@ class KnitModelMirror {
 
     public TypeElement enclosingClass;
 
-    public Map<String[],VariableElement> generateField = new LinkedHashMap<>();
-
-    public Map<String[],VariableElement> generateAsyncField = new LinkedHashMap<>();
+    public Map<String[],GeneratesParams> generatesParamsMap = new LinkedHashMap<>();
 
     public Map<String[],VariableElement> collectorField = new LinkedHashMap<>();
 

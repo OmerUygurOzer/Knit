@@ -4,6 +4,7 @@ import com.omerozer.knit.Collects;
 import com.omerozer.knit.Generates;
 import com.omerozer.knit.GeneratesAsync;
 import com.omerozer.knit.Inputs;
+import com.omerozer.knit.KnitSchedulers;
 import com.omerozer.knit.Model;
 import com.omerozer.knit.Use;
 import com.omerozer.knit.UseMethod;
@@ -85,12 +86,14 @@ public class KnitModelProcessor extends AbstractProcessor {
             for (Element element : clazz.getEnclosedElements()) {
                 if (element.getKind().isField()) {
                     if (element.getAnnotation(Generates.class) != null) {
+                        GeneratesParams generatesParams = new GeneratesParams();
                         String[] params = element.getAnnotation(Generates.class).value();
-                        knitModelMirror.generateField.put(params, (VariableElement) element);
-                        knitModelMirror.vals.addAll(Arrays.asList(params));
-                    } else if (element.getAnnotation(GeneratesAsync.class) != null) {
-                        String[] params = element.getAnnotation(GeneratesAsync.class).value();
-                        knitModelMirror.generateAsyncField.put(params, (VariableElement) element);
+                        KnitSchedulers runsOn = element.getAnnotation(Generates.class).runOn();
+                        KnitSchedulers consumesOn = element.getAnnotation(Generates.class).consumeOn();
+                        generatesParams.variableElement = (VariableElement)element;
+                        generatesParams.runOn = runsOn;
+                        generatesParams.consumeOn = consumesOn;
+                        knitModelMirror.generatesParamsMap.put(params, generatesParams);
                         knitModelMirror.vals.addAll(Arrays.asList(params));
                     }else if(element.getAnnotation(Collects.class)!=null){
                         String[] params = element.getAnnotation(Collects.class).value();

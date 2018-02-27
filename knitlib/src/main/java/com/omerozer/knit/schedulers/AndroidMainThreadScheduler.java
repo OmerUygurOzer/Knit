@@ -23,7 +23,7 @@ public class AndroidMainThreadScheduler implements SchedulerInterface {
         MAIN_THREAD_HANDLER = new AtomicReference<>(new Handler(Looper.getMainLooper()));
     }
 
-    AndroidMainThreadScheduler(){
+    public AndroidMainThreadScheduler(){
         this.target = new AtomicReference<>();
         this.resultConsumer = new AtomicReference<>();
         this.isDone = new AtomicBoolean(false);
@@ -42,7 +42,7 @@ public class AndroidMainThreadScheduler implements SchedulerInterface {
                         target.get().submit(new Runnable() {
                             @Override
                             public void run() {
-                                resultConsumer.get().consumer(data);
+                                resultConsumer.get().consume(data);
                             }
                         });
                     }
@@ -63,7 +63,7 @@ public class AndroidMainThreadScheduler implements SchedulerInterface {
 
     @Override
     public void start() {
-
+        EVICTOR_THREAD.registerScheduler(this);
     }
 
     @Override

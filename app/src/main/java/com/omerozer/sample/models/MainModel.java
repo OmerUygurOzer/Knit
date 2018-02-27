@@ -28,7 +28,7 @@ public class MainModel extends KnitModel {
     }
 
     @Generates("test")
-    Generator0<String> generateTestString = new Generator0<String>() {
+    public Generator0<String> generateTestString = new Generator0<String>() {
 
         @Override
         public KnitResponse<String> generate() {

@@ -76,7 +76,7 @@ public class IOScheduler implements SchedulerInterface {
                         target.get().submit(new Runnable() {
                                                 @Override
                                                 public void run() {
-                                                     resultConsumer.get().consumer(data);
+                                                     resultConsumer.get().consume(data);
                                                 }
                                             }
 
@@ -123,7 +123,7 @@ public class IOScheduler implements SchedulerInterface {
     private AtomicReference<Consumer> resultConsumer;
     private AtomicBoolean isDone;
 
-    IOScheduler(){
+    public IOScheduler(){
         init();
         this.receiverThread  = new AtomicReference<>(new HandlerThread(KNIT_LISTENER_THREAD_NAME));
         this.receiverHandler = new AtomicReference<>();
@@ -148,6 +148,7 @@ public class IOScheduler implements SchedulerInterface {
 
     @Override
     public void start() {
+        EVICTOR_THREAD.registerScheduler(this);
         this.listenerThread.set(new ListenerThread());
         this.receiverThread.get().start();
         this.receiverHandler.set(new Handler(receiverThread.get().getLooper()));

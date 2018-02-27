@@ -6,23 +6,25 @@ import com.omerozer.knit.schedulers.heavy.HeavyTaskScheduler;
  * Created by omerozer on 2/26/18.
  */
 
-public class Schedulers {
+public class Schedulers implements SchedulerProvider{
 
-
-
-    static SchedulerInterface io(){
+    @Override
+    public SchedulerInterface io(){
         return new IOScheduler();
     }
 
-    static SchedulerInterface main(){
+    @Override
+    public SchedulerInterface main(){
         return new AndroidMainThreadScheduler();
     }
 
-    static SchedulerInterface immediate(){
+    @Override
+    public SchedulerInterface immediate(){
         return new ImmediateScheduler();
     }
 
-    static SchedulerInterface heavy(){
+    @Override
+    public SchedulerInterface heavy(){
         return new HeavyTaskScheduler();
     }
 }

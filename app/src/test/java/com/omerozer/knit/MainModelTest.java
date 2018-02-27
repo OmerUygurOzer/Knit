@@ -2,6 +2,7 @@ package com.omerozer.knit;
 
 import static junit.framework.Assert.assertEquals;
 
+
 import com.omerozer.sample.models.MainModel;
 
 import org.junit.Test;
@@ -24,9 +25,7 @@ public class MainModelTest extends KnitModelTest<MainModel> {
 
     @Test
     public void testGenerateTestString() throws Exception{
-        final ImmutableHolder<String> immutableHolder = new ImmutableHolder<>();
-        accessModelManager().requestThreadSafe("test",immutableHolder);
-        assertEquals("TEEEESST STRING",immutableHolder.getData());
+        mainModel.generateTestString.generate();
     }
 
     @Override

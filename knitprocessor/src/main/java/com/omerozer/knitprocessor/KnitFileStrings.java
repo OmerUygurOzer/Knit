@@ -61,9 +61,19 @@ public class KnitFileStrings {
     public static final String KNIT_SUBMITTER = "com.omerozer.knit.collectors.Submitter";
     public static final String KNIT_RESPONSE = "com.omerozer.knit.KnitResponse";
     public static final String KNIT_NAVIGATOR = "com.omerozer.knit.KnitNavigator";
+    public static final String KNIT_TASK_FLOW = "com.omerozer.knit.schedulers.KnitTaskFlow";
+    public static final String KNITSCHEDULER_IO = "io()";
+    public static final String KNITSCHEDULER_MAIN = "main()";
+    public static final String KNITSCHEDULER_IMMEDIATE = "immediate()";
+    public static final String KNITSCHEDULER_HEAVY = "heavy()";
+
     public static final ClassName TYPE_NAME_CLASS = ClassName.bestGuess(Class.class.getCanonicalName());
     public static final ClassName TYPE_NAME_STRING = ClassName.bestGuess(String.class.getCanonicalName());
     public static final ClassName TYPE_NAME_LIST = ClassName.bestGuess(List.class.getCanonicalName());
+    public static final ClassName TYPE_NAME_SCHEDULER_PROVIDER = ClassName.bestGuess("com.omerozer.knit.schedulers.SchedulerProvider");
+    public static final ClassName TYPE_NAME_CALLABLE = ClassName.bestGuess("java.util.concurrent.Callable");
+    public static final ClassName TYPE_NAME_CONSUMER = ClassName.bestGuess("com.omerozer.knit.schedulers.Consumer");
+
 
 
     //CONTRACT

@@ -44,9 +44,7 @@ public class MainPresenterTest extends KnitPresenterTest<MainPresenter,MainActiv
     @Override
     public void setup(){
         MockitoAnnotations.initMocks(this);
-
         mainPresenter = getPresenter();
-
         when(knit.findPresenterForParent(mainPresenter)).thenReturn(NULL_PRESENTER);
         when(activityNavigator.target(SecondActivity.class)).thenReturn(activityNavigator);
         when(navigator.toActivity()).thenReturn(activityNavigator);

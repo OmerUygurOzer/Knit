@@ -40,6 +40,7 @@ public class EvictorThread implements Runnable {
 
 
     void registerScheduler(SchedulerInterface scheduler){
+        if(!isRunning){start();}
         this.evictBase.set(System.currentTimeMillis());
         this.entryLock.writeLock().lock();
         this.schedulers.add(scheduler);
@@ -63,7 +64,6 @@ public class EvictorThread implements Runnable {
 
             if(System.currentTimeMillis() - evictBase.get() >= STAY_ALIVE){
                 stop();
-                this.isRunning = true;
             }
 
             sleep();

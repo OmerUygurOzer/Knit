@@ -18,7 +18,7 @@ public final class TestModelManager extends ModelManager {
 
     public TestModelManager(){
         this.dataToModelMap = new HashMap<>();
-        this.modelLoader = new KnitModelLoader(new KnitAsyncTaskHandler());
+        this.modelLoader = new KnitModelLoader(new TestSchedulers());
     }
 
     KnitModel registerModel(Class<? extends KnitModel> model){
@@ -27,21 +27,6 @@ public final class TestModelManager extends ModelManager {
             dataToModelMap.put(val,internalModel);
         }
         return internalModel.getParent();
-    }
-
-    protected <T> void requestThreadSafe(String data, final ImmutableHolder<T> holder, Object... params){
-        request(data, new Callback<T>() {
-            @Override
-            public void response(KnitResponse<T> response) {
-                holder.setData(response.getBody());
-            }
-        },params);
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
     }
 
     @Override
