@@ -14,6 +14,15 @@ Features:
 7. Navigation is supported as outlined here : [Navigation in the context of MVP](https://medium.com/@nikita.kozlov/navigation-in-the-context-of-mvp-f474ed313901)  
 8. Easy integration with other libraries such as Dagger.
 
+Version 1.1.0  
+[![](https://jitpack.io/v/OmerUygurOzer/knit.svg)](https://jitpack.io/#OmerUygurOzer/knit)
+
+- Supports multiple threads for generators to be executed on
+- Usage tree for components
+- Support for reporting errors from Generators added
+- Test Kit added to make testing easy
+- Smarter life-cycle callbacks(Removed Knit.show(view), Knit.dismiss(view))
+- Bug fixes
 
 ### Adding Knit to the project:
 ```
@@ -26,8 +35,8 @@ allprojects {
 }
 
 dependencies {
-  implementation 'com.github.OmerUygurOzer.knit:knitlib:v1.0.9'
-  annotationProcessor 'com.github.OmerUygurOzer.knit:knitprocessor:v1.0.9'
+  implementation 'com.github.OmerUygurOzer.knit:knitlib:v1.1.0'
+  annotationProcessor 'com.github.OmerUygurOzer.knit:knitprocessor:v1.1.0'
 }
 ```
 
@@ -47,7 +56,7 @@ public class RestLayer extends KnitModel {
         DaggerModelsComponent.create().inject(this);
     }
 
-    @GeneratesAsync(GET_REPOS)
+    @Generates(GET_REPOS)
     Generator1<List<Repo>,String> getRepos = new Generator1<List<Repo>,String>() {
         @Override
         public List<Repo> generate(String s) {
@@ -85,13 +94,11 @@ public class InputActivity extends Activity{
     @Override
     protected void onResume() {
         super.onResume();
-        Knit.show(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Knit.show(this);
     }
 
     public String getUserName(){
@@ -115,7 +122,7 @@ public class RepoActivityPresenter extends KnitPresenter<RepoActivityContract> {
 
     @Override
     public void onViewApplied(Object o, Bundle bundle) {
-        requestData(RestLayer.GET_REPOS,bundle.getString("userName"));
+        request(RestLayer.GET_REPOS, KnitSchedulers.IO,KnitSchedulers.MAIN,bundle.getString("userName"));
     }
 
     @Override
