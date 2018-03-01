@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.omerozer.knit.Knit;
-
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,6 +61,7 @@ public abstract class HeavyThread extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         final TaskPackage currentTask = getNextTask(threadId);
+        Log.d("KNIT_TEST","HEAVY:"+threadId);
         switch (intent.getIntExtra(TASK_TYPE_KEY,RUNNABLE)){
             case RUNNABLE:
                 currentTask.getRunnable().run();

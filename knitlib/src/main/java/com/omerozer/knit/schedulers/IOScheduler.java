@@ -2,16 +2,10 @@ package com.omerozer.knit.schedulers;
 
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.util.Log;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -24,7 +18,6 @@ public class IOScheduler implements SchedulerInterface {
     private static final int DEFAULT_THREAD_POOL_SIZE = 4;
     private static final String KNIT_LISTENER_THREAD_NAME = "knit_io_receiver";
     private static  AtomicReference<ExecutorService> THREAD_POOL;
-    private static final long TIME_OUT = 20L;
 
     static {
         THREAD_POOL = new AtomicReference<>();
@@ -39,105 +32,9 @@ public class IOScheduler implements SchedulerInterface {
         }
     }
 
-    class ListenerThread implements Runnable{
-
-        volatile boolean running;
-        LinkedBlockingQueue<Future<?>> futureRegistry;
-        AtomicReference<Handler> receiverHandler;
-        Thread thread;
-
-        private ListenerThread() {
-            this.thread = new Thread(this);
-            this.futureRegistry = new LinkedBlockingQueue<>();
-        }
-
-        void registerFuture(Future<?> future){
-            try {
-                futureRegistry.put(future);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        void setReceiverHandler(AtomicReference<Handler> handler){
-            this.receiverHandler = handler;
-        }
-
-        @Override
-        public void run() {
-            while (running){
-                Future<?> future = null;
-                try {
-                    future = futureRegistry.take();
-                    while (!future.isDone()){
-                        sleep(1);
-                    }
-                    Log.d("KNIT_TEST","DONE");
-                    final Object data = future.get(TIME_OUT, TimeUnit.SECONDS);
-                    Log.d("KNIT_TEST","GOTTEN");
-                    if(target.get()!=null){
-                        target.get().start();
-                        target.get().submit(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                     resultConsumer.get().consume(data);
-                                                }
-                                            }
-
-                        );
-                        isDone.set(true);
-                    }
-
-                } catch (InterruptedException e) {
-                    errorOut(e);
-                } catch (ExecutionException e) {
-                    errorOut(e);
-                    future.cancel(true);
-                } catch (TimeoutException e) {
-                    errorOut(e);
-                    future.cancel(true);
-                }
-
-            }
-        }
-
-        private void errorOut(final Throwable throwable){
-            if(target.get()!=null){
-                target.get().start();
-                target.get().submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        resultConsumer.get().error(throwable);
-                    }
-                });
-            }
-        }
-
-        private void start(){
-            this.running = true;
-            thread.start();
-        }
-
-        private void shutdown(){
-            this.running = false;
-            this.thread = null;
-
-        }
-
-        private void sleep(long ms){
-            try {
-                Thread.sleep(ms);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-
 
     private AtomicReference<HandlerThread> receiverThread;
     private AtomicReference<Handler> receiverHandler;
-    private AtomicReference<ListenerThread> listenerThread;
     private AtomicReference<SchedulerInterface> target;
     private AtomicReference<Consumer> resultConsumer;
     private AtomicBoolean isDone;
@@ -146,7 +43,6 @@ public class IOScheduler implements SchedulerInterface {
         init();
         this.receiverThread  = new AtomicReference<>(new HandlerThread(KNIT_LISTENER_THREAD_NAME));
         this.receiverHandler = new AtomicReference<>();
-        this.listenerThread = new AtomicReference<>();
         this.target = new AtomicReference<>();
         this.resultConsumer = new AtomicReference<>();
         this.isDone = new AtomicBoolean(false);
@@ -156,36 +52,59 @@ public class IOScheduler implements SchedulerInterface {
 
     @Override
     public<T> void submit(Callable<T> callable) {
-        listenerThread.get().registerFuture(THREAD_POOL.get().submit(callable));
+        THREAD_POOL.get().submit(createTask(callable));
     }
 
     @Override
     public void submit(Runnable runnable) {
-        listenerThread.get().registerFuture(THREAD_POOL.get().submit(runnable));
+        THREAD_POOL.get().submit(runnable);
     }
 
 
     @Override
     public void start() {
         EVICTOR_THREAD.registerScheduler(this);
-        this.listenerThread.set(new ListenerThread());
         this.receiverThread.get().start();
         this.receiverHandler.set(new Handler(receiverThread.get().getLooper()));
-        this.listenerThread.get().setReceiverHandler(receiverHandler);
-        this.listenerThread.get().start();
     }
 
 
 
     @Override
     public void shutDown() {
-        this.listenerThread.get().shutdown();
         this.receiverThread.get().quit();
     }
 
     @Override
     public boolean isDone() {
         return isDone.get();
+    }
+
+    private<T> Runnable createTask(final Callable<T> callable){
+        return new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final Object data = callable.call();
+                    receiverHandler.get().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            target.get().start();
+                            target.get().submit(new Runnable() {
+                                @Override
+                                public void run() {
+                                    resultConsumer.get().consume(data);
+                                    isDone.set(true);
+                                }
+                            });
+                        }
+                    });
+                } catch (Exception e) {
+                    resultConsumer.get().error(e);
+
+                }
+            }
+        };
     }
 
     @Override

@@ -2,10 +2,8 @@ package com.omerozer.knit.classloaders;
 
 import com.omerozer.knit.InternalModel;
 import com.omerozer.knit.Knit;
-import com.omerozer.knit.KnitAsyncTaskHandler;
 import com.omerozer.knit.KnitModel;
 import com.omerozer.knit.ModelMapInterface;
-import com.omerozer.knit.components.ModelManager;
 import com.omerozer.knit.schedulers.SchedulerProvider;
 
 import java.lang.reflect.Constructor;

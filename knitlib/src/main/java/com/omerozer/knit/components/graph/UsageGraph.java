@@ -1,12 +1,10 @@
 package com.omerozer.knit.components.graph;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import com.omerozer.knit.InternalModel;
 import com.omerozer.knit.InternalPresenter;
 import com.omerozer.knit.Knit;
-import com.omerozer.knit.KnitAsyncTaskHandler;
 import com.omerozer.knit.KnitNavigator;
 import com.omerozer.knit.MemoryEntity;
 import com.omerozer.knit.ModelMapInterface;

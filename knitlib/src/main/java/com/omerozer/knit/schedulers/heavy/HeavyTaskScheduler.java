@@ -11,6 +11,7 @@ import com.omerozer.knit.Knit;
 import com.omerozer.knit.schedulers.Consumer;
 import com.omerozer.knit.schedulers.SchedulerInterface;
 
+import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -29,32 +30,44 @@ public class HeavyTaskScheduler implements SchedulerInterface {
     static final String HEAVY_THREAD_NAME3 = "knit_heavy_thread3";
     static final String HEAVY_THREAD_NAME4 = "knit_heavy_thread4";
 
-    private class AvailableThread implements Comparable<AvailableThread>{
+    private static final PriorityQueue<AvailableThread> avaiableThreads;
+
+    static {
+        avaiableThreads = new PriorityQueue<>(4,getThreadPriorityComparator());
+        avaiableThreads.offer(new AvailableThread(HThread1.class, HEAVY_THREAD_NAME1));
+        avaiableThreads.offer(new AvailableThread(HThread2.class, HEAVY_THREAD_NAME2));
+        avaiableThreads.offer(new AvailableThread(HThread3.class, HEAVY_THREAD_NAME3));
+        avaiableThreads.offer(new AvailableThread(HThread4.class, HEAVY_THREAD_NAME4));
+    }
+
+    private static class AvailableThread{
         public Class<? extends HeavyThread> clazz;
         public String threadId;
 
-        AvailableThread(Class<? extends HeavyThread> clazz,String threadId){
+        AvailableThread(Class<? extends HeavyThread> clazz, String threadId) {
             this.clazz = clazz;
             this.threadId = threadId;
         }
 
-        @Override
-        public int compareTo(@NonNull AvailableThread o) {
-            return (getPriority(threadId) < getPriority(o.threadId)) ? -1 : ((getPriority(threadId) == getPriority(o.threadId)) ? 0 : 1);
-        }
     }
 
-    private PriorityQueue<AvailableThread> avaiableThreads;
+    private static Comparator<AvailableThread> getThreadPriorityComparator(){
+        return new Comparator<AvailableThread>() {
+            @Override
+            public int compare(AvailableThread o1,
+                    AvailableThread o2) {
+                return (getPriority(o1.threadId) < getPriority(o2.threadId)) ? -1 : ((getPriority(o1.threadId)
+                        == getPriority(o2.threadId)) ? 0 : 1);
+            }
+        };
+    }
+
+
     private SchedulerInterface target;
     private Consumer consumer;
     private Context context;
 
-    public HeavyTaskScheduler(){
-        this.avaiableThreads = new PriorityQueue<>();
-        this.avaiableThreads.offer(new AvailableThread(HThread1.class,HEAVY_THREAD_NAME1));
-        this.avaiableThreads.offer(new AvailableThread(HThread2.class,HEAVY_THREAD_NAME2));
-        this.avaiableThreads.offer(new AvailableThread(HThread3.class,HEAVY_THREAD_NAME3));
-        this.avaiableThreads.offer(new AvailableThread(HThread4.class,HEAVY_THREAD_NAME4));
+    public HeavyTaskScheduler() {
         this.context = Knit.getInstance().getApp();
     }
 
@@ -64,8 +77,8 @@ public class HeavyTaskScheduler implements SchedulerInterface {
         taskPackage.setCallable(callable);
         taskPackage.setTarget(target);
         taskPackage.setConsumer(consumer);
-        AvailableThread availableThread = avaiableThreads.peek();
-        handleTask(availableThread.threadId,taskPackage,context,availableThread.clazz);
+        AvailableThread availableThread = getLeastBusyThread();
+        handleTask(availableThread.threadId, taskPackage, context, availableThread.clazz);
     }
 
     @Override
@@ -74,21 +87,27 @@ public class HeavyTaskScheduler implements SchedulerInterface {
         taskPackage.setRunnable(runnable);
         taskPackage.setTarget(target);
         taskPackage.setConsumer(consumer);
-        AvailableThread availableThread = avaiableThreads.peek();
-        handleTask(availableThread.threadId,taskPackage,context,availableThread.clazz);
+        AvailableThread availableThread =  getLeastBusyThread();
+        handleTask(availableThread.threadId, taskPackage, context, availableThread.clazz);
+    }
+
+    private AvailableThread getLeastBusyThread(){
+        AvailableThread availableThread = avaiableThreads.poll();
+        avaiableThreads.offer(availableThread);
+        return availableThread;
     }
 
     @Override
     public void start() {
-
+        EVICTOR_THREAD.registerScheduler(this);
     }
 
     @Override
     public void shutDown() {
-        context.stopService(new Intent(context,HThread1.class));
-        context.stopService(new Intent(context,HThread2.class));
-        context.stopService(new Intent(context,HThread3.class));
-        context.stopService(new Intent(context,HThread4.class));
+        context.stopService(new Intent(context, HThread1.class));
+        context.stopService(new Intent(context, HThread2.class));
+        context.stopService(new Intent(context, HThread3.class));
+        context.stopService(new Intent(context, HThread4.class));
 
     }
 
@@ -100,9 +119,9 @@ public class HeavyTaskScheduler implements SchedulerInterface {
 
     @Override
     public boolean isDone() {
-        return  getPriority(HEAVY_THREAD_NAME1)==0 &&
-                getPriority(HEAVY_THREAD_NAME2)==0 &&
-                getPriority(HEAVY_THREAD_NAME3)==0 &&
-                getPriority(HEAVY_THREAD_NAME4)==0;
+        return  getPriority(HEAVY_THREAD_NAME1) == 0 &&
+                getPriority(HEAVY_THREAD_NAME2) == 0 &&
+                getPriority(HEAVY_THREAD_NAME3) == 0 &&
+                getPriority(HEAVY_THREAD_NAME4) == 0;
     }
 }

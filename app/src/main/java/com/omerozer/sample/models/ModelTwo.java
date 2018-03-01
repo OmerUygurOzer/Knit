@@ -1,17 +1,12 @@
 package com.omerozer.sample.models;
 
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.omerozer.knit.Generates;
 import com.omerozer.knit.KnitModel;
 import com.omerozer.knit.KnitResponse;
-import com.omerozer.knit.schedulers.KnitSchedulers;
 import com.omerozer.knit.Model;
 import com.omerozer.knit.generators.Generator1;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by omerozer on 2/6/18.

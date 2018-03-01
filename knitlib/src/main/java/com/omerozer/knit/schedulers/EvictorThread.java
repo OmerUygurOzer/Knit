@@ -41,7 +41,7 @@ public class EvictorThread implements Runnable {
         this.isRunning = false;
     }
 
-    void registerScheduler(SchedulerInterface scheduler){
+    public void registerScheduler(SchedulerInterface scheduler){
         if(!isRunning){start();}
         this.evictBase.set(System.currentTimeMillis());
         this.entryLock.writeLock().lock();
