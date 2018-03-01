@@ -52,7 +52,7 @@ public class KnitNavigator {
     }
 
 
-    abstract class Navigator {
+    public abstract class Navigator {
         public abstract Class<?> getTarget();
     }
 

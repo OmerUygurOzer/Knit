@@ -14,7 +14,7 @@ import java.lang.ref.WeakReference;
  * Created by omerozer on 2/1/18.
  */
 
-public final class Knit {
+public class Knit {
 
     private static Knit instance;
 

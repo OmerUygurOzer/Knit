@@ -16,7 +16,7 @@ import com.omerozer.knit.viewevents.KnitTextChangedEvent;
  * Created by omerozer on 2/2/18.
  */
 
-public final class KnitEvents {
+public class KnitEvents {
 
     private static Knit knitInstance;
 
