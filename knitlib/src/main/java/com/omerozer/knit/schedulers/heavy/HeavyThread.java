@@ -62,7 +62,6 @@ public abstract class HeavyThread extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        Log.d("KNIT_TEST","HEAVY:"+threadId);
         final TaskPackage currentTask = getNextTask(threadId);
         switch (intent.getIntExtra(TASK_TYPE_KEY,RUNNABLE)){
             case RUNNABLE:
