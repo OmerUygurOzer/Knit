@@ -46,8 +46,6 @@ public class KnitPresenterProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
 
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Knit Processor Stage1");
-
         processViews(roundEnvironment.getElementsAnnotatedWith(KnitView.class));
         processPresenters(roundEnvironment.getElementsAnnotatedWith(Presenter.class));
 

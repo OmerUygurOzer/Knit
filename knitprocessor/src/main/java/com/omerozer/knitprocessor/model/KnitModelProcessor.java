@@ -37,7 +37,7 @@ public class KnitModelProcessor extends AbstractProcessor {
     private Set<KnitModelMirror> models;
     private Set<UserMirror> users;
     private Map<KnitModelMirror, Set<UserMirror>> modelToUserMap;
-    public static Messager messager;
+    //public static Messager messager;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnvironment) {
@@ -45,13 +45,11 @@ public class KnitModelProcessor extends AbstractProcessor {
         this.models = new HashSet<>();
         this.users = new HashSet<>();
         this.modelToUserMap = new HashMap<>();
-        messager = processingEnvironment.getMessager();
+        //messager = processingEnvironment.getMessager();
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
-
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Knit Processor Stage3");
 
         processModels(roundEnvironment.getElementsAnnotatedWith(Model.class));
         processUsers(roundEnvironment.getElementsAnnotatedWith(Use.class));

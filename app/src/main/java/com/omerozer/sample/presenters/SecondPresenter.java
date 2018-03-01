@@ -11,8 +11,11 @@ import com.omerozer.knit.Updating;
 import com.omerozer.knit.schedulers.KnitSchedulers;
 import com.omerozer.knit.viewevents.ViewEventEnv;
 import com.omerozer.knit.viewevents.ViewEventPool;
+import com.omerozer.sample.datatype.StringWrapper;
 import com.omerozer.sample.views.SecondActivity;
 import com.omerozer.sample.views.SecondActivityContract;
+
+import java.util.List;
 
 /**
  * Created by omerozer on 2/6/18.
@@ -52,7 +55,7 @@ public class SecondPresenter extends KnitPresenter<SecondActivityContract> {
     }
 
     @Updating("Ttest")
-    void updateDatat2(KnitResponse<String> data){
-        getContract().recMes(data.getBody());
+    void updateDatat2(KnitResponse<List<StringWrapper>> data){
+        getContract().recMes(data.getBody().get(0).string);
     }
 }

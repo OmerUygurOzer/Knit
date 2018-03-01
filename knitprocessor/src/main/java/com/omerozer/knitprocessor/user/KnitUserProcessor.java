@@ -35,8 +35,6 @@ public class KnitUserProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
 
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, "Knit Processor Stage 2");
-
         processUsers(roundEnvironment.getElementsAnnotatedWith(Use.class));
         createUsers(userMirros);
 

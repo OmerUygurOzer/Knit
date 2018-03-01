@@ -303,11 +303,9 @@ class KnitModelWriter {
                 .addParameter(String.class, "data")
                 .addParameter(Object[].class, "params", Modifier.FINAL);
 
-        KnitModelProcessor.messager.printMessage(Diagnostic.Kind.WARNING,"OUT GEN VAL:"+modelMirror.enclosingClass.getQualifiedName());
         for (String[] generatedVals : modelMirror.generatesParamsMap.keySet()) {
                 String condition = createConditionBlock(generatedVals);
                 requestImmediateMethodBuilder.beginControlFlow("if($L)", condition);
-                KnitModelProcessor.messager.printMessage(Diagnostic.Kind.WARNING,"GEN VAL:"+modelMirror.enclosingClass.getQualifiedName());
                 List<String> types = GeneratorExaminer.getGenerateTypes(modelMirror.generatesParamsMap.get(generatedVals));
                 requestImmediateMethodBuilder.addStatement("return $L.generate($L)", modelMirror.generatesParamsMap.get(
                         generatedVals).getSimpleName(),createParamBlock(types,1));
@@ -386,11 +384,12 @@ class KnitModelWriter {
             KnitModelMirror modelMirror) {
 
         ClassName knitResponse = ClassName.bestGuess(KnitFileStrings.KNIT_RESPONSE);
-        ClassName responseType = ClassName.bestGuess(types.get(0));
-        ParameterizedTypeName parameterizedKnitResponse = ParameterizedTypeName.get(knitResponse,
-                responseType);
-        ParameterizedTypeName parameterizedCallable = ParameterizedTypeName.get(
-                KnitFileStrings.TYPE_NAME_CALLABLE, parameterizedKnitResponse);
+        TypeName responseType = GeneratorExaminer.getName(types.get(0));
+
+        ParameterizedTypeName parameterizedKnitResponse = ParameterizedTypeName.get(knitResponse, responseType);
+
+
+        ParameterizedTypeName parameterizedCallable = ParameterizedTypeName.get(KnitFileStrings.TYPE_NAME_CALLABLE, parameterizedKnitResponse);
 
         TypeSpec callable = TypeSpec
                 .anonymousClassBuilder("")
@@ -412,7 +411,7 @@ class KnitModelWriter {
 
     private static TypeSpec createConsumerTypeSpec(String[] params, List<String> types, UserMirror userMirror) {
         ClassName knitResponse = ClassName.bestGuess(KnitFileStrings.KNIT_RESPONSE);
-        ClassName responseType = ClassName.bestGuess(types.get(0));
+        TypeName responseType = GeneratorExaminer.getName(types.get(0));
         ParameterizedTypeName parameterizedKnitResponse = ParameterizedTypeName.get(knitResponse,
                 responseType);
         ParameterizedTypeName parameterizedConsumerName = ParameterizedTypeName.get(
