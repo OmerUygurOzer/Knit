@@ -64,11 +64,11 @@ public final class Knit {
         userGraph.stopViewAndItsComponents(viewObject);
     }
 
-    InternalPresenter findPresenterForView(Object viewObject) {
+    public InternalPresenter findPresenterForView(Object viewObject) {
         return userGraph.getPresenterForView(viewObject);
     }
 
-    InternalPresenter findPresenterForParent(Object parentPresenter) {
+    public InternalPresenter findPresenterForParent(Object parentPresenter) {
         return userGraph.getPresenterForObject(parentPresenter);
     }
 
