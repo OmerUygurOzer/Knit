@@ -15,7 +15,6 @@ Features:
 8. Easy integration with other libraries such as Dagger.
 
 Version 1.1.0  
-[![](https://jitpack.io/v/OmerUygurOzer/knit.svg)](https://jitpack.io/#OmerUygurOzer/knit)
 
 - Supports multiple threads for generators to be executed on
 - Usage tree for components
