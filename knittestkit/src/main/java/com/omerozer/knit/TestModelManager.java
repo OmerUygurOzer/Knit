@@ -2,6 +2,7 @@ package com.omerozer.knit;
 
 import com.omerozer.knit.classloaders.KnitModelLoader;
 import com.omerozer.knit.components.ModelManager;
+import com.omerozer.knit.schedulers.KnitSchedulers;
 import com.omerozer.knit.schedulers.SchedulerProvider;
 
 import java.util.HashMap;
@@ -34,5 +35,21 @@ public final class TestModelManager extends ModelManager {
         if(dataToModelMap.containsKey(data)){
             dataToModelMap.get(data).input(data,params);
         }
+    }
+
+    @Override
+    public void request(String data, KnitSchedulers runOn, KnitSchedulers consumeOn,
+            InternalPresenter internalPresenter, Object... params) {
+        if(dataToModelMap.containsKey(data)){
+            dataToModelMap.get(data).request(data,runOn,consumeOn,internalPresenter,params);
+        }
+    }
+
+    @Override
+    public <T> KnitResponse<T> requestImmediately(String data, Object... params) {
+        if(dataToModelMap.containsKey(data)){
+            return dataToModelMap.get(data).requestImmediately(data,params);
+        }
+        return null;
     }
 }
