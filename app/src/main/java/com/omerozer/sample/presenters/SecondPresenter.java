@@ -24,7 +24,17 @@ public class SecondPresenter extends KnitPresenter<SecondActivityContract> {
     @Override
     public void onViewApplied(Object viewObject,Bundle bundle){
         super.onViewApplied(viewObject,bundle);
-        request("umbrella", KnitSchedulers.IO,KnitSchedulers.MAIN);
+        request("umbrella", KnitSchedulers.HEAVY,KnitSchedulers.MAIN);
+        request("umbrella", KnitSchedulers.HEAVY,KnitSchedulers.MAIN);
+        request("umbrella", KnitSchedulers.HEAVY,KnitSchedulers.MAIN);
+        request("umbrella", KnitSchedulers.HEAVY,KnitSchedulers.MAIN);
+        request("umbrella", KnitSchedulers.HEAVY,KnitSchedulers.MAIN);
+        request("umbrella", KnitSchedulers.HEAVY,KnitSchedulers.MAIN);
+        request("umbrella", KnitSchedulers.HEAVY,KnitSchedulers.MAIN);
+        request("umbrella", KnitSchedulers.HEAVY,KnitSchedulers.MAIN);
+        request("umbrella", KnitSchedulers.HEAVY,KnitSchedulers.MAIN);
+        request("umbrella", KnitSchedulers.HEAVY,KnitSchedulers.MAIN);
+
     }
 
     @Override

@@ -3,10 +3,10 @@
 
 
     <application>
-
-
-
-
+        <service android:name=".schedulers.heavy.HThread1"/>
+        <service android:name=".schedulers.heavy.HThread2"/>
+        <service android:name=".schedulers.heavy.HThread3"/>
+        <service android:name=".schedulers.heavy.HThread4"/>
     </application>
 
 </manifest>

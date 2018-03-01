@@ -1,11 +1,15 @@
 package com.omerozer.knit.schedulers.heavy;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.util.Log;
+
+import com.omerozer.knit.Knit;
 
 import java.util.Map;
-import java.util.concurrent.Callable;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -15,8 +19,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class HeavyThread extends IntentService {
 
-    private static final String RUNNABLE_KEY = "RUNNABLE_KEY";
-    private static final String CALLABLE_KEY = "CALLABLE_KEY";
     private static final String TASK_TYPE_KEY = "TASK_TYPE_KEY";
 
     public static final int RUNNABLE = 1;
@@ -25,21 +27,30 @@ public abstract class HeavyThread extends IntentService {
 
     private static Map<String,ConcurrentLinkedQueue<TaskPackage>> taskMap;
 
+    public static void handleTask(String threadId, TaskPackage taskPackage,Context context,Class<? extends HeavyThread> taskThread){
+        getTaskQueueForThread(threadId).add(taskPackage);
+        Intent intent = new Intent(context,taskThread);
+        intent.putExtra(TASK_TYPE_KEY,taskPackage.getRunnable()==null? CALLABLE:RUNNABLE);
+        context.startService(intent);
+    }
+
     static {
         taskMap = new ConcurrentHashMap<>();
     }
 
     private static TaskPackage getNextTask(String threadId){
-        if(!taskMap.containsKey(threadId)){
-            taskMap.put(threadId,new ConcurrentLinkedQueue<TaskPackage>());
-            taskMap.get(threadId).add(TaskPackage.EMPTY);
-            return taskMap.get(threadId).peek();
-        }
         return taskMap.get(threadId).poll();
     }
 
+    private static Queue<TaskPackage> getTaskQueueForThread(String threadId){
+        if(!taskMap.containsKey(threadId)) {
+            taskMap.put(threadId, new ConcurrentLinkedQueue<TaskPackage>());
+        }
+        return taskMap.get(threadId);
+    }
+
     public static int getPriority(String threadId){
-        return taskMap.get(threadId).size();
+        return getTaskQueueForThread(threadId).size();
     }
 
     private String threadId;
@@ -51,20 +62,31 @@ public abstract class HeavyThread extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        TaskPackage currentTask = getNextTask(threadId);
+        Log.d("KNIT_TEST","HEAVY:"+threadId);
+        final TaskPackage currentTask = getNextTask(threadId);
+        switch (intent.getIntExtra(TASK_TYPE_KEY,RUNNABLE)){
+            case RUNNABLE:
+                currentTask.getRunnable().run();
+                break;
+            case CALLABLE:
+                try {
+                    final Object data = currentTask.getCallable().call();
+                    currentTask.getTarget().start();
+                    currentTask.getTarget().submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            currentTask.getConsumer().consume(data);
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
 
-//        switch (intent.getIntExtra(TASK_TYPE_KEY,RUNNABLE)){
-//            case RUNNABLE:
-//                extractRunnable(intent).run();
-//                break;
-//            case CALLABLE:
-//                try {
-//                    Object data = extractCallable(intent).call();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                break;
-//        }
+            default:
+                break;
+
+        }
     }
 
 }
