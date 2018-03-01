@@ -2,6 +2,7 @@ package com.omerozer.knit;
 
 import android.os.Bundle;
 
+import com.omerozer.knit.schedulers.KnitSchedulers;
 import com.omerozer.knit.viewevents.ViewEventEnv;
 import com.omerozer.knit.viewevents.ViewEventPool;
 import com.omerozer.knit.viewevents.handlers.EventHandler;
@@ -37,9 +38,14 @@ public abstract class KnitPresenter<T> implements EventHandler, PresenterInterfa
         return viewObjectRef.get();
     }
 
-    protected void requestData(String data, Object... params) {
+    protected void request(String data,KnitSchedulers runOn, KnitSchedulers consumeOn,Object... params) {
         InternalPresenter instance = knitInstance.findPresenterForParent(this);
-        getModelManager().request(data, instance, params);
+        getModelManager().request(data, runOn, consumeOn ,instance, params);
+    }
+
+    protected void request(String data,Object... params) {
+        InternalPresenter instance = knitInstance.findPresenterForParent(this);
+        getModelManager().request(data, KnitSchedulers.IMMEDIATE, KnitSchedulers.IMMEDIATE ,instance, params);
     }
 
     protected void destroyComponent(){

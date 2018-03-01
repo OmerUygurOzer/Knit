@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void recMes(String message){
-        ((TextView)findViewById(R.id.textView_t)).setText("TEEST");
+        ((TextView)findViewById(R.id.textView_t)).setText(message);
     }
 
     public void showToast(String message){

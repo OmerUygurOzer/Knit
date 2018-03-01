@@ -27,4 +27,19 @@ public class Schedulers implements SchedulerProvider{
     public SchedulerInterface heavy(){
         return new HeavyTaskScheduler();
     }
+
+    @Override
+    public SchedulerInterface forType(KnitSchedulers type) {
+        switch (type){
+            case IO:
+                return io();
+            case MAIN:
+                return main();
+            case IMMEDIATE:
+                return immediate();
+            case HEAVY:
+                return heavy();
+        }
+        return immediate();
+    }
 }

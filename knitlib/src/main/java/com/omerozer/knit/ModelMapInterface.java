@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface ModelMapInterface {
      List<Class<? extends InternalModel>> getAll();
-     List<String> getGeneratedValues(Class<?> getGeneratedValues);
+     List<String> getGeneratedValues(Class<?> clazz);
+     List<String> getRequiredValues(Class<?> clazz);
      Class<? extends InternalModel> getModelClassForModel(Class<? extends KnitModel> target);
 }

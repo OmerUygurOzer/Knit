@@ -5,6 +5,8 @@ import android.app.Application;
 import com.omerozer.knit.components.KnitMemoryManager;
 import com.omerozer.knit.components.ModelManager;
 import com.omerozer.knit.components.graph.UsageGraph;
+import com.omerozer.knit.schedulers.SchedulerProvider;
+import com.omerozer.knit.schedulers.Schedulers;
 
 /**
  * Created by omerozer on 2/1/18.
@@ -24,7 +26,7 @@ public final class Knit {
 
     private UsageGraph userGraph;
 
-    private KnitAsyncTaskHandler knitAsyncTaskHandler;
+    private SchedulerProvider schedulerProvider;
 
     private ModelManager modelManager;
 
@@ -32,9 +34,9 @@ public final class Knit {
 
     private Knit(Application application){
         modelManager = new ModelManager();
-        knitAsyncTaskHandler = new KnitAsyncTaskHandler();
+        schedulerProvider = new Schedulers();
         navigator = KnitNavigator.getInstance();
-        userGraph = new UsageGraph(this,knitAsyncTaskHandler,navigator,modelManager);
+        userGraph = new UsageGraph(this,schedulerProvider,navigator,modelManager);
         application.registerComponentCallbacks(new KnitMemoryManager(userGraph));
         application.registerActivityLifecycleCallbacks(new KnitAppListener(this));
         KnitEvents.init(this);

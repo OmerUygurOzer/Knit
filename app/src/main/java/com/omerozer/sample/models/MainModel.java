@@ -32,6 +32,7 @@ public class MainModel extends KnitModel {
 
         @Override
         public KnitResponse<String> generate() {
+            Log.d("KNIT_TEST","TEST CALL");
             return new KnitResponse<>("TEEEESST STRING");
         }
     };

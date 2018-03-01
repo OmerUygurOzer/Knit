@@ -66,6 +66,7 @@ public class KnitFileStrings {
     public static final String KNITSCHEDULER_MAIN = "main()";
     public static final String KNITSCHEDULER_IMMEDIATE = "immediate()";
     public static final String KNITSCHEDULER_HEAVY = "heavy()";
+    public static final String KNIT_MODEL_REQUEST_IMMEDIATE_METHOD = "requestImmediately";
 
     public static final ClassName TYPE_NAME_CLASS = ClassName.bestGuess(Class.class.getCanonicalName());
     public static final ClassName TYPE_NAME_STRING = ClassName.bestGuess(String.class.getCanonicalName());
@@ -73,6 +74,7 @@ public class KnitFileStrings {
     public static final ClassName TYPE_NAME_SCHEDULER_PROVIDER = ClassName.bestGuess("com.omerozer.knit.schedulers.SchedulerProvider");
     public static final ClassName TYPE_NAME_CALLABLE = ClassName.bestGuess("java.util.concurrent.Callable");
     public static final ClassName TYPE_NAME_CONSUMER = ClassName.bestGuess("com.omerozer.knit.schedulers.Consumer");
+    public static final ClassName TYPE_NAME_SCHEDULER_ENUM = ClassName.bestGuess("com.omerozer.knit.schedulers.KnitSchedulers");
 
 
 
@@ -86,6 +88,7 @@ public class KnitFileStrings {
 
 
     public static final String STRING_CLASS = String.class.getCanonicalName();
+
 
     public static String createStringArrayField(Collection<String> strings){
         String[] stringsArray = new String[strings.size()];

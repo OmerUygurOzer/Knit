@@ -1,6 +1,7 @@
 package com.omerozer.knit;
 
 import com.omerozer.knit.schedulers.ImmediateScheduler;
+import com.omerozer.knit.schedulers.KnitSchedulers;
 import com.omerozer.knit.schedulers.SchedulerInterface;
 import com.omerozer.knit.schedulers.SchedulerProvider;
 
@@ -27,5 +28,10 @@ public class TestSchedulers implements SchedulerProvider {
     @Override
     public SchedulerInterface heavy() {
         return new ImmediateScheduler();
+    }
+
+    @Override
+    public SchedulerInterface forType(KnitSchedulers type) {
+        return immediate();
     }
 }

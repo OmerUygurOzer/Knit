@@ -26,6 +26,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.VariableElement;
+import javax.tools.Diagnostic;
 
 /**
  * Created by omerozer on 2/4/18.
@@ -47,10 +48,6 @@ class KnitModelWriter {
             handledVals.addAll(Arrays.asList(params));
         }
 
-        for (String[] params : modelMirror.collectorField.keySet()) {
-            handledVals.addAll(Arrays.asList(params));
-        }
-
         for (String[] params : modelMirror.inputterField.keySet()) {
             handledVals.addAll(Arrays.asList(params));
         }
@@ -69,28 +66,30 @@ class KnitModelWriter {
                 .methodBuilder(KnitFileStrings.KNIT_ME_ONCREATE_METHOD)
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
-                .addStatement("this.parentExposer.use_$L()",KnitFileStrings.KNIT_ME_ONCREATE_METHOD)
+                .addStatement("this.parentExposer.use_$L()",
+                        KnitFileStrings.KNIT_ME_ONCREATE_METHOD)
                 .build();
 
         MethodSpec onDestroyMethod = MethodSpec
                 .methodBuilder(KnitFileStrings.KNIT_ME_DESTROY_METHOD)
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
-                .addStatement("this.parentExposer.use_$L()",KnitFileStrings.KNIT_ME_DESTROY_METHOD)
+                .addStatement("this.parentExposer.use_$L()", KnitFileStrings.KNIT_ME_DESTROY_METHOD)
                 .build();
 
         MethodSpec onLoadMethod = MethodSpec
                 .methodBuilder(KnitFileStrings.KNIT_ME_LOAD_METHOD)
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
-                .addStatement("this.parentExposer.use_$L()",KnitFileStrings.KNIT_ME_LOAD_METHOD)
+                .addStatement("this.parentExposer.use_$L()", KnitFileStrings.KNIT_ME_LOAD_METHOD)
                 .build();
 
         MethodSpec onMemoryLow = MethodSpec
                 .methodBuilder(KnitFileStrings.KNIT_ME_MEMORY_LOW_METHOD)
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
-                .addStatement("this.parentExposer.use_$L()",KnitFileStrings.KNIT_ME_MEMORY_LOW_METHOD)
+                .addStatement("this.parentExposer.use_$L()",
+                        KnitFileStrings.KNIT_ME_MEMORY_LOW_METHOD)
                 .build();
 
         MethodSpec getParentMethod = MethodSpec
@@ -131,7 +130,7 @@ class KnitModelWriter {
         clazzBuilder.addField(instanceMapField);
         clazzBuilder.addMethod(onCreateMethod);
         createRequestMethodForPresenter(clazzBuilder, modelMirror, map);
-        createRequestMethodForCallback(clazzBuilder, modelMirror);
+        createRequestImmediateMethod(clazzBuilder,modelMirror);
         createGeneratingFields(clazzBuilder, modelMirror);
         createConstructor(clazzBuilder, modelMirror);
         createInputMethod(clazzBuilder, modelMirror);
@@ -163,8 +162,7 @@ class KnitModelWriter {
             KnitModelMirror modelMirror) {
 
         Set<VariableElement> fields = new HashSet<>();
-        for(GeneratesParams generatesParams : modelMirror.generatesParamsMap.values()){fields.add(generatesParams.variableElement);}
-        fields.addAll(modelMirror.collectorField.values());
+        fields.addAll(modelMirror.generatesParamsMap.values());
         fields.addAll(modelMirror.inputterField.values());
 
         for (VariableElement field : fields) {
@@ -182,7 +180,8 @@ class KnitModelWriter {
         MethodSpec.Builder constructorBuilder = MethodSpec
                 .constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
-                .addStatement("java.lang.Object parent = new $L()",modelMirror.enclosingClass.getQualifiedName())
+                .addStatement("java.lang.Object parent = new $L()",
+                        modelMirror.enclosingClass.getQualifiedName())
                 .addParameter(KnitFileStrings.TYPE_NAME_SCHEDULER_PROVIDER, "schedulerProvider")
                 .addStatement("this.parentExposer = new "
                                 + modelMirror.enclosingClass.getQualifiedName().toString()
@@ -194,8 +193,7 @@ class KnitModelWriter {
                 .addStatement("this.userMap = new java.util.HashMap<>()");
 
         Set<VariableElement> fields = new HashSet<>();
-        for(GeneratesParams generatesParams : modelMirror.generatesParamsMap.values()){fields.add(generatesParams.variableElement);}
-        fields.addAll(modelMirror.collectorField.values());
+        fields.addAll(modelMirror.generatesParamsMap.values());
         fields.addAll(modelMirror.inputterField.values());
 
         for (VariableElement generator : fields) {
@@ -240,52 +238,13 @@ class KnitModelWriter {
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(String.class, "data")
+                .addParameter(KnitFileStrings.TYPE_NAME_SCHEDULER_ENUM, "runOn")
+                .addParameter(KnitFileStrings.TYPE_NAME_SCHEDULER_ENUM, "consumeOn")
                 .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_PRESENTER), "presenter")
                 .addParameter(Object[].class, "params", Modifier.FINAL);
 
 
         for (String[] generatedVals : modelMirror.generatesParamsMap.keySet()) {
-            if (map.containsKey(modelMirror)) {
-                String condition = createConditionBlock(generatedVals);
-                requestMethodBuilder.beginControlFlow("if($L)", condition);
-                Set<UserMirror> users = map.get(modelMirror);
-                for (UserMirror userMirror : users) {
-                    if (methodExists(generatedVals, userMirror)) {
-                        requestMethodBuilder.beginControlFlow("if(presenter instanceof $L)",
-                                userMirror.enclosingClass.getQualifiedName());
-                        requestMethodBuilder.beginControlFlow("if(!userMap.containsKey($L))",
-                                "presenter");
-                        requestMethodBuilder.addStatement("userMap.put(presenter,new $L$L($L))",
-                                userMirror.enclosingClass.getQualifiedName(),
-                                KnitFileStrings.KNIT_PRESENTER_USER_POSTFIX, "presenter");
-                        requestMethodBuilder.endControlFlow();
-                        String userText = userMirror.enclosingClass.getQualifiedName() +
-                                KnitFileStrings.KNIT_PRESENTER_USER_POSTFIX;
-                        requestMethodBuilder.addStatement("final $L user = ($L)userMap.get(presenter)",
-                                userText,
-                                userText);
-
-                        List<String> types = GeneratorExaminer.getGenerateTypes(
-                                modelMirror.generatesParamsMap.get(generatedVals).variableElement);
-
-                        String runOnString = "schedulerProvider."+modelMirror.generatesParamsMap.get(generatedVals).runOn.getMethod();
-                        String consumeOnString = "schedulerProvider."+modelMirror.generatesParamsMap.get(generatedVals).consumeOn.getMethod();
-                        String knitTaskFlow = KnitFileStrings.KNIT_TASK_FLOW;
-
-                        TypeSpec callable = createCallableTypeSpec(generatedVals,types,modelMirror);
-                        TypeSpec consumer = createConsumerTypeSpec(generatedVals,types,modelMirror,userMirror);
-
-                        requestMethodBuilder.addStatement("$L.create($L).runOn($L).consumeOn($L).start($L)",knitTaskFlow,callable,runOnString,consumeOnString,consumer);
-
-                        requestMethodBuilder.endControlFlow();
-                    }
-                }
-                requestMethodBuilder.endControlFlow();
-            }
-
-        }
-
-        for (String[] generatedVals : modelMirror.collectorField.keySet()) {
             if (map.containsKey(modelMirror)) {
                 String condition = createConditionBlock(generatedVals);
                 requestMethodBuilder.beginControlFlow("if($L)", condition);
@@ -308,21 +267,19 @@ class KnitModelWriter {
                                 userText);
 
                         List<String> types = GeneratorExaminer.getGenerateTypes(
-                                modelMirror.collectorField.get(generatedVals));
+                                modelMirror.generatesParamsMap.get(generatedVals));
 
-                        String paramBlock = createParamBlock(types, 1);
 
-                        if (paramBlock.equals("")) {
-                            requestMethodBuilder.addStatement("$L.collect($L)",
-                                    modelMirror.collectorField.get(generatedVals).getSimpleName(),
-                                    createSubmitterForPresenter(generatedVals, modelMirror,
-                                            userMirror));
-                        } else {
-                            requestMethodBuilder.addStatement("$L.collect($L,$L)",
-                                    modelMirror.collectorField.get(generatedVals).getSimpleName(),
-                                    createSubmitterForPresenter(generatedVals, modelMirror,
-                                            userMirror), paramBlock);
-                        }
+                        String knitTaskFlow = KnitFileStrings.KNIT_TASK_FLOW;
+
+                        TypeSpec callable = createCallableTypeSpec(generatedVals, types,
+                                modelMirror);
+                        TypeSpec consumer = createConsumerTypeSpec(generatedVals, types, userMirror);
+
+                        requestMethodBuilder.addStatement(
+                                "$L.create($L).runOn(schedulerProvider.forType(runOn)).consumeOn"
+                                        + "(schedulerProvider.forType(consumeOn)).start($L)",
+                                knitTaskFlow, callable, consumer);
 
                         requestMethodBuilder.endControlFlow();
                     }
@@ -330,70 +287,38 @@ class KnitModelWriter {
                 requestMethodBuilder.endControlFlow();
             }
 
-
         }
 
 
         clazzBuilder.addMethod(requestMethodBuilder.build());
     }
 
-    private static void createRequestMethodForCallback(TypeSpec.Builder clazzBuilder,
+    private static void createRequestImmediateMethod(TypeSpec.Builder clazzBuilder,
             KnitModelMirror modelMirror) {
-
-        MethodSpec.Builder requestMethodBuilder = MethodSpec
-                .methodBuilder(KnitFileStrings.KNIT_MODEL_REQUEST_METHOD)
+        MethodSpec.Builder requestImmediateMethodBuilder = MethodSpec
+                .methodBuilder(KnitFileStrings.KNIT_MODEL_REQUEST_IMMEDIATE_METHOD)
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
+                .returns(ClassName.bestGuess(KnitFileStrings.KNIT_RESPONSE))
                 .addParameter(String.class, "data")
-                .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_CALLBACK), "callback",
-                        Modifier.FINAL)
                 .addParameter(Object[].class, "params", Modifier.FINAL);
 
+        KnitModelProcessor.messager.printMessage(Diagnostic.Kind.WARNING,"OUT GEN VAL:"+modelMirror.enclosingClass.getQualifiedName());
+        for (String[] generatedVals : modelMirror.generatesParamsMap.keySet()) {
+                String condition = createConditionBlock(generatedVals);
+                requestImmediateMethodBuilder.beginControlFlow("if($L)", condition);
+                KnitModelProcessor.messager.printMessage(Diagnostic.Kind.WARNING,"GEN VAL:"+modelMirror.enclosingClass.getQualifiedName());
+                List<String> types = GeneratorExaminer.getGenerateTypes(modelMirror.generatesParamsMap.get(generatedVals));
+                requestImmediateMethodBuilder.addStatement("return $L.generate($L)", modelMirror.generatesParamsMap.get(
+                        generatedVals).getSimpleName(),createParamBlock(types,1));
 
-//        for (String[] generatedVals : modelMirror.generateField.keySet()) {
-//            String condition = createConditionBlock(generatedVals);
-//            requestMethodBuilder.beginControlFlow("if($L)", condition);
-//
-//            List<String> types = GeneratorExaminer.getGenerateTypes(
-//                    modelMirror.generateField.get(generatedVals));
-//
-//
-//            requestMethodBuilder.addStatement("final $L<$L> genVal = $L.generate($L)",
-//                    KnitFileStrings.KNIT_RESPONSE,
-//                    types.get(0),
-//                    modelMirror.generateField.get(generatedVals).getSimpleName(),
-//                    createParamBlock(types, 1));
-//            requestMethodBuilder.addStatement("callback.response(genVal)");
-//
-//            requestMethodBuilder.endControlFlow();
-//        }
 
-        for (String[] generatedVals : modelMirror.collectorField.keySet()) {
-            String condition = createConditionBlock(generatedVals);
-            requestMethodBuilder.beginControlFlow("if($L)", condition);
-
-            List<String> types = GeneratorExaminer.getGenerateTypes(
-                    modelMirror.collectorField.get(generatedVals));
-
-            String paramBlock = createParamBlock(types, 1);
-
-            if (paramBlock.equals("")) {
-                requestMethodBuilder.addStatement("$L.collect($L)",
-                        modelMirror.collectorField.get(generatedVals).getSimpleName(),
-                        createSubmitterForCallback(generatedVals, modelMirror));
-            } else {
-                requestMethodBuilder.addStatement("$L.collect($L,$L)",
-                        modelMirror.collectorField.get(generatedVals).getSimpleName(),
-                        createSubmitterForCallback(generatedVals, modelMirror),
-                        paramBlock);
-            }
-
-            requestMethodBuilder.endControlFlow();
+            requestImmediateMethodBuilder.endControlFlow();
 
         }
 
-
-        clazzBuilder.addMethod(requestMethodBuilder.build());
+        requestImmediateMethodBuilder.addStatement("return null");
+        clazzBuilder.addMethod(requestImmediateMethodBuilder.build());
 
     }
 
@@ -457,12 +382,15 @@ class KnitModelWriter {
     }
 
 
-    private static TypeSpec createCallableTypeSpec(String[] params,List<String> types,KnitModelMirror modelMirror){
+    private static TypeSpec createCallableTypeSpec(String[] params, List<String> types,
+            KnitModelMirror modelMirror) {
 
         ClassName knitResponse = ClassName.bestGuess(KnitFileStrings.KNIT_RESPONSE);
         ClassName responseType = ClassName.bestGuess(types.get(0));
-        ParameterizedTypeName parameterizedKnitResponse = ParameterizedTypeName.get(knitResponse,responseType);
-        ParameterizedTypeName parameterizedCallable = ParameterizedTypeName.get(KnitFileStrings.TYPE_NAME_CALLABLE,parameterizedKnitResponse);
+        ParameterizedTypeName parameterizedKnitResponse = ParameterizedTypeName.get(knitResponse,
+                responseType);
+        ParameterizedTypeName parameterizedCallable = ParameterizedTypeName.get(
+                KnitFileStrings.TYPE_NAME_CALLABLE, parameterizedKnitResponse);
 
         TypeSpec callable = TypeSpec
                 .anonymousClassBuilder("")
@@ -473,7 +401,8 @@ class KnitModelWriter {
                         .addModifiers(Modifier.PUBLIC)
                         .returns(parameterizedKnitResponse)
                         .addStatement("return $L.generate($L)",
-                                modelMirror.generatesParamsMap.get(params).variableElement.getSimpleName(),
+                                modelMirror.generatesParamsMap.get(
+                                        params).getSimpleName(),
                                 createParamBlock(types, 1))
                         .build())
                 .build();
@@ -481,11 +410,13 @@ class KnitModelWriter {
         return callable;
     }
 
-    private static TypeSpec createConsumerTypeSpec(String[] params,List<String> types,KnitModelMirror modelMirror,UserMirror userMirror){
+    private static TypeSpec createConsumerTypeSpec(String[] params, List<String> types, UserMirror userMirror) {
         ClassName knitResponse = ClassName.bestGuess(KnitFileStrings.KNIT_RESPONSE);
         ClassName responseType = ClassName.bestGuess(types.get(0));
-        ParameterizedTypeName parameterizedKnitResponse = ParameterizedTypeName.get(knitResponse,responseType);
-        ParameterizedTypeName parameterizedConsumerName = ParameterizedTypeName.get(KnitFileStrings.TYPE_NAME_CONSUMER,parameterizedKnitResponse);
+        ParameterizedTypeName parameterizedKnitResponse = ParameterizedTypeName.get(knitResponse,
+                responseType);
+        ParameterizedTypeName parameterizedConsumerName = ParameterizedTypeName.get(
+                KnitFileStrings.TYPE_NAME_CONSUMER, parameterizedKnitResponse);
         ClassName throwableName = ClassName.bestGuess("java.lang.Throwable");
 
         TypeSpec consumer = TypeSpec
@@ -494,7 +425,7 @@ class KnitModelWriter {
                 .addMethod(MethodSpec
                         .methodBuilder("consume")
                         .addAnnotation(Override.class)
-                        .addParameter(parameterizedKnitResponse,"t")
+                        .addParameter(parameterizedKnitResponse, "t")
                         .addModifiers(Modifier.PUBLIC)
                         .addStatement("user.$L(t)",
                                 findMethod(params, userMirror))
@@ -502,7 +433,7 @@ class KnitModelWriter {
                 .addMethod(MethodSpec
                         .methodBuilder("error")
                         .addAnnotation(Override.class)
-                        .addParameter(throwableName,"error")
+                        .addParameter(throwableName, "error")
                         .addModifiers(Modifier.PUBLIC).build())
                 .build();
 
@@ -511,138 +442,4 @@ class KnitModelWriter {
     }
 
 
-//    private static TypeSpec createAsyncRunnableForPresenter(String[] params,
-//            KnitModelMirror modelMirror,
-//            UserMirror userMirror) {
-//
-//        List<String> types = GeneratorExaminer.getGenerateTypes(
-//                modelMirror.generateAsyncField.get(params));
-//
-//        TypeSpec uiRunnable = TypeSpec
-//                .anonymousClassBuilder("")
-//                .addSuperinterface(Runnable.class)
-//                .addMethod(MethodSpec
-//                        .methodBuilder("run")
-//                        .addAnnotation(Override.class)
-//                        .addModifiers(Modifier.PUBLIC)
-//                        .addStatement("user.$L(genVal)",
-//                                findMethod(params, userMirror))
-//                        .build())
-//                .build();
-//
-//
-//        return TypeSpec
-//                .anonymousClassBuilder("")
-//                .addSuperinterface(Runnable.class)
-//                .addMethod(MethodSpec
-//                        .methodBuilder("run")
-//                        .addAnnotation(Override.class)
-//                        .addModifiers(Modifier.PUBLIC)
-//                        .addStatement("final $L<$L> genVal = $L.generate($L)",
-//                                KnitFileStrings.KNIT_RESPONSE,
-//                                types.get(0),
-//                                modelMirror.generateAsyncField.get(params).getSimpleName(),
-//                                createParamBlock(types, 1))
-//                        .addStatement("uiThreadHandler.post($L)", uiRunnable)
-//                        .build())
-//                .build();
-//
-//    }
-
-//    private static TypeSpec createAsyncRunnableForCallback(String[] params,
-//            KnitModelMirror modelMirror) {
-//
-//        List<String> types = GeneratorExaminer.getGenerateTypes(
-//                modelMirror.generateAsyncField.get(params));
-//
-//        TypeSpec uiRunnable = TypeSpec
-//                .anonymousClassBuilder("")
-//                .addSuperinterface(Runnable.class)
-//                .addMethod(MethodSpec
-//                        .methodBuilder("run")
-//                        .addAnnotation(Override.class)
-//                        .addModifiers(Modifier.PUBLIC)
-//                        .addStatement("callback.response(genVal)")
-//                        .build())
-//                .build();
-//
-//
-//        return TypeSpec
-//                .anonymousClassBuilder("")
-//                .addSuperinterface(Runnable.class)
-//                .addMethod(MethodSpec
-//                        .methodBuilder("run")
-//                        .addAnnotation(Override.class)
-//                        .addModifiers(Modifier.PUBLIC)
-//                        .addStatement("final $L<$L> genVal = $L.generate($L)",
-//                                KnitFileStrings.KNIT_RESPONSE,
-//                                types.get(0),
-//                                modelMirror.generateAsyncField.get(params).getSimpleName(),
-//                                createParamBlock(types, 1))
-//                        .addStatement("uiThreadHandler.post($L)", uiRunnable)
-//                        .build())
-//                .build();
-//
-//    }
-
-    private static TypeSpec createSubmitterForPresenter(String[] params,
-            KnitModelMirror modelMirror, UserMirror mirror) {
-
-        List<String> types = GeneratorExaminer.getGenerateTypes(
-                modelMirror.collectorField.get(params));
-        TypeName[] typeNames = new TypeName[types.size()];
-        for (int i = 0; i < types.size(); i++) {
-            typeNames[i] = ClassName.bestGuess(types.get(i));
-        }
-
-        ParameterizedTypeName submitterName = ParameterizedTypeName.get(
-                ClassName.bestGuess(KnitFileStrings.KNIT_SUBMITTER), typeNames);
-
-        ParameterizedTypeName responseType = ParameterizedTypeName.get(ClassName.bestGuess(KnitFileStrings.KNIT_RESPONSE),ClassName.bestGuess(types.get(0)));
-
-        return TypeSpec
-                .anonymousClassBuilder("")
-                .addSuperinterface(submitterName)
-                .addMethod(MethodSpec
-                        .methodBuilder("submit")
-                        .addAnnotation(Override.class)
-                        .addModifiers(Modifier.PUBLIC)
-                        .addParameter(responseType, "response")
-                        .addStatement("user.$L(response)",
-                                findMethod(params, mirror))
-                        .build())
-                .build();
-
-
-    }
-
-    private static TypeSpec createSubmitterForCallback(String[] params,
-            KnitModelMirror modelMirror) {
-
-        List<String> types = GeneratorExaminer.getGenerateTypes(
-                modelMirror.collectorField.get(params));
-        TypeName[] typeNames = new TypeName[types.size()];
-        for (int i = 0; i < types.size(); i++) {
-            typeNames[i] = ClassName.bestGuess(types.get(i));
-        }
-
-        ParameterizedTypeName submitterName = ParameterizedTypeName.get(
-                ClassName.bestGuess(KnitFileStrings.KNIT_SUBMITTER), typeNames);
-
-        ParameterizedTypeName responseType = ParameterizedTypeName.get(ClassName.bestGuess(KnitFileStrings.KNIT_RESPONSE),ClassName.bestGuess(types.get(0)));
-
-        return TypeSpec
-                .anonymousClassBuilder("")
-                .addSuperinterface(submitterName)
-                .addMethod(MethodSpec
-                        .methodBuilder("submit")
-                        .addAnnotation(Override.class)
-                        .addModifiers(Modifier.PUBLIC)
-                        .addParameter(responseType, "response")
-                        .addStatement("callback.response(response)")
-                        .build())
-                .build();
-
-
-    }
 }

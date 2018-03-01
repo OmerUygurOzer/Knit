@@ -8,6 +8,7 @@ import com.omerozer.knit.KnitPresenter;
 import com.omerozer.knit.KnitResponse;
 import com.omerozer.knit.Presenter;
 import com.omerozer.knit.Updating;
+import com.omerozer.knit.schedulers.KnitSchedulers;
 import com.omerozer.knit.viewevents.ViewEventEnv;
 import com.omerozer.knit.viewevents.ViewEventPool;
 import com.omerozer.sample.views.SecondActivity;
@@ -23,7 +24,7 @@ public class SecondPresenter extends KnitPresenter<SecondActivityContract> {
     @Override
     public void onViewApplied(Object viewObject,Bundle bundle){
         super.onViewApplied(viewObject,bundle);
-        requestData("testN","PARAM_SENT");
+        request("umbrella", KnitSchedulers.IO,KnitSchedulers.MAIN);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class SecondPresenter extends KnitPresenter<SecondActivityContract> {
         Log.d("KNIT_TEST","PRESENTER TWO DESTROYED");
     }
 
-    @Updating("testN")
+    @Updating("umbrella")
     void updateData2(KnitResponse<String> data){
         getContract().recMes(data.getBody());
     }

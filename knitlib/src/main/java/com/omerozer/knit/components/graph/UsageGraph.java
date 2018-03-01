@@ -1,6 +1,7 @@
 package com.omerozer.knit.components.graph;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.omerozer.knit.InternalModel;
 import com.omerozer.knit.InternalPresenter;
@@ -15,10 +16,12 @@ import com.omerozer.knit.classloaders.KnitPresenterLoader;
 import com.omerozer.knit.classloaders.KnitUtilsLoader;
 import com.omerozer.knit.components.ComponentTag;
 import com.omerozer.knit.components.ModelManager;
+import com.omerozer.knit.schedulers.SchedulerProvider;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,14 +60,14 @@ public class UsageGraph {
 
     private Set<ComponentTag> activePresenterTags;
 
-    public UsageGraph(Knit knitInstance, KnitAsyncTaskHandler asyncTaskHandler, KnitNavigator navigator,
+    public UsageGraph(Knit knitInstance, SchedulerProvider schedulerProvider, KnitNavigator navigator,
             ModelManager modelManager) {
         this.knitUtilsLoader = new KnitUtilsLoader();
         this.modelManager = modelManager;
         this.modelManager.setUsageGraph(this);
         this.viewToPresenterMap = knitUtilsLoader.getViewToPresenterMap(knitInstance.getClass());
         this.modelMap = knitUtilsLoader.getModelMap(knitInstance.getClass());
-        this.knitModelLoader = new KnitModelLoader(asyncTaskHandler);
+        this.knitModelLoader = new KnitModelLoader(schedulerProvider);
         this.knitPresenterLoader = new KnitPresenterLoader(knitInstance,navigator, modelManager);
         this.counterMap = new HashMap<>();
         this.graphBase = new HashMap<>();
@@ -83,6 +86,10 @@ public class UsageGraph {
         for (Class<? extends InternalModel> clazz : models) {
             generatedValuesMap.put(clazz, modelMap.getGeneratedValues(clazz));
         }
+        Map<Class<? extends InternalModel>, List<String>> requiredValues = new HashMap<>();
+        for (Class<? extends InternalModel> clazz : models) {
+            requiredValues.put(clazz, modelMap.getRequiredValues(clazz));
+        }
 
         for (Class<?> view : views) {
             ComponentTag viewTag = ComponentTag.getNewTag();
@@ -98,21 +105,41 @@ public class UsageGraph {
             EntityNode presenterEntityNode = new EntityNode(presenterTag, EntityType.PRESENTER);
             graphBase.get(viewTag).next.add(presenterEntityNode);
             for (String updating : viewToPresenterMap.getUpdatingValues(presenterClass)) {
-                for (Class<? extends InternalModel> modelClazz : models) {
-                    if (!clazzToTagMap.containsKey(modelClazz)) {
-                        ComponentTag modelTag = ComponentTag.getNewTag();
-                        clazzToTagMap.put(modelClazz, modelTag);
-                        counterMap.put(modelTag, new UserCounter());
-                        tagToClazzMap.put(modelTag, modelClazz);
-                    }
+                Iterator<Class<? extends InternalModel>> modelOuterItr = models.iterator();
+                while (modelOuterItr.hasNext()) {
+                    Class<? extends InternalModel> modelClazz = modelOuterItr.next();
+                       createModelTag(modelClazz);
                     if (generatedValuesMap.get(modelClazz).contains(updating)) {
-                        presenterEntityNode.next.add(
-                                new EntityNode(clazzToTagMap.get(modelClazz), EntityType.MODEL));
+                        EntityNode node = new EntityNode(clazzToTagMap.get(modelClazz), EntityType.MODEL);
+                        Iterator<Class<? extends InternalModel>> modelInnerItr = models.iterator();
+                        while (modelInnerItr.hasNext()) {
+                            Class<? extends InternalModel> innerClazz = modelInnerItr.next();
+                            for(String req: requiredValues.get(modelClazz)){
+                                if(generatedValuesMap.get(innerClazz).contains(req)){
+                                    createModelTag(innerClazz);
+                                    EntityNode reqM = new EntityNode(clazzToTagMap.get(innerClazz), EntityType.MODEL);
+                                    node.next.add(reqM);
+                                }
+                            }
+
+                        }
+
+                        presenterEntityNode.next.add(node);
                     }
+
                 }
             }
         }
 
+    }
+
+    private void createModelTag(Class<? extends InternalModel> clazz){
+        if (!clazzToTagMap.containsKey(clazz)) {
+            ComponentTag modelTag = ComponentTag.getNewTag();
+            clazzToTagMap.put(clazz, modelTag);
+            counterMap.put(modelTag, new UserCounter());
+            tagToClazzMap.put(modelTag, clazz);
+        }
     }
 
     public Collection<MemoryEntity> activeEntities(){

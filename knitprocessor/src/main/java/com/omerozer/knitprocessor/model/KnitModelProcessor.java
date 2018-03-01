@@ -2,9 +2,7 @@ package com.omerozer.knitprocessor.model;
 
 import com.omerozer.knit.Collects;
 import com.omerozer.knit.Generates;
-import com.omerozer.knit.GeneratesAsync;
 import com.omerozer.knit.Inputs;
-import com.omerozer.knit.KnitSchedulers;
 import com.omerozer.knit.Model;
 import com.omerozer.knit.Use;
 import com.omerozer.knit.UseMethod;
@@ -86,19 +84,14 @@ public class KnitModelProcessor extends AbstractProcessor {
             for (Element element : clazz.getEnclosedElements()) {
                 if (element.getKind().isField()) {
                     if (element.getAnnotation(Generates.class) != null) {
-                        GeneratesParams generatesParams = new GeneratesParams();
                         String[] params = element.getAnnotation(Generates.class).value();
-                        KnitSchedulers runsOn = element.getAnnotation(Generates.class).runOn();
-                        KnitSchedulers consumesOn = element.getAnnotation(Generates.class).consumeOn();
-                        generatesParams.variableElement = (VariableElement)element;
-                        generatesParams.runOn = runsOn;
-                        generatesParams.consumeOn = consumesOn;
-                        knitModelMirror.generatesParamsMap.put(params, generatesParams);
+                        knitModelMirror.generatesParamsMap.put(params, (VariableElement)element);
                         knitModelMirror.vals.addAll(Arrays.asList(params));
                     }else if(element.getAnnotation(Collects.class)!=null){
                         String[] params = element.getAnnotation(Collects.class).value();
-                        knitModelMirror.collectorField.put(params, (VariableElement) element);
+                        knitModelMirror.generatesParamsMap.put(params, (VariableElement)element);
                         knitModelMirror.vals.addAll(Arrays.asList(params));
+                        knitModelMirror.reqs.addAll(Arrays.asList(element.getAnnotation(Collects.class).needs()));
                     }else if(element.getAnnotation(Inputs.class)!=null){
                         String[] params = element.getAnnotation(Inputs.class).value();
                         knitModelMirror.inputterField.put(params, (VariableElement) element);

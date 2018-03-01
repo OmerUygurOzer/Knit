@@ -1,15 +1,15 @@
 package com.omerozer.knit;
 
-import com.omerozer.knit.generators.Callback;
+import com.omerozer.knit.schedulers.KnitSchedulers;
 
 /**
  * Created by omerozer on 2/3/18.
  */
 
 public abstract class InternalModel implements ModelInterface {
-    public abstract void request(String data, InternalPresenter presenter, Object... params);
+    public abstract void request(String data,KnitSchedulers runOn,KnitSchedulers consumeOn,InternalPresenter presenter, Object... params);
 
-    public abstract void request(String data, Callback callback, Object... params);
+    public abstract <T>KnitResponse<T> requestImmediately(String data, Object... params);
 
     public abstract void input(String data, Object... params);
 

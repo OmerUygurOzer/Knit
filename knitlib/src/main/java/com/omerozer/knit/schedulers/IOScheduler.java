@@ -2,6 +2,7 @@ package com.omerozer.knit.schedulers;
 
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.util.Log;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -38,14 +39,15 @@ public class IOScheduler implements SchedulerInterface {
         }
     }
 
-    class ListenerThread extends Thread implements Runnable{
+    class ListenerThread implements Runnable{
 
         volatile boolean running;
         LinkedBlockingQueue<Future<?>> futureRegistry;
         AtomicReference<Handler> receiverHandler;
+        Thread thread;
 
         private ListenerThread() {
-            super();
+            this.thread = new Thread(this);
             this.futureRegistry = new LinkedBlockingQueue<>();
         }
 
@@ -70,7 +72,9 @@ public class IOScheduler implements SchedulerInterface {
                     while (!future.isDone()){
                         sleep(1);
                     }
+                    Log.d("KNIT_TEST","DONE");
                     final Object data = future.get(TIME_OUT, TimeUnit.SECONDS);
+                    Log.d("KNIT_TEST","GOTTEN");
                     if(target.get()!=null){
                         target.get().start();
                         target.get().submit(new Runnable() {
@@ -109,8 +113,23 @@ public class IOScheduler implements SchedulerInterface {
             }
         }
 
+        private void start(){
+            this.running = true;
+            thread.start();
+        }
+
         private void shutdown(){
-            running = false;
+            this.running = false;
+            this.thread = null;
+
+        }
+
+        private void sleep(long ms){
+            try {
+                Thread.sleep(ms);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
     }

@@ -14,4 +14,6 @@ public interface SchedulerProvider {
     SchedulerInterface immediate();
 
     SchedulerInterface heavy();
+
+    SchedulerInterface forType(KnitSchedulers type);
 }

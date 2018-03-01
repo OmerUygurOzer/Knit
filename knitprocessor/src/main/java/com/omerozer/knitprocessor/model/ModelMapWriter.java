@@ -96,6 +96,37 @@ public class ModelMapWriter {
 
         modelMapBuilder.addMethod(getGeneratedValuesMethodBuilder.build());
 
+        MethodSpec.Builder getRequiredValuesMethodBuilder = MethodSpec
+                .methodBuilder("getRequiredValues")
+                .addParameter(TYPE_NAME_CLASS,"clazz")
+                .addAnnotation(Override.class)
+                .returns(returnTypeForGeneratedVals)
+                .addModifiers(Modifier.PUBLIC);
+
+        for(KnitModelMirror knitModelMirror: modelMirrors) {
+            c = 0;
+            stringBuilder = new StringBuilder();
+            stringBuilder.append("java.util.Arrays.asList(");
+            for (String field : knitModelMirror.reqs) {
+                stringBuilder.append("\"");
+                stringBuilder.append(field);
+                stringBuilder.append("\"");
+                if (c < knitModelMirror.vals.size() - 1) {
+                    stringBuilder.append(",");
+                }
+                c++;
+            }
+            stringBuilder.append(")");
+
+            getRequiredValuesMethodBuilder.beginControlFlow("if(clazz.equals($L$L.class))",knitModelMirror.enclosingClass.getQualifiedName(),"_Model");
+            getRequiredValuesMethodBuilder.addStatement("return $L",stringBuilder.toString());
+            getRequiredValuesMethodBuilder.endControlFlow();
+        }
+
+        getRequiredValuesMethodBuilder.addStatement("return null");
+
+        modelMapBuilder.addMethod(getRequiredValuesMethodBuilder.build());
+
         WildcardTypeName internalModelSubTypeName = WildcardTypeName.subtypeOf(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL));
 
         ParameterizedTypeName internalModelClassName = ParameterizedTypeName.get(KnitFileStrings.TYPE_NAME_CLASS,internalModelSubTypeName);

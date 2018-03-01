@@ -2,7 +2,7 @@ package com.omerozer.knit;
 
 import android.os.Bundle;
 
-import com.omerozer.knit.generators.Callback;
+import com.omerozer.knit.schedulers.KnitSchedulers;
 import com.omerozer.knit.viewevents.ViewEventEnv;
 import com.omerozer.knit.viewevents.ViewEventPool;
 
@@ -15,14 +15,16 @@ public final class NullValues {
     public static final Object[] NULL_PARAMS = new Object[0];
 
     public static final InternalModel NULL_MODEL = new InternalModel() {
+
         @Override
-        public void request(String data, InternalPresenter presenter, Object... params) {
+        public void request(String data, KnitSchedulers runOn, KnitSchedulers consumeOn,
+                InternalPresenter presenter, Object... params) {
 
         }
 
         @Override
-        public void request(String data, Callback callback, Object... params) {
-
+        public <T> KnitResponse<T> requestImmediately(String data, Object... params) {
+            return null;
         }
 
         @Override

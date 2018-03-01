@@ -2,11 +2,10 @@ package com.omerozer.knit.components;
 
 import com.omerozer.knit.InternalModel;
 import com.omerozer.knit.InternalPresenter;
-import com.omerozer.knit.KnitAsyncTaskHandler;
 import com.omerozer.knit.KnitModel;
-import com.omerozer.knit.classloaders.KnitUtilsLoader;
+import com.omerozer.knit.KnitResponse;
 import com.omerozer.knit.components.graph.UsageGraph;
-import com.omerozer.knit.generators.Callback;
+import com.omerozer.knit.schedulers.KnitSchedulers;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -48,21 +47,22 @@ public class ModelManager extends InternalModel {
     }
 
     @Override
-    public void request(String data, InternalPresenter internalPresenter, Object... params) {
+    public void request(String data,KnitSchedulers runOn,KnitSchedulers consumeOn,InternalPresenter internalPresenter, Object... params) {
         synchronized (requestLock) {
             if (valueToModelMap.containsKey(data)) {
-                usageGraph.getModelWithTag(valueToModelMap.get(data)).request(data, internalPresenter, params);
+                usageGraph.getModelWithTag(valueToModelMap.get(data)).request(data, runOn,consumeOn,internalPresenter, params);
             }
         }
     }
 
     @Override
-    public void request(String data, Callback callback, Object... params) {
+    public <T> KnitResponse<T> requestImmediately(String data, Object... params) {
         synchronized (requestLock) {
             if (valueToModelMap.containsKey(data)) {
-                usageGraph.getModelWithTag(valueToModelMap.get(data)).request(data, callback, params);
+                return usageGraph.getModelWithTag(valueToModelMap.get(data)).requestImmediately(data, params);
             }
         }
+        return null;
     }
 
     @Override

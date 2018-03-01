@@ -2,7 +2,6 @@ package com.omerozer.knit;
 
 import com.omerozer.knit.classloaders.KnitModelLoader;
 import com.omerozer.knit.components.ModelManager;
-import com.omerozer.knit.generators.Callback;
 import com.omerozer.knit.schedulers.SchedulerProvider;
 
 import java.util.HashMap;
@@ -28,13 +27,6 @@ public final class TestModelManager extends ModelManager {
             dataToModelMap.put(val,internalModel);
         }
         return internalModel.getParent();
-    }
-
-    @Override
-    public void request(String data, Callback callback, Object... params) {
-        if(dataToModelMap.containsKey(data)){
-            dataToModelMap.get(data).request(data,callback,params);
-        }
     }
 
     @Override

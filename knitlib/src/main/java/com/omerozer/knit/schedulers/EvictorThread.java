@@ -1,5 +1,6 @@
 package com.omerozer.knit.schedulers;
 
+
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -23,21 +24,22 @@ public class EvictorThread implements Runnable {
     private Set<SchedulerInterface> schedulers;
 
     EvictorThread(){
-        this.isRunning = true;
+        this.isRunning = false;
         this.entryLock = new ReentrantReadWriteLock();
         this.schedulers = new LinkedHashSet<>();
+        this.evictBase = new AtomicLong();
     }
 
     void start(){
+        this.isRunning = true;
         this.thread = new Thread(this);
-        this.evictBase = new AtomicLong(System.currentTimeMillis());
+        this.evictBase.set(System.currentTimeMillis());
         this.thread.start();
     }
 
     void stop(){
         this.isRunning = false;
     }
-
 
     void registerScheduler(SchedulerInterface scheduler){
         if(!isRunning){start();}

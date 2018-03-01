@@ -1,4 +1,4 @@
-package com.omerozer.knit;
+package com.omerozer.knit.schedulers;
 
 /**
  * Created by omerozer on 2/21/18.
