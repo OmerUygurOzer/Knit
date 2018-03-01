@@ -112,11 +112,6 @@ class KnitModelWriter {
                 .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
                 .build();
 
-        FieldSpec uiThreadHandlerField = FieldSpec
-                .builder(ClassName.bestGuess(KnitFileStrings.ANDROID_HANDLER), "uiThreadHandler")
-                .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-                .build();
-
         FieldSpec instanceMapField = FieldSpec
                 .builder(ParameterizedTypeName.get(ClassName.get(Map.class),
                         ClassName.bestGuess(KnitFileStrings.KNIT_PRESENTER),
@@ -126,7 +121,6 @@ class KnitModelWriter {
 
         clazzBuilder.addField(parentExposerField);
         clazzBuilder.addField(schedulerProviderField);
-        clazzBuilder.addField(uiThreadHandlerField);
         clazzBuilder.addField(instanceMapField);
         clazzBuilder.addMethod(onCreateMethod);
         createRequestMethodForPresenter(clazzBuilder, modelMirror, map);
@@ -188,8 +182,6 @@ class KnitModelWriter {
                                 + KnitFileStrings.KNIT_MODEL_EXPOSER_POSTFIX + "(($L)parent)",
                         modelMirror.enclosingClass.getQualifiedName().toString())
                 .addStatement("this.schedulerProvider = schedulerProvider")
-                .addStatement("this.uiThreadHandler = new " + KnitFileStrings.ANDROID_HANDLER + "("
-                        + KnitFileStrings.ANDROID_LOOPER + ".getMainLooper())")
                 .addStatement("this.userMap = new java.util.HashMap<>()");
 
         Set<VariableElement> fields = new HashSet<>();
