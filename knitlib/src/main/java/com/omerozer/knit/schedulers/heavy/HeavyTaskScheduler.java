@@ -30,9 +30,11 @@ public class HeavyTaskScheduler implements SchedulerInterface {
     static final String HEAVY_THREAD_NAME3 = "knit_heavy_thread3";
     static final String HEAVY_THREAD_NAME4 = "knit_heavy_thread4";
 
+    private static final Object queueLock;
     private static final PriorityQueue<AvailableThread> avaiableThreads;
 
     static {
+        queueLock = new Object();
         avaiableThreads = new PriorityQueue<>(4,getThreadPriorityComparator());
         avaiableThreads.offer(new AvailableThread(HThread1.class, HEAVY_THREAD_NAME1));
         avaiableThreads.offer(new AvailableThread(HThread2.class, HEAVY_THREAD_NAME2));
@@ -92,9 +94,11 @@ public class HeavyTaskScheduler implements SchedulerInterface {
     }
 
     private AvailableThread getLeastBusyThread(){
-        AvailableThread availableThread = avaiableThreads.poll();
-        avaiableThreads.offer(availableThread);
-        return availableThread;
+        synchronized (queueLock) {
+            AvailableThread availableThread = avaiableThreads.poll();
+            avaiableThreads.offer(availableThread);
+            return availableThread;
+        }
     }
 
     @Override
