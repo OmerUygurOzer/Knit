@@ -14,7 +14,7 @@ Features:
 7. Navigation is supported as outlined here : [Navigation in the context of MVP](https://medium.com/@nikita.kozlov/navigation-in-the-context-of-mvp-f474ed313901)  
 8. Easy integration with other libraries such as Dagger.
 
-Version 1.1.0  
+Version 1.1.7  
 
 - Supports multiple threads for generators to be executed on
 - Usage tree for components
@@ -141,6 +141,34 @@ public class RepoActivityPresenter extends KnitPresenter<RepoActivityContract> {
     }
 }
 ```
+
+
+### Technical Details
+
+Component Initialization:
+
+Components are initialized by Knit framework on demand as it will be explained below. Presenters and Models have lifecycle callbacks we are all familiar with such as ```onCreate()``` ,```onDestroy()``` . Knit is smart in managing lifecycles of the components but it is still your duty to free up heavy objects on do any kind of `unsubscribe` operation inside ```onDestroy()``` . 
+
+Memory Management:
+
+Components are initialized on a top down basis top being your view and bottom being models required. Each view has a `component` it's associated with. This component will have a presenter and models. The presenter and views are tied together(1to1). However, each presenter may require multiple models. All components inside the associated `component` will be initialized. Initialized is done by keeping a track of usage of each component. Everytime a model is required for instance, it's usage count will be incremented. If it goes up to 1 from 0. it will be initialized and `onCreate()` will be called. If the component is marked for killing and model no longer is needed, the usage count will be decremented. If it gets to 0 , it will be destroyed and `onDestroy()` will be called. To help you visualize it, check out this image below.
+
+![Usage Tree](https://github.com/OmerUygurOzer/Knit/blob/master/UsageTree.png)
+
+This tree-like structure is called a `UsageTree`. When View1 is shown, Presenter 1 , Misc and Rest models will be created and their `usage count`s will be incremented to 1. So when View2 is shown, they won't be re-created. Their `usage count`s will just be incremented to 2 but the Umbrella and Database models will be initialized and their `usage count`s will be set to 1. When View2 is destroyed however, only Presenter2 , Umbrella and Database models will be destroyed since their `usage count`s will be decremented to 0 . Misc and Rest models will still have a `usage count` of 0 and stay alive.
+
+Concurrency:
+
+Concurrency in Knit is achieved through `Schedulers`. 
+
+`IOScheduler` : Runs task on a ThreadPool of 4. Tasks are distributed evenly. Results are reported to a separated `receiver` thread. This thread then handles the task of sending the result to the following scheduler and calling the consumer on that scheduler. Best use cases: Rest calls, local database look-ups, computations.
+
+`MainScheduler`: Runs tasks on the AndroidMain thread. Often used to report back to the UI thread after having completed tasks asynchronuously.
+
+`ImmediateScheduler`: Runs tasks on the thread it's called on. If you run tasks and `IOScheduler` and consume them on `ImmediateScheduler` , the consume operation will be done on the `receiver` thread of the IOScheduler since that's the thread responsible for handling the consume operation. If the `ImmeduateScheduler` is called after the `MainScheduler` then the operation will run on the UI thread. 
+
+`HeavyScheduler`: Designed for heavier tasks such as downloading files/images. The thread pool for this is different than the one from `IOScheduler`. These tasks will outlive the life-cycle of all components and keep running in the background unless there's an error or they are completed. Only 4 heavy tasks can be ran simultaneously.
+
 
 
 
