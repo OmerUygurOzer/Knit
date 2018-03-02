@@ -3,6 +3,7 @@ package com.omerozer.knit;
 import com.omerozer.knit.schedulers.SchedulerProvider;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
@@ -13,9 +14,11 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public abstract class KnitModelTest<T extends KnitModel>{
 
+    private T testSubject;
+
     private TestModelManager modelManager;
 
-    @Before
+    @BeforeClass
     public void init(){
         modelManager = new TestModelManager(getSchedulerProvider());
         try{
@@ -38,7 +41,10 @@ public abstract class KnitModelTest<T extends KnitModel>{
     protected abstract Class<T> getModelClass();
 
     protected T getModel(){
-        return (T)modelManager.registerModel(getModelClass());
+        if(testSubject==null){
+             testSubject = (T)modelManager.registerModel(getModelClass());
+        }
+        return testSubject;
     }
 
 }
