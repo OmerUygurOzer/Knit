@@ -164,6 +164,12 @@ class KnitModelWriter {
                     .builder(TypeName.get(field.asType()), field.getSimpleName().toString(),
                             Modifier.PRIVATE)
                     .build();
+
+            FieldSpec generatorLock = FieldSpec
+                    .builder(TypeName.OBJECT, field.getSimpleName().toString()+"Lock",
+                            Modifier.PRIVATE,Modifier.FINAL)
+                    .build();
+            clazzBuilder.addField(generatorLock);
             clazzBuilder.addField(generatorField);
         }
     }
@@ -182,17 +188,15 @@ class KnitModelWriter {
                                 + KnitFileStrings.KNIT_MODEL_EXPOSER_POSTFIX + "(($L)parent)",
                         modelMirror.enclosingClass.getQualifiedName().toString())
                 .addStatement("this.schedulerProvider = schedulerProvider")
-                .addStatement("this.userMap = new java.util.HashMap<>()");
+                .addStatement("this.userMap = new java.util.concurrent.ConcurrentHashMap<>()");
 
         Set<VariableElement> fields = new HashSet<>();
         fields.addAll(modelMirror.generatesParamsMap.values());
         fields.addAll(modelMirror.inputterField.values());
 
         for (VariableElement generator : fields) {
-            constructorBuilder
-                    .addStatement("this." + generator.getSimpleName().toString()
-                            + " = this.parentExposer.get_" + generator.getSimpleName() + "()");
-
+            constructorBuilder.addStatement("this." + generator.getSimpleName().toString() + " = this.parentExposer.get_" + generator.getSimpleName() + "()");
+            constructorBuilder.addStatement("this.$L$L = new $L()",generator.getSimpleName().toString(),"Lock",TypeName.OBJECT);
         }
 
         clazzBuilder.addMethod(constructorBuilder.build());
@@ -299,9 +303,9 @@ class KnitModelWriter {
                 String condition = createConditionBlock(generatedVals);
                 requestImmediateMethodBuilder.beginControlFlow("if($L)", condition);
                 List<String> types = GeneratorExaminer.getGenerateTypes(modelMirror.generatesParamsMap.get(generatedVals));
-                requestImmediateMethodBuilder.addStatement("return $L.generate($L)", modelMirror.generatesParamsMap.get(
-                        generatedVals).getSimpleName(),createParamBlock(types,1));
-
+                requestImmediateMethodBuilder.beginControlFlow("synchronized($L$L)",modelMirror.generatesParamsMap.get(generatedVals).getSimpleName(),"Lock");
+                requestImmediateMethodBuilder.addStatement("return $L.generate($L)", modelMirror.generatesParamsMap.get(generatedVals).getSimpleName(),createParamBlock(types,1));
+                requestImmediateMethodBuilder.endControlFlow();
 
             requestImmediateMethodBuilder.endControlFlow();
 
@@ -391,10 +395,12 @@ class KnitModelWriter {
                         .addAnnotation(Override.class)
                         .addModifiers(Modifier.PUBLIC)
                         .returns(parameterizedKnitResponse)
+                        .beginControlFlow("synchronized($L$L)",modelMirror.generatesParamsMap.get(params).getSimpleName(),"Lock")
                         .addStatement("return $L.generate($L)",
                                 modelMirror.generatesParamsMap.get(
                                         params).getSimpleName(),
                                 createParamBlock(types, 1))
+                        .endControlFlow()
                         .build())
                 .build();
 

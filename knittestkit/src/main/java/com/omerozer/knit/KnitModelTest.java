@@ -13,17 +13,19 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public abstract class KnitModelTest<T extends KnitModel>{
 
-    private T testSubject;
-
     private TestModelManager modelManager;
 
     @Before
     public void init(){
         modelManager = new TestModelManager(getSchedulerProvider());
+        try{
         setup();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
-    public void setup(){
+    public void setup() throws Exception{
 
     }
 
@@ -36,10 +38,7 @@ public abstract class KnitModelTest<T extends KnitModel>{
     protected abstract Class<T> getModelClass();
 
     protected T getModel(){
-        if(testSubject==null){
-             testSubject = (T)modelManager.registerModel(getModelClass());
-        }
-        return testSubject;
+        return (T)modelManager.registerModel(getModelClass());
     }
 
 }

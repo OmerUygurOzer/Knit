@@ -25,7 +25,7 @@ public class MainModelTest extends KnitModelTest<MainModel> {
     }
 
     @Override
-    protected SchedulerProvider schedulerProvider() {
+    protected SchedulerProvider getSchedulerProvider() {
         return null;
     }
 
@@ -37,5 +37,10 @@ public class MainModelTest extends KnitModelTest<MainModel> {
     @Override
     protected Class<MainModel> getModelClass() {
         return MainModel.class;
+    }
+
+    @Test
+    public void testStuff() throws Exception{
+
     }
 }
