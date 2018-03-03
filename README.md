@@ -169,6 +169,8 @@ Concurrency in Knit is achieved through `Schedulers`.
 
 `HeavyScheduler`: Designed for heavier tasks such as downloading files/images. The thread pool for this is different than the one from `IOScheduler`. These tasks will outlive the life-cycle of all components and keep running in the background unless there's an error or they are completed. Only 4 heavy tasks can be ran simultaneously.
 
+Accessing Generators: Accessing Models is thread safe. Multiple threads can access the same model . However, each generator's generate block is behind it's own thread lock. So access to generate blocks will be atomic. For this reason. try not to run the same geneator on different threads at the same time. If a model has multiple generators using the same resources. You should have your own concurrency system in hand to avoid issues.
+
 
 
 
