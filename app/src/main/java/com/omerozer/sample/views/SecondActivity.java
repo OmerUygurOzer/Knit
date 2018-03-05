@@ -30,6 +30,12 @@ public class SecondActivity extends AppCompatActivity {
         return "test";
     }
 
+    public Object getObj(){
+        return null;
+    }
 
+    public int getInt(){
+        return 8;
+    }
 
 }

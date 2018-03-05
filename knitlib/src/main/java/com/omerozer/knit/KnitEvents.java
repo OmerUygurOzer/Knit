@@ -96,8 +96,7 @@ public class KnitEvents {
                 KnitOnFocusChangedEvent event = onFocusChangedEventPool.getEvent();
                 event.setTag(tag);
                 event.setFocus(b);
-                knitInstance.findPresenterForView(carrierObject).handle(onFocusChangedEventPool, event,
-                        knitInstance.getModelManager());
+                knitInstance.findPresenterForView(carrierObject).handle(onFocusChangedEventPool, event, knitInstance.getModelManager());
             }
         });
     }

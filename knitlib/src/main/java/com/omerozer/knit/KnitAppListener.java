@@ -9,6 +9,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Created by omerozer on 2/18/18.
  */
@@ -20,6 +22,10 @@ public class KnitAppListener implements Application.ActivityLifecycleCallbacks {
     private FragmentManager.FragmentLifecycleCallbacks supportFragmentCallbacks;
     private android.app.FragmentManager.FragmentLifecycleCallbacks oFragmentCallbacks;
 
+    private Class<? extends Activity> topType;
+    private WeakReference<Activity> topActivityRef;
+    private int orientation;
+
     KnitAppListener(Knit knit) {
         this.knit = knit;
     }
@@ -27,6 +33,7 @@ public class KnitAppListener implements Application.ActivityLifecycleCallbacks {
     @SuppressLint("NewApi")
     @Override
     public void onActivityCreated(Activity activity, Bundle bundle) {
+        registerTopActivity(activity);
         if (activity instanceof AppCompatActivity) {
             ((AppCompatActivity) activity).getSupportFragmentManager()
                     .registerFragmentLifecycleCallbacks(
@@ -35,6 +42,32 @@ public class KnitAppListener implements Application.ActivityLifecycleCallbacks {
             activity.getFragmentManager().registerFragmentLifecycleCallbacks(
                     getoFragmentCallbacks(), true);
         }
+    }
+
+    private void registerTopActivity(Activity activity){
+        if(topActivityRef==null){
+            assignAsTop(activity);
+            return;
+        }
+        if(orientationChanged(activity)){
+            this.knit.releaseViewFromComponent(topActivityRef.get());
+            assignAsTop(activity);
+            this.knit.initViewDependencies(activity);
+            return;
+        }
+        this.knit.destoryComponent(topActivityRef.get());
+        this.knit.initViewDependencies(activity);
+        assignAsTop(activity);
+    }
+
+    private boolean orientationChanged(Activity activity){
+        return this.orientation != activity.getResources().getConfiguration().orientation && topType.equals(activity.getClass());
+    }
+
+    private void assignAsTop(Activity activity){
+        this.topActivityRef = new WeakReference<Activity>(activity);
+        this.topType = activity.getClass();
+        this.orientation = activity.getResources().getConfiguration().orientation;
     }
 
 
@@ -65,7 +98,7 @@ public class KnitAppListener implements Application.ActivityLifecycleCallbacks {
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-        knit.releaseViewFromComponent(activity);
+
     }
 
     private FragmentManager.FragmentLifecycleCallbacks getSupportFragmentCallbacks() {

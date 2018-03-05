@@ -34,7 +34,7 @@ public abstract class KnitPresenter<T> implements EventHandler, PresenterInterfa
         this.viewObjectRef = new WeakReference<Object>(viewObject);
     }
 
-    private Object getView(){
+    protected Object getView(){
         return viewObjectRef.get();
     }
 
@@ -46,10 +46,6 @@ public abstract class KnitPresenter<T> implements EventHandler, PresenterInterfa
     protected void request(String data,Object... params) {
         InternalPresenter instance = knitInstance.findPresenterForParent(this);
         getModelManager().request(data, KnitSchedulers.IMMEDIATE, KnitSchedulers.IMMEDIATE ,instance, params);
-    }
-
-    protected void destroyComponent(){
-        knitInstance.destoryComponent(viewObjectRef.get());
     }
 
     protected void inputData(String data, Object... params) {

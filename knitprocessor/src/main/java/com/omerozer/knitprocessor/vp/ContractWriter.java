@@ -1,6 +1,7 @@
 package com.omerozer.knitprocessor.vp;
 
 import com.omerozer.knitprocessor.KnitFileStrings;
+import com.omerozer.knitprocessor.ReturnTypeExaminer;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -22,7 +23,8 @@ import javax.lang.model.element.PackageElement;
  * Created by omerozer on 2/14/18.
  */
 
-public class ContractWriter {
+public class
+ContractWriter {
 
     static void write(Filer filer, KnitViewMirror viewMirror) {
 
@@ -45,6 +47,14 @@ public class ContractWriter {
                 .addStatement("this.parent = new WeakReference<>(parent)")
                 .build();
 
+        MethodSpec nullCheckMethod = MethodSpec
+                .methodBuilder("nullCheck")
+                .returns(TypeName.BOOLEAN)
+                .addStatement("return this.parent==null || this.parent.get()==null")
+                .build();
+
+        contractClassBuilder.addMethod(nullCheckMethod);
+
         for(ExecutableElement executableElement : viewMirror.methods){
             MethodSpec.Builder methodBuilder = MethodSpec
                     .methodBuilder(executableElement.getSimpleName().toString())
@@ -60,9 +70,18 @@ public class ContractWriter {
             }
 
             if(executableElement.getReturnType().toString().contains("void")){
+                methodBuilder.beginControlFlow("if(nullCheck())");
+                methodBuilder.addStatement("return");
+                methodBuilder.endControlFlow();
                 methodBuilder.addStatement("this.parent.get().$L($L)",executableElement.getSimpleName(),paramBlock);
             }else{
-                methodBuilder.returns(TypeName.get(executableElement.getReturnType()));
+                TypeName returnType = TypeName.get(executableElement.getReturnType());
+                methodBuilder.returns(returnType);
+
+                methodBuilder.beginControlFlow("if(nullCheck())");
+                methodBuilder.addStatement("return $L", ReturnTypeExaminer.getDefaultReturnValueInString(returnType));
+                methodBuilder.endControlFlow();
+
                 methodBuilder.addStatement("return this.parent.get().$L($L)",executableElement.getSimpleName(),paramBlock);
             }
 
@@ -84,6 +103,8 @@ public class ContractWriter {
         }
 
     }
+
+
 
 
 

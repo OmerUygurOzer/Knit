@@ -34,7 +34,6 @@ public class SecondPresenter extends KnitPresenter<SecondActivityContract> {
     @Override
     public void onCurrentViewReleased() {
         super.onCurrentViewReleased();
-        destroyComponent();
     }
 
     @Override
