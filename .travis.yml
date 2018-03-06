@@ -2,15 +2,17 @@ language: android
 sudo: false
 android:
   components:
-    - tools
-    - platform-tools
-    - android-26
+      - tools
+      - android-26
+      - platform-tools
+      - build-tools-26.0.1
 
-   branches:
-    only:
-    - master
+license:
+    - 'android-sdk-preview-license-.+'
+    - 'android-sdk-license-.+'
+    - 'google-gdk-license-.+'
 
 script:
-   - ./gradlew build connectedCheck
+   - ./gradlew build connectedCheck --stacktrace
 
 
