@@ -24,6 +24,7 @@ public class KnitFileStrings {
     public static final String KNIT_GET_UPDATEABLES_METHOD = "getUpdatableFields";
     public static final String KNIT_PRESENTER_APPLY_METHOD = "onViewApplied";
     public static final String KNIT_PRESENTER_RELEASE_METHOD = "onCurrentViewReleased";
+    public static final String KNIT_PRESENTER_GET_PARENT_METHOD = "getParent";
 
     //MEMORY ENTITY
     public static final String KNIT_ME_ONCREATE_METHOD = "onCreate";
@@ -88,6 +89,7 @@ public class KnitFileStrings {
 
 
     public static final String STRING_CLASS = String.class.getCanonicalName();
+
 
 
     public static String createStringArrayField(Collection<String> strings){

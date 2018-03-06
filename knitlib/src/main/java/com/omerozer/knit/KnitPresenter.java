@@ -13,7 +13,7 @@ import java.lang.ref.WeakReference;
  * Created by omerozer on 2/12/18.
  */
 
-public abstract class KnitPresenter<T> implements EventHandler, PresenterInterface {
+public abstract class KnitPresenter<T> implements PresenterInterface {
 
     private WeakReference<Object> viewObjectRef;
 
@@ -84,11 +84,6 @@ public abstract class KnitPresenter<T> implements EventHandler, PresenterInterfa
             navigator =  knitInstance.findPresenterForParent(this).getNavigator();
         }
         return navigator;
-
-    }
-
-    @Override
-    public void handle(ViewEventPool eventPool, ViewEventEnv eventEnv, InternalModel modelManager) {
 
     }
 

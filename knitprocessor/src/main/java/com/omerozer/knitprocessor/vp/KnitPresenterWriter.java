@@ -13,6 +13,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.processing.Filer;
@@ -40,11 +41,6 @@ class KnitPresenterWriter {
 
         FieldSpec modelManagerField = FieldSpec
                 .builder(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL), "modelManager",
-                        Modifier.PRIVATE)
-                .build();
-
-        FieldSpec eventHandlerField = FieldSpec
-                .builder(ClassName.bestGuess(KnitFileStrings.KNIT_EVENT_HANDLER), "viewEventHandler",
                         Modifier.PRIVATE)
                 .build();
 
@@ -108,12 +104,20 @@ class KnitPresenterWriter {
                 .addStatement("return updateables")
                 .build();
 
-        MethodSpec getNavigator = MethodSpec
+        MethodSpec getNavigatorMEthod = MethodSpec
                 .methodBuilder(KnitFileStrings.KNIT_GET_NAVIGATOR_METHOD)
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(ClassName.bestGuess(KnitFileStrings.KNIT_NAVIGATOR))
                 .addStatement("return navigator")
+                .build();
+
+        MethodSpec getParentMethod = MethodSpec
+                .methodBuilder(KnitFileStrings.KNIT_PRESENTER_GET_PARENT_METHOD)
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.get(presenterMirror.enclosingClass.asType()))
+                .addStatement("return this.parent.getParent()")
                 .build();
 
 
@@ -126,7 +130,6 @@ class KnitPresenterWriter {
                 .addField(parentField)
                 .addField(loadedField)
                 .addField(modelManagerField)
-                .addField(eventHandlerField)
                 .addField(activeViewWeakRefField)
                 .addField(updateablesField)
                 .addField(navigatorField)
@@ -135,7 +138,8 @@ class KnitPresenterWriter {
                 .addMethod(onCreateMethod)
                 .addMethod(getUpdatablesMethod)
                 .addMethod(getContractMethod)
-                .addMethod(getNavigator);
+                .addMethod(getNavigatorMEthod)
+                .addMethod(getParentMethod);
 
 
 
@@ -180,7 +184,6 @@ class KnitPresenterWriter {
                                 + KnitFileStrings.KNIT_MODEL_EXPOSER_POSTFIX + "(parent)")
                 .addStatement("parent.setKnit(knitInstance)")
                 .addStatement("this.modelManager = modelManager")
-                .addStatement("this.viewEventHandler = ($L)parent",KnitFileStrings.KNIT_EVENT_HANDLER)
                 .addStatement("this.updateables = $L",KnitFileStrings.createStringArrayField(presenterMirror.updatingMethodsMap.keySet()))
                 .addStatement("this.navigator = navigator")
                 .addModifiers(Modifier.PUBLIC);
@@ -204,9 +207,21 @@ class KnitPresenterWriter {
                         "eventEnv")
                 .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL), "modelManager");
 
-        handleMethodBuilder.addStatement("$L tag = eventEnv.getTag()",
-                String.class.getCanonicalName())
-                .addStatement("this.viewEventHandler.$L(eventPool,eventEnv,modelManager)",KnitFileStrings.KNIT_EVENT_HANDLE_METHOD);
+        handleMethodBuilder.addStatement("$L tag = eventEnv.getTag()", String.class.getCanonicalName());
+
+        for(String viewEvent : presenterMirror.viewEventMethods.keySet()){
+            handleMethodBuilder.beginControlFlow("if($S.equals(tag))",viewEvent);
+            List<? extends VariableElement> paramsList = presenterMirror.viewEventMethods.get(viewEvent).getParameters();
+            if(paramsList.isEmpty()){
+                handleMethodBuilder.addStatement("this.parent.use_$L()",presenterMirror.viewEventMethods.get(viewEvent).getSimpleName());
+            }else{
+                handleMethodBuilder.addStatement("this.parent.use_$L(eventEnv)",presenterMirror.viewEventMethods.get(viewEvent).getSimpleName());
+            }
+            handleMethodBuilder.endControlFlow();
+        }
+
+        handleMethodBuilder.addStatement("eventPool.pool(eventEnv)");
+
 
         clazzBuilder.addMethod(handleMethodBuilder.build());
     }

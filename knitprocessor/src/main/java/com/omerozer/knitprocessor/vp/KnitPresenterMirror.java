@@ -19,5 +19,7 @@ public class KnitPresenterMirror {
 
     public Map<String,ExecutableElement> updatingMethodsMap = new LinkedHashMap<>();
 
+    public Map<String,ExecutableElement> viewEventMethods = new LinkedHashMap<>();
+
 
 }

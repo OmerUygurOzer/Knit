@@ -3,14 +3,11 @@ package com.omerozer.sample.presenters;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.omerozer.knit.InternalModel;
 import com.omerozer.knit.KnitPresenter;
 import com.omerozer.knit.KnitResponse;
 import com.omerozer.knit.Presenter;
 import com.omerozer.knit.Updating;
 import com.omerozer.knit.schedulers.KnitSchedulers;
-import com.omerozer.knit.viewevents.ViewEventEnv;
-import com.omerozer.knit.viewevents.ViewEventPool;
 import com.omerozer.sample.datatype.StringWrapper;
 import com.omerozer.sample.views.SecondActivity;
 import com.omerozer.sample.views.SecondActivityContract;

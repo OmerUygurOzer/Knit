@@ -1,5 +1,7 @@
 package com.omerozer.knit;
 
+import com.omerozer.knit.classloaders.KnitPresenterLoader;
+
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -48,24 +50,15 @@ public final class KnitTestKit {
             return this;
         }
 
-        public T build(){
-            try {
-                T presenter = clazz.getConstructor().newInstance();
+        public InternalPresenter build(){
+                KnitPresenterLoader knitPresenterLoader = new KnitPresenterLoader(knit,navigator,modelManager);
+                InternalPresenter internalPresenter = knitPresenterLoader.loadPresenter(clazz);
+                T presenter = (T)internalPresenter.getParent();
                 presenter.setKnit(knit);
                 presenter.setContract(contract);
                 presenter.setModelManager(modelManager);
                 presenter.setNavigator(navigator);
-                return presenter;
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            }
-            return null;
+                return internalPresenter;
         }
 
     }

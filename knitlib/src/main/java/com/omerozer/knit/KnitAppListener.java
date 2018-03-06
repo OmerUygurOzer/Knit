@@ -51,8 +51,8 @@ public class KnitAppListener implements Application.ActivityLifecycleCallbacks {
         }
         if(orientationChanged(activity)){
             this.knit.releaseViewFromComponent(topActivityRef.get());
-            assignAsTop(activity);
             this.knit.initViewDependencies(activity);
+            assignAsTop(activity);
             return;
         }
         this.knit.destoryComponent(topActivityRef.get());

@@ -1,5 +1,7 @@
 package com.omerozer.knit.classloaders;
 
+import android.util.Log;
+
 import com.omerozer.knit.InternalModel;
 import com.omerozer.knit.InternalPresenter;
 import com.omerozer.knit.Knit;
@@ -33,6 +35,7 @@ public class KnitPresenterLoader {
 
     public InternalPresenter loadPresenter(Class<?> presenterClass) {
         try {
+            Log.d("KNIT_TEST","CLASS:" + presenterClass.getCanonicalName());
             return (InternalPresenter) findConstructorForPresenter(presenterClass).newInstance(
                     knitInstance,navigator, modelManager);
         } catch (InstantiationException e) {

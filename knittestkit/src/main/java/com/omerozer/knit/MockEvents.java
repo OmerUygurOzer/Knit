@@ -15,10 +15,10 @@ public final class MockEvents {
     private static final KnitOnTextChangedEventPool onTextChangedEventPool = new KnitOnTextChangedEventPool();
     private static final KnitOnFocusChangedEventPool onFocusChangedEventPool = new KnitOnFocusChangedEventPool();
 
-    public static void fireMockClickEvent(String tag,KnitPresenter knitPresenter){
+    public static void fireMockClickEvent(String tag,KnitPresenterTest presenterTest){
         KnitOnClickEvent event = onClickEventPool.getEvent();
         event.setTag(tag);
-        knitPresenter.handle(onClickEventPool,event,NullValues.NULL_MODEL);
+        presenterTest.getInternalObject().handle(onClickEventPool,event,NullValues.NULL_MODEL);
     }
 
 }

@@ -3,6 +3,7 @@ package com.omerozer.knitprocessor.vp;
 import com.omerozer.knit.KnitView;
 import com.omerozer.knit.Presenter;
 import com.omerozer.knit.Updating;
+import com.omerozer.knit.ViewEvent;
 import com.omerozer.knitprocessor.KnitAnnotations;
 
 import java.util.LinkedHashMap;
@@ -71,6 +72,10 @@ public class KnitPresenterProcessor extends AbstractProcessor {
                     if (element.getAnnotation(Updating.class) != null) {
                         knitPresenterMirror.updatingMethodsMap.put(
                                 element.getAnnotation(Updating.class).value(),
+                                (ExecutableElement) element);
+                    }else if(element.getAnnotation(ViewEvent.class)!=null){
+                        knitPresenterMirror.viewEventMethods.put(
+                                element.getAnnotation(ViewEvent.class).value(),
                                 (ExecutableElement) element);
                     }
                 }

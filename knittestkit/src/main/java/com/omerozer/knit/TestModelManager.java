@@ -18,7 +18,6 @@ public final class TestModelManager extends ModelManager {
     private KnitModelLoader modelLoader;
 
     public TestModelManager(SchedulerProvider schedulerProvider){
-        System.out.println("TM INIT");
         this.dataToModelMap = new HashMap<>();
         this.modelLoader = new KnitModelLoader(schedulerProvider==null? new TestSchedulers() : schedulerProvider);
     }
@@ -26,7 +25,6 @@ public final class TestModelManager extends ModelManager {
     KnitModel registerModel(Class<? extends KnitModel> model){
         InternalModel internalModel = modelLoader.loadModel(modelLoader.getModelForModel(model));
         for(String val: internalModel.getHandledValues()){
-            System.out.println("GENVAL:"+val);
             dataToModelMap.put(val,internalModel);
         }
         return internalModel.getParent();
@@ -42,9 +40,7 @@ public final class TestModelManager extends ModelManager {
     @Override
     public void request(String data, KnitSchedulers runOn, KnitSchedulers consumeOn,
             InternalPresenter internalPresenter, Object... params) {
-        System.out.println("REQ GENVAL:"+data);
         if(dataToModelMap.containsKey(data)){
-            System.out.println("CONTAINS");
             dataToModelMap.get(data).request(data,runOn,consumeOn,internalPresenter,params);
         }
     }

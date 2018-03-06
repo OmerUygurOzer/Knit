@@ -40,6 +40,13 @@ public class PresenterExposerWriter {
                 .addModifiers(Modifier.PUBLIC)
                 .build();
 
+        MethodSpec getParentMethod = MethodSpec
+                .methodBuilder("getParent")
+                .returns(TypeName.get(presenterMirror.enclosingClass.asType()))
+                .addModifiers(Modifier.PUBLIC)
+                .addStatement("return this.parent")
+                .build();
+
         for(Element element : presenterMirror.enclosingClass.getEnclosedElements()){
             if(element.getKind().isField()){
                 MethodSpec getter = MethodSpec
@@ -82,6 +89,7 @@ public class PresenterExposerWriter {
 
         clazzBuilder.addField(parentField);
         clazzBuilder.addMethod(constructor);
+        clazzBuilder.addMethod(getParentMethod);
 
         PackageElement enclosingPackage =
                 (PackageElement) presenterMirror.enclosingClass.getEnclosingElement();

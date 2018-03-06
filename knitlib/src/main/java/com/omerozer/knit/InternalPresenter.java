@@ -17,4 +17,6 @@ public abstract class InternalPresenter implements EventHandler,PresenterInterfa
 
     public abstract String[] getUpdatableFields();
 
+    public abstract KnitPresenter getParent();
+
 }

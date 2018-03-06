@@ -13,6 +13,8 @@ import com.omerozer.sample.R;
 @KnitView
 public class MainActivity extends AppCompatActivity {
 
+    public static final String BUTTON_CLICK = "button";
+
     Button button;
 
     @Override
@@ -20,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.button = (Button)findViewById(R.id.btn_next) ;
-        KnitEvents.onClick("button",this,button);
+        KnitEvents.onClick(BUTTON_CLICK,this,button);
     }
 
     public void recMes(String message){

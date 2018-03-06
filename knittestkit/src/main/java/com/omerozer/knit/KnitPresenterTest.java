@@ -13,8 +13,11 @@ public abstract class KnitPresenterTest<T extends KnitPresenter,K> implements Ba
 
     private T testSubject;
 
+    private InternalPresenter internalObject;
+
     @Before
     public void init(){
+        testSubject = null;
         setup();
     }
 
@@ -30,15 +33,20 @@ public abstract class KnitPresenterTest<T extends KnitPresenter,K> implements Ba
 
     protected T getPresenter(){
         if(testSubject==null){
-            testSubject = KnitTestKit
+            internalObject = KnitTestKit
                     .presenterBuilder(getPresenterClass())
                     .setKnit(getKnitInstance())
                     .setModelManager(getModelManager())
                     .setNavigator(getNavigator())
                     .usingContract(getContract())
                     .build();
+            testSubject = (T)internalObject.getParent();
         }
         return testSubject;
+    }
+
+    InternalPresenter getInternalObject(){
+        return internalObject;
     }
 
 }

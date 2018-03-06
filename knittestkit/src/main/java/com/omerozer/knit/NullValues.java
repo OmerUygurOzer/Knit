@@ -65,6 +65,11 @@ public final class NullValues {
         }
 
         @Override
+        public KnitPresenter getParent() {
+            return null;
+        }
+
+        @Override
         public void onViewApplied(Object viewObject, Bundle bundle) {
 
         }
