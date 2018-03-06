@@ -35,7 +35,6 @@ public class KnitPresenterLoader {
 
     public InternalPresenter loadPresenter(Class<?> presenterClass) {
         try {
-            Log.d("KNIT_TEST","CLASS:" + presenterClass.getCanonicalName());
             return (InternalPresenter) findConstructorForPresenter(presenterClass).newInstance(
                     knitInstance,navigator, modelManager);
         } catch (InstantiationException e) {
