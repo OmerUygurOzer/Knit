@@ -1,4 +1,4 @@
-[![](https://jitpack.io/v/OmerUygurOzer/knit.svg)](https://jitpack.io/#OmerUygurOzer/knit)
+[![](https://jitpack.io/v/OmerUygurOzer/knit.svg)](https://jitpack.io/#OmerUygurOzer/knit)     [![Coverage Status](https://coveralls.io/repos/github/OmerUygurOzer/Knit/badge.svg?branch=master)](https://coveralls.io/github/OmerUygurOzer/Knit?branch=master)
 
 # Knit
 MVP Framework for Android apps. 
