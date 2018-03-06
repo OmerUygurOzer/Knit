@@ -1,6 +1,7 @@
 package com.omerozer.knit;
 
 import com.omerozer.knit.classloaders.KnitPresenterLoader;
+import com.omerozer.knit.classloaders.KnitUtilsLoader;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -52,7 +53,8 @@ public final class KnitTestKit {
 
         public InternalPresenter build(){
                 KnitPresenterLoader knitPresenterLoader = new KnitPresenterLoader(knit,navigator,modelManager);
-                InternalPresenter internalPresenter = knitPresenterLoader.loadPresenter(clazz);
+                ViewToPresenterMapInterface viewToPresenterMap = new KnitUtilsLoader().getViewToPresenterMap(Knit.class);
+                InternalPresenter internalPresenter = knitPresenterLoader.loadPresenter(viewToPresenterMap.getPresenterClassForPresenter(clazz));
                 T presenter = (T)internalPresenter.getParent();
                 presenter.setKnit(knit);
                 presenter.setContract(contract);
