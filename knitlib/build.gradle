@@ -6,8 +6,6 @@ group='com.github.OmerUygurOzer'
 android {
     compileSdkVersion 26
 
-
-
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 26
