@@ -2,11 +2,14 @@ language: android
 android:
   components:
     - tools
-    - tools
-    - platform-tools
     - build-tools-26.0.1
+    - platform-tools
     - android-26
+
+  license:
+    - 'android-sdk-license-.+'
 
 script:
    - ./gradlew build connectedCheck
+
 
