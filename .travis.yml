@@ -1,0 +1,24 @@
+language: android
+sudo: required
+jdk: oraclejdk8
+android:
+  branches:
+   only:
+    - master
+    except:
+    - gh-pages
+  components:
+   - tools
+   - platform-tools
+   - build-tools-26.0.2
+   - android-25
+   - extra-android-m2repository
+   script:
+   - ./gradlew check --stacktrace
+notifications:
+     email: false
+sudo: false
+cache:
+  directories:
+    - $HOME/.m2
+    - $HOME/.gradle
