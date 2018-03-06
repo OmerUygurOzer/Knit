@@ -129,9 +129,12 @@ public class RepoActivityPresenter extends KnitPresenter<RepoActivityContract> {
 
     }
 
-    @Override
-    public void handle(ViewEventPool viewEventPool, ViewEventEnv viewEventEnv,
-            InternalModel internalModel) {
+    @ViewEvent(SEARCH_CLICK)
+    public void handle(ViewEventEnv viewEventEnv) {
+            getNavigator()
+                    .toActivity()
+                    .target(RepoActivity.class)
+                    .go();
 
     }
 
