@@ -27,9 +27,7 @@ allprojects {
     }
 
 
-    lintOptions {
-        abortOnError false
-    }
+
 }
 
 task clean(type: Delete) {
