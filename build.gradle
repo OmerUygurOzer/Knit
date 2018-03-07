@@ -25,6 +25,11 @@ allprojects {
         mavenCentral()
         maven { url 'https://jitpack.io' }
     }
+
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 task clean(type: Delete) {
