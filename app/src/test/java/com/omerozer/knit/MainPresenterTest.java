@@ -84,7 +84,7 @@ public class MainPresenterTest extends KnitPresenterTest<MainPresenter,MainActiv
     public void onHandleViewEventsTest() throws Exception{
         ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Class<? extends Activity>> targetCaptor = ArgumentCaptor.forClass(Class.class);
-        MockEvents.fireMockClickEvent("button",mainPresenter);
+        MockEvents.fireMockClickEvent("button",this);
         verify(contract).recMes(messageCaptor.capture());
         assertEquals("BUTTON PRESSED",messageCaptor.getValue());
         verify(navigator).toActivity();
@@ -115,7 +115,7 @@ public class MainPresenterTest extends KnitPresenterTest<MainPresenter,MainActiv
         ArgumentCaptor<InternalPresenter> presenterCaptor = ArgumentCaptor.forClass(InternalPresenter.class);
         ArgumentCaptor<Object[]> paramsCaptor = ArgumentCaptor.forClass(Object[].class);
         mainPresenter.onViewApplied(null,null);
-      //  verify(modelManager,atLeastOnce()).request(dataRequestCaptor.capture(),presenterCaptor.capture(),paramsCaptor.capture());
+        //verify(modelManager,atLeastOnce()).request(dataRequestCaptor.capture(),presenterCaptor.capture(),paramsCaptor.capture());
         assertEquals(NULL_PRESENTER,presenterCaptor.getValue());
         assertEquals("test",dataRequestCaptor.getValue());
     }
