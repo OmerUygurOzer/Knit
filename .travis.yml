@@ -13,6 +13,6 @@ license:
     - 'google-gdk-license-.+'
 
 script:
-   - ./gradlew build connectedCheck --stacktrace
+   - ./gradlew build connectedCheck
 
 
