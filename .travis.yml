@@ -12,7 +12,7 @@ license:
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
 
-install: ./gradlew clean assemble
+#install: ./gradlew clean assemble
 
 script:
    - ./gradlew build connectedCheck
