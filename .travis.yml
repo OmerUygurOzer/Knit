@@ -1,5 +1,4 @@
 language: android
-sudo: false
 android:
   components:
       - tools
@@ -7,14 +6,7 @@ android:
       - platform-tools
       - build-tools-26.0.2
 
-license:
-    - 'android-sdk-preview-license-.+'
-    - 'android-sdk-license-.+'
-    - 'google-gdk-license-.+'
-
-#install: ./gradlew clean assemble
-
 script:
-   - ./gradlew build connectedCheck
+- ./gradlew check
 
 
