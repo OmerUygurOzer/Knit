@@ -1,4 +1,5 @@
-[![](https://jitpack.io/v/OmerUygurOzer/knit.svg)](https://jitpack.io/#OmerUygurOzer/knit)     [![Build Status](https://travis-ci.org/OmerUygurOzer/Knit.svg?branch=master)](https://travis-ci.org/OmerUygurOzer/Knit)   [![Test Coverage](https://api.codeclimate.com/v1/badges/af038b17c3bdd001ad51/test_coverage)](https://codeclimate.com/github/OmerUygurOzer/Knit/test_coverage)
+[![](https://jitpack.io/v/OmerUygurOzer/knit.svg)](https://jitpack.io/#OmerUygurOzer/knit)     [![Build Status](https://travis-ci.org/OmerUygurOzer/Knit.svg?branch=master)](https://travis-ci.org/OmerUygurOzer/Knit)   
+[![codecov](https://codecov.io/gh/OmerUygurOzer/Knit/branch/master/graph/badge.svg)](https://codecov.io/gh/OmerUygurOzer/Knit)
 
 # Knit
 MVP Framework for Android apps. 
