@@ -7,12 +7,15 @@ android:
       - platform-tools
       - build-tools-26.0.2
 
+      - sys-img-armeabi-v7a-android-26
+
 license:
     - 'android-sdk-preview-license-.+'
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
 
-#install: ./gradlew clean assemble
+install: ./gradlew clean assemble
+
 
 script:
    - ./gradlew build connectedCheck
