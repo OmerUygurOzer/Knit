@@ -40,4 +40,6 @@ dependencies {
 
     api project(':knitannotations')
 
+    testCompile "org.mockito:mockito-core:2.15.0"
+
 }
