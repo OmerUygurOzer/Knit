@@ -2,7 +2,8 @@ language: android
 
 env:
   global:
-    - CC_TEST_REPORTER_ID=ad463b8e3e2ea396adf6b646410bc3d1380cd51a74a19f43f077b3bbaf348882
+    - ANDROID_TARGET=android-26
+    - ANDROID_ABI=armeabi-v7a
 
 android:
   components:
@@ -10,16 +11,16 @@ android:
       - android-26
       - platform-tools
       - build-tools-26.0.2
-
-before_script:
-      - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-      - chmod +x ./cc-test-reporter
-      - ./cc-test-reporter before-build
-
+      - sys-img-${ANDROID_ABI}-${ANDROID_TARGET}
 script:
-      - ./gradlew check
+      - ./gradlew build jacocoTestReport assembleAndroidTest
+      - echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
+      - emulator -avd test -no-skin -no-audio -no-window &
+      - android-wait-for-emulator
+      - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
+      - ./gradlew connectedCheck
 
-after_script:
-      - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 
 
