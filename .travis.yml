@@ -1,4 +1,9 @@
 language: android
+
+env:
+  global:
+    - CC_TEST_REPORTER_ID=ad463b8e3e2ea396adf6b646410bc3d1380cd51a74a19f43f077b3bbaf348882
+
 android:
   components:
       - tools
@@ -6,7 +11,15 @@ android:
       - platform-tools
       - build-tools-26.0.2
 
+before_script:
+      - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+      - chmod +x ./cc-test-reporter
+      - ./cc-test-reporter before-build
+
 script:
       - ./gradlew check
+
+after_script:
+      - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 
 
