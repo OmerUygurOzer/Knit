@@ -75,4 +75,9 @@ public class ModelManager extends InternalModel {
     public String[] getHandledValues() {
         return new String[0];
     }
+
+    @Override
+    public boolean isSingleton() {
+        return true;
+    }
 }

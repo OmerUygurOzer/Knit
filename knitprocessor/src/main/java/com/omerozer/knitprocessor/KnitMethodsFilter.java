@@ -1,5 +1,7 @@
 package com.omerozer.knitprocessor;
 
+import com.omerozer.knitprocessor.vp.NativeViewCallbacks;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,8 +17,9 @@ public class KnitMethodsFilter {
 
     static {
         knitSpecificMethods.addAll(
-                Arrays.asList("onCreate","onDestroy","onViewApplied","onCurrentViewReleased","onLoad","shouldLoad","onMemoryLow")
-        );
+                Arrays.asList("onCreate","onDestroy","onViewApplied","onCurrentViewReleased","onLoad","shouldLoad","onMemoryLow"));
+        knitSpecificMethods.addAll(NativeViewCallbacks.getAll());
+
     }
 
 

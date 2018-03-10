@@ -79,6 +79,7 @@ public class KnitModelProcessor extends AbstractProcessor {
             TypeElement clazz = (TypeElement) model;
             KnitModelMirror knitModelMirror = new KnitModelMirror();
             knitModelMirror.enclosingClass = clazz;
+            knitModelMirror.instanceType = clazz.getAnnotation(Model.class).value();
             for (Element element : clazz.getEnclosedElements()) {
                 if (element.getKind().isField()) {
                     if (element.getAnnotation(Generates.class) != null) {

@@ -86,6 +86,14 @@ public class PresenterExposerWriter {
         clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnMemoryLow());
         clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnDestroyMethod());
 
+        for(String callback: NativeViewCallbacks.getAll()){
+            clazzBuilder.addMethod(MethodSpec
+                    .methodBuilder("use_"+callback)
+                    .addModifiers(Modifier.PUBLIC)
+                    .addStatement("this.parent.$L()",callback)
+                    .build());
+        }
+
 
         clazzBuilder.addField(parentField);
         clazzBuilder.addMethod(constructor);

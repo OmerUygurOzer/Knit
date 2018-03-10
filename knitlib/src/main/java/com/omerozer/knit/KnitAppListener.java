@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
 import java.lang.ref.WeakReference;
@@ -30,34 +31,26 @@ public class KnitAppListener implements Application.ActivityLifecycleCallbacks {
         this.knit = knit;
     }
 
-    @SuppressLint("NewApi")
+
     @Override
     public void onActivityCreated(Activity activity, Bundle bundle) {
-        registerTopActivity(activity);
-        if (activity instanceof AppCompatActivity) {
-            ((AppCompatActivity) activity).getSupportFragmentManager()
-                    .registerFragmentLifecycleCallbacks(
-                    getSupportFragmentCallbacks(), true);
-        } else {
-            activity.getFragmentManager().registerFragmentLifecycleCallbacks(
-                    getoFragmentCallbacks(), true);
+        if(topExists() && orientationChanged(activity)){
+            knit.initViewDependencies(activity);
+            return;
         }
+
+        registerTopActivity(activity);
+        attachFragmentListeners(activity);
+
+    }
+
+    private boolean topExists(){
+        return topActivityRef!=null;
     }
 
     private void registerTopActivity(Activity activity){
-        if(topActivityRef==null){
-            assignAsTop(activity);
-            return;
-        }
-        if(orientationChanged(activity)){
-            this.knit.releaseViewFromComponent(topActivityRef.get());
-            this.knit.initViewDependencies(activity);
-            assignAsTop(activity);
-            return;
-        }
-        this.knit.destoryComponent(topActivityRef.get());
-        this.knit.initViewDependencies(activity);
         assignAsTop(activity);
+        knit.initViewDependencies(activity);
     }
 
     private boolean orientationChanged(Activity activity){
@@ -70,25 +63,37 @@ public class KnitAppListener implements Application.ActivityLifecycleCallbacks {
         this.orientation = activity.getResources().getConfiguration().orientation;
     }
 
+    @SuppressLint("NewApi")
+    private void attachFragmentListeners(Activity activity){
+        if (activity instanceof AppCompatActivity) {
+            ((AppCompatActivity) activity).getSupportFragmentManager()
+                    .registerFragmentLifecycleCallbacks(
+                            getSupportFragmentCallbacks(), true);
+        } else {
+            activity.getFragmentManager().registerFragmentLifecycleCallbacks(
+                    getoFragmentCallbacks(), true);
+        }
+    }
+
 
     @Override
     public void onActivityStarted(Activity activity) {
-        knit.initViewDependencies(activity);
+        knit.findPresenterForView(activity).onViewStart();
     }
 
     @Override
     public void onActivityResumed(Activity activity) {
-
+        knit.findPresenterForView(activity).onViewResume();
     }
 
     @Override
     public void onActivityPaused(Activity activity) {
-
+        knit.findPresenterForView(activity).onViewPause();
     }
 
     @Override
     public void onActivityStopped(Activity activity) {
-
+       knit.findPresenterForView(activity).onViewStop();
     }
 
     @Override
@@ -98,7 +103,10 @@ public class KnitAppListener implements Application.ActivityLifecycleCallbacks {
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-
+        if(activity.isFinishing()){
+            knit.destoryComponent(activity);
+            return;
+        }
     }
 
     private FragmentManager.FragmentLifecycleCallbacks getSupportFragmentCallbacks() {

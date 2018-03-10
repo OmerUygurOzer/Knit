@@ -203,15 +203,16 @@ public class UsageGraph {
         recurseForStart(graphBase.get(tag), viewObject, data);
     }
 
+
     private void recurseForStart(EntityNode entityNode, Object viewObject, Bundle data) {
+        //DFS to create models first
         for (EntityNode node : entityNode.next) {
             recurseForStart(node, viewObject, data);
         }
         switch (entityNode.type) {
             case MODEL:
                 if (!counterMap.get(entityNode.tag).isUsed()) {
-                    InternalModel internalModel = knitModelLoader.loadModel(
-                            tagToClazzMap.get(entityNode.tag));
+                    InternalModel internalModel = knitModelLoader.loadModel(tagToClazzMap.get(entityNode.tag));
                     instanceMap.put(entityNode.tag, internalModel);
                     activeModelTags.add(entityNode.tag);
                     modelManager.registerModelComponentTag(entityNode.tag);
@@ -241,6 +242,7 @@ public class UsageGraph {
         recurseForFinish(graphBase.get(tag));
     }
 
+
     private void recurseForFinish(EntityNode entityNode) {
         counterMap.get(entityNode.tag).release();
         switch (entityNode.type) {
@@ -251,7 +253,6 @@ public class UsageGraph {
                     activeModelTags.remove(entityNode.tag);
                     modelManager.unregisterComponentTag(entityNode.tag);
                 }
-
                 break;
             case PRESENTER:
                 if (!counterMap.get(entityNode.tag).isUsed()) {
@@ -266,6 +267,7 @@ public class UsageGraph {
             recurseForFinish(node);
         }
     }
+
 
     private List<Class<?>> extractViews(List<Class<?>> views) {
         return views.subList(0, views.size() - 1);

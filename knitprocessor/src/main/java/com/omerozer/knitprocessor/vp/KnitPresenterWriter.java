@@ -121,6 +121,8 @@ class KnitPresenterWriter {
                 .build();
 
 
+
+
         TypeSpec.Builder clazzBuilder = TypeSpec
                 .classBuilder(presenterMirror.enclosingClass.getSimpleName()
                         + KnitFileStrings.KNIT_PRESENTER_POSTFIX)
@@ -141,6 +143,14 @@ class KnitPresenterWriter {
                 .addMethod(getNavigatorMEthod)
                 .addMethod(getParentMethod);
 
+        for(String callback : NativeViewCallbacks.getAll()){
+            clazzBuilder.addMethod(MethodSpec
+                    .methodBuilder(callback)
+                    .addAnnotation(Override.class)
+                    .addModifiers(Modifier.PUBLIC)
+                    .addStatement("this.parent.use_$L()",callback)
+                    .build());
+        }
 
 
 
@@ -179,9 +189,7 @@ class KnitPresenterWriter {
                 .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_NAVIGATOR),"navigator")
                 .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL), "modelManager")
                 .addStatement("$L parent = new $L()",presenterMirror.enclosingClass.getQualifiedName(),presenterMirror.enclosingClass.getQualifiedName())
-                .addStatement(
-                        "this.parent = new " + presenterMirror.enclosingClass.getQualifiedName()
-                                + KnitFileStrings.KNIT_MODEL_EXPOSER_POSTFIX + "(parent)")
+                .addStatement("this.parent = new " + presenterMirror.enclosingClass.getQualifiedName() + KnitFileStrings.KNIT_MODEL_EXPOSER_POSTFIX + "(parent)")
                 .addStatement("parent.setKnit(knitInstance)")
                 .addStatement("this.modelManager = modelManager")
                 .addStatement("this.updateables = $L",KnitFileStrings.createStringArrayField(presenterMirror.updatingMethodsMap.keySet()))

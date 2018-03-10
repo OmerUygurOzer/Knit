@@ -35,13 +35,37 @@ public class MainPresenter extends KnitPresenter<MainActivityContract> {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d("KNIT_TEST","PRESENTER MAIN CREATED");
+        Log.d("KNIT_TEST","MAIN PRESENTER MAIN CREATED");
+    }
+
+    @Override
+    public void onViewStart() {
+        super.onViewStart();
+        Log.d("KNIT_TEST","MAIN PRESENTER VIEW STARTED");
+    }
+
+    @Override
+    public void onViewResume() {
+        super.onViewResume();
+        Log.d("KNIT_TEST","MAIN PRESENTER VIEW RESUMED");
+    }
+
+    @Override
+    public void onViewPause() {
+        super.onViewPause();
+        Log.d("KNIT_TEST","MAIN PRESENTER VIEW PAUSED");
+    }
+
+    @Override
+    public void onViewStop() {
+        super.onViewStop();
+        Log.d("KNIT_TEST","MAIN PRESENTER VIEW STOPPED");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("KNIT_TEST","PRESENTER MAIN DESTROYED");
+        Log.d("KNIT_TEST","MAIN PRESENTER MAIN DESTROYED");
     }
 
     @ViewEvent(BUTTON_CLICK)

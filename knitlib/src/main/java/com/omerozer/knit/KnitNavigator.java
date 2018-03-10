@@ -58,24 +58,13 @@ public class KnitNavigator {
 
     public class ActivityNavigator extends Navigator {
         private Class<? extends Activity> target;
-        private Bundle bundle;
-
         public ActivityNavigator target(Class<? extends Activity> target) {
             this.target = target;
             return this;
         }
 
-        public ActivityNavigator addData(Bundle bundle) {
-            this.bundle = bundle;
-            return this;
-        }
-
         public void go() {
             Intent intent = new Intent(contextRef.get(), target);
-            if (bundle != null) {
-                navigatorDataMap.put(target, bundle);
-            }
-
             contextRef.get().startActivity(intent);
         }
 

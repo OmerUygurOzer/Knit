@@ -44,4 +44,9 @@ public class TestModel_Model extends InternalModel {
     public String[] getHandledValues() {
         return new String[0];
     }
+
+    @Override
+    public boolean isSingleton() {
+        return false;
+    }
 }

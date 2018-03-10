@@ -1,5 +1,6 @@
 package com.omerozer.knitprocessor.model;
 
+import com.omerozer.knit.InstanceType;
 import com.omerozer.knit.UseMethod;
 import com.omerozer.knitprocessor.GeneratorExaminer;
 import com.omerozer.knitprocessor.KnitFileStrings;
@@ -100,6 +101,14 @@ class KnitModelWriter {
                 .addStatement("return this.parentExposer.getParent()")
                 .build();
 
+        MethodSpec isSingletonMethod = MethodSpec
+                .methodBuilder(KnitFileStrings.KNIT_MODEL_IS_SINGLETON)
+                .returns(TypeName.BOOLEAN)
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addStatement("return $L",Boolean.toString(modelMirror.instanceType.equals(InstanceType.SINGLETON)))
+                .build();
+
         FieldSpec parentExposerField = FieldSpec
                 .builder(ClassName.bestGuess(
                         modelMirror.enclosingClass.getQualifiedName().toString()
@@ -134,6 +143,7 @@ class KnitModelWriter {
         clazzBuilder.addMethod(onLoadMethod);
         clazzBuilder.addMethod(onMemoryLow);
         clazzBuilder.addMethod(getParentMethod);
+        clazzBuilder.addMethod(isSingletonMethod);
 
 
         PackageElement packageElement =

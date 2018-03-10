@@ -43,6 +43,7 @@ public class KnitFileStrings {
     public static final String KNIT_MODEL_GET_PARENT_METHOD = "getParent";
     public static final String KNIT_MODEL_INPUT_METHOD = "input";
     public static final String KNIT_GET_NAVIGATOR_METHOD = "getNavigator";
+    public static final String KNIT_MODEL_IS_SINGLETON = "isSingleton";
 
     //USER
     public static final String KNIT_USER = "com.omerozer.knit.KnitUser";

@@ -31,6 +31,7 @@ public abstract class KnitPresenter<T> implements PresenterInterface {
 
     @Override
     public void onViewApplied(Object viewObject, Bundle bundle) {
+        this.contract = null;
         this.viewObjectRef = new WeakReference<Object>(viewObject);
     }
 
@@ -112,7 +113,29 @@ public abstract class KnitPresenter<T> implements PresenterInterface {
 
     }
 
+    public KnitPresenter() {
+        super();
+    }
 
+    @Override
+    public void onViewStart() {
+
+    }
+
+    @Override
+    public void onViewResume() {
+
+    }
+
+    @Override
+    public void onViewPause() {
+
+    }
+
+    @Override
+    public void onViewStop() {
+
+    }
 
     @Override
     public void onCurrentViewReleased() {

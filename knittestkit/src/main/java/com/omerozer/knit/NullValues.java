@@ -41,9 +41,34 @@ public final class NullValues {
         public String[] getHandledValues() {
             return new String[0];
         }
+
+        @Override
+        public boolean isSingleton() {
+            return false;
+        }
     };
 
     public static final InternalPresenter NULL_PRESENTER = new InternalPresenter() {
+        @Override
+        public void onViewStart() {
+
+        }
+
+        @Override
+        public void onViewResume() {
+
+        }
+
+        @Override
+        public void onViewPause() {
+
+        }
+
+        @Override
+        public void onViewStop() {
+
+        }
+
         @Override
         public InternalModel getModelManager() {
             return null;

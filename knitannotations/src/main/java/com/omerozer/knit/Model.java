@@ -5,4 +5,5 @@ package com.omerozer.knit;
  */
 
 public @interface Model {
+    InstanceType value() default InstanceType.IN_GRAPH;
 }

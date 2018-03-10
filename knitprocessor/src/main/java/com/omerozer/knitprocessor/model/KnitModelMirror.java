@@ -1,6 +1,8 @@
 package com.omerozer.knitprocessor.model;
 
 
+import com.omerozer.knit.InstanceType;
+
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -16,6 +18,8 @@ import javax.lang.model.element.VariableElement;
 class KnitModelMirror {
 
     public TypeElement enclosingClass;
+
+    public InstanceType instanceType;
 
     public Map<String[],VariableElement> generatesParamsMap = new LinkedHashMap<>();
 

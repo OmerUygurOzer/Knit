@@ -41,4 +41,6 @@ public abstract class InternalModel implements ModelInterface {
     public boolean shouldLoad() {
         return false;
     }
+
+    public abstract boolean isSingleton();
 }
