@@ -1,21 +1,16 @@
 package com.omerozer.knit.classloadertests;
 
-import static junit.framework.Assert.assertEquals;
-
 import com.omerozer.knit.InternalModel;
-import com.omerozer.knit.ModelMap;
-import com.omerozer.knit.ModelMapInterface;
 import com.omerozer.knit.TestModel;
 import com.omerozer.knit.TestModel_Model;
-import com.omerozer.knit.ViewToPresenterMap;
-import com.omerozer.knit.ViewToPresenterMapInterface;
 import com.omerozer.knit.classloaders.KnitModelLoader;
-import com.omerozer.knit.classloaders.KnitUtilsLoader;
 import com.omerozer.knit.schedulers.SchedulerProvider;
 import com.omerozer.knit.schedulers.Schedulers;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import static junit.framework.Assert.assertEquals;
 
 /**
  * Created by omerozer on 3/8/18.

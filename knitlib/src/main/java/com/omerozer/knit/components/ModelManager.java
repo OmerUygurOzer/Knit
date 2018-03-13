@@ -31,8 +31,8 @@ public class ModelManager extends InternalModel {
     public void registerModelComponentTag(ComponentTag componentTag) {
         for (String val : usageGraph.getModelWithTag(componentTag).getHandledValues()) {
             valueToModelMap.put(val, componentTag);
-            usageGraph.getModelWithTag(componentTag).getParent().setModelManager(this);
         }
+        usageGraph.getModelWithTag(componentTag).getParent().setModelManager(this);
     }
 
     public void unregisterComponentTag(ComponentTag componentTag) {

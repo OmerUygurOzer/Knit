@@ -17,6 +17,10 @@ public class TestPresenter_Presenter extends InternalPresenter {
 
     private InternalModel modelManager;
 
+    public TestPresenter_Presenter(){
+
+    }
+
     public TestPresenter_Presenter(Knit knitInstance, KnitNavigator navigator,
             InternalModel modelManager) {
         this.knit = knitInstance;
@@ -91,6 +95,26 @@ public class TestPresenter_Presenter extends InternalPresenter {
 
     @Override
     public void handle(ViewEventPool eventPool, ViewEventEnv eventEnv, InternalModel modelManager) {
+
+    }
+
+    @Override
+    public void onViewStart() {
+
+    }
+
+    @Override
+    public void onViewResume() {
+
+    }
+
+    @Override
+    public void onViewPause() {
+
+    }
+
+    @Override
+    public void onViewStop() {
 
     }
 }

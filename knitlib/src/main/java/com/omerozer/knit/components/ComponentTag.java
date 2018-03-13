@@ -12,6 +12,10 @@ public final class ComponentTag {
         return new ComponentTag(baseTag++);
     }
 
+    public static void reset(){
+        baseTag = Short.MIN_VALUE;
+    }
+
     private Short tag;
 
     private ComponentTag(Short tag){
@@ -31,5 +35,9 @@ public final class ComponentTag {
     @Override
     public int hashCode() {
         return tag.hashCode();
+    }
+
+    public Short getTag(){
+        return tag;
     }
 }

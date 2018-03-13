@@ -52,7 +52,7 @@ public final class KnitTestKit {
         }
 
         public InternalPresenter build(){
-                KnitPresenterLoader knitPresenterLoader = new KnitPresenterLoader(knit,navigator,modelManager);
+                KnitPresenterLoader knitPresenterLoader = new KnitPresenterLoader(knit);
                 ViewToPresenterMapInterface viewToPresenterMap = new KnitUtilsLoader().getViewToPresenterMap(Knit.class);
                 InternalPresenter internalPresenter = knitPresenterLoader.loadPresenter(viewToPresenterMap.getPresenterClassForPresenter(clazz));
                 T presenter = (T)internalPresenter.getParent();

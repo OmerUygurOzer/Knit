@@ -41,6 +41,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
     api project(':knitannotations')
+    testApi project(':knittestkit')
 
     testCompile "org.mockito:mockito-core:2.15.0"
 

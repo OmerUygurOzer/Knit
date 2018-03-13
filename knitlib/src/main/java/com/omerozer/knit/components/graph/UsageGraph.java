@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.omerozer.knit.InternalModel;
 import com.omerozer.knit.InternalPresenter;
 import com.omerozer.knit.Knit;
+import com.omerozer.knit.KnitInterface;
 import com.omerozer.knit.KnitNavigator;
 import com.omerozer.knit.MemoryEntity;
 import com.omerozer.knit.ModelMapInterface;
@@ -36,8 +37,6 @@ public class UsageGraph {
 
     private ModelManager modelManager;
 
-    private KnitUtilsLoader knitUtilsLoader;
-
     private KnitModelLoader knitModelLoader;
 
     private KnitPresenterLoader knitPresenterLoader;
@@ -56,15 +55,13 @@ public class UsageGraph {
 
     private Set<ComponentTag> activePresenterTags;
 
-    public UsageGraph(Knit knitInstance, SchedulerProvider schedulerProvider, KnitNavigator navigator,
-            ModelManager modelManager) {
-        this.knitUtilsLoader = new KnitUtilsLoader();
-        this.modelManager = modelManager;
+    public UsageGraph(KnitInterface knitInstance) {
+        this.modelManager = knitInstance.getModelManager();
         this.modelManager.setUsageGraph(this);
-        this.viewToPresenterMap = knitUtilsLoader.getViewToPresenterMap(knitInstance.getClass());
-        this.modelMap = knitUtilsLoader.getModelMap(knitInstance.getClass());
-        this.knitModelLoader = new KnitModelLoader(schedulerProvider);
-        this.knitPresenterLoader = new KnitPresenterLoader(knitInstance,navigator, modelManager);
+        this.viewToPresenterMap = knitInstance.getUtilsLoader().getViewToPresenterMap(knitInstance.getClass());
+        this.modelMap = knitInstance.getUtilsLoader().getModelMap(knitInstance.getClass());
+        this.knitModelLoader = knitInstance.getModelLoader();
+        this.knitPresenterLoader = knitInstance.getPresenterLoader();
         this.counterMap = new HashMap<>();
         this.graphBase = new HashMap<>();
         this.clazzToTagMap = new HashMap<>();

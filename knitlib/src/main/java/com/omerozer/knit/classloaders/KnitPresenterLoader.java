@@ -5,6 +5,7 @@ import android.util.Log;
 import com.omerozer.knit.InternalModel;
 import com.omerozer.knit.InternalPresenter;
 import com.omerozer.knit.Knit;
+import com.omerozer.knit.KnitInterface;
 import com.omerozer.knit.KnitNavigator;
 
 import java.lang.reflect.Constructor;
@@ -20,16 +21,16 @@ public class KnitPresenterLoader {
 
     private Map<Class<?>, Constructor<?>> cache;
 
-    private Knit knitInstance;
+    private KnitInterface knitInstance;
 
     private KnitNavigator navigator;
 
     private InternalModel modelManager;
 
-    public KnitPresenterLoader(Knit knit,KnitNavigator navigator, InternalModel modelManager) {
+    public KnitPresenterLoader(KnitInterface knit) {
         this.knitInstance = knit;
-        this.navigator = navigator;
-        this.modelManager = modelManager;
+        this.navigator = knit.getNavigator();
+        this.modelManager = knit.getModelManager();
         this.cache = new HashMap<>();
     }
 

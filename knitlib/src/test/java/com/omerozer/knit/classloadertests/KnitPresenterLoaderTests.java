@@ -5,6 +5,8 @@ import static junit.framework.Assert.assertEquals;
 import com.omerozer.knit.InternalModel;
 import com.omerozer.knit.InternalPresenter;
 import com.omerozer.knit.Knit;
+import com.omerozer.knit.KnitInterface;
+import com.omerozer.knit.KnitMock;
 import com.omerozer.knit.KnitNavigator;
 import com.omerozer.knit.TestPresenter_Presenter;
 import com.omerozer.knit.classloaders.KnitPresenterLoader;
@@ -20,27 +22,25 @@ import org.mockito.MockitoAnnotations;
 
 public class KnitPresenterLoaderTests {
 
-    @Mock
-    Knit knit;
+    KnitInterface knit;
 
-    @Mock
     KnitNavigator knitNavigator;
 
-    @Mock
     InternalModel modelManager;
 
     KnitPresenterLoader knitPresenterLoader;
 
     @Before
     public void setup(){
-        MockitoAnnotations.initMocks(this);
-        this.knitPresenterLoader = new KnitPresenterLoader(knit,knitNavigator,modelManager);
+        this.knit = KnitMock.get();
+        this.knitNavigator = knit.getNavigator();
+        this.modelManager = knit.getModelManager();
+        this.knitPresenterLoader = new KnitPresenterLoader(knit);
     }
 
     @Test
     public void loadPresenterTest(){
-        InternalPresenter internalPresenter = knitPresenterLoader.loadPresenter(
-                TestPresenter_Presenter.class);
+        InternalPresenter internalPresenter = knitPresenterLoader.loadPresenter(TestPresenter_Presenter.class);
         assertEquals(TestPresenter_Presenter.class,internalPresenter.getClass());
         TestPresenter_Presenter castPresenter = (TestPresenter_Presenter)internalPresenter;
         assertEquals(knit,castPresenter.getKnit());

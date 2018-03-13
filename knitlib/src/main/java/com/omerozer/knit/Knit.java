@@ -2,6 +2,9 @@ package com.omerozer.knit;
 
 import android.app.Application;
 
+import com.omerozer.knit.classloaders.KnitModelLoader;
+import com.omerozer.knit.classloaders.KnitPresenterLoader;
+import com.omerozer.knit.classloaders.KnitUtilsLoader;
 import com.omerozer.knit.components.KnitMemoryManager;
 import com.omerozer.knit.components.ModelManager;
 import com.omerozer.knit.components.graph.UsageGraph;
@@ -14,7 +17,7 @@ import java.lang.ref.WeakReference;
  * Created by omerozer on 2/1/18.
  */
 
-public class Knit {
+public class Knit implements KnitInterface {
 
     private static Knit instance;
 
@@ -25,6 +28,12 @@ public class Knit {
     public static Knit getInstance(){
         return instance;
     }
+
+    private KnitModelLoader knitModelLoader;
+
+    private KnitPresenterLoader knitPresenterLoader;
+
+    private KnitUtilsLoader knitUtilsLoader;
 
     private UsageGraph userGraph;
 
@@ -41,7 +50,10 @@ public class Knit {
         this.modelManager = new ModelManager();
         this.schedulerProvider = new Schedulers();
         this.navigator = KnitNavigator.getInstance();
-        this.userGraph = new UsageGraph(this,schedulerProvider,navigator,modelManager);
+        this.knitModelLoader = new KnitModelLoader(schedulerProvider);
+        this.knitPresenterLoader = new KnitPresenterLoader(this);
+        this.knitUtilsLoader = new KnitUtilsLoader();
+        this.userGraph = new UsageGraph(this);
         application.registerComponentCallbacks(new KnitMemoryManager(userGraph));
         application.registerActivityLifecycleCallbacks(new KnitAppListener(this));
         KnitEvents.init(this);
@@ -72,8 +84,34 @@ public class Knit {
         return userGraph.getPresenterForObject(parentPresenter);
     }
 
-    InternalModel getModelManager(){
+    @Override
+    public SchedulerProvider getSchedulerProvider() {
+        return schedulerProvider;
+    }
+
+    @Override
+    public ModelManager getModelManager(){
         return modelManager;
+    }
+
+    @Override
+    public KnitNavigator getNavigator() {
+        return navigator;
+    }
+
+    @Override
+    public KnitModelLoader getModelLoader() {
+        return knitModelLoader;
+    }
+
+    @Override
+    public KnitPresenterLoader getPresenterLoader() {
+        return knitPresenterLoader;
+    }
+
+    @Override
+    public KnitUtilsLoader getUtilsLoader() {
+        return knitUtilsLoader;
     }
 
 
