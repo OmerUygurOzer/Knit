@@ -21,6 +21,9 @@ public class ReturnTypeExaminer {
             if(name.contains("char")){
                 return "''";
             }
+            if(name.contains("bool")){
+                return "false";
+            }
         }
         return "null";
     }

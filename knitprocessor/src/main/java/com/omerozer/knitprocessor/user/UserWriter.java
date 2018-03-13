@@ -64,6 +64,9 @@ public class UserWriter extends KnitClassWriter {
 
     private void createExposedMethodsMethod(TypeSpec.Builder builder, UserMirror userMirror){
         for (ExecutableElement methodElement : userMirror.method) {
+            if(methodElement.getModifiers().contains(Modifier.PRIVATE)){
+                continue;
+            }
             MethodSpec.Builder userBuilder = MethodSpec
                     .methodBuilder("use_" + methodElement.getSimpleName().toString())
                     .addModifiers(Modifier.PUBLIC);

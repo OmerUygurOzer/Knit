@@ -76,6 +76,9 @@ public class ContractWriter extends KnitClassWriter {
 
     private void createNonAndroidMethods(TypeSpec.Builder builder,KnitViewMirror viewMirror){
         for(ExecutableElement executableElement : viewMirror.methods){
+            if(executableElement.getModifiers().contains(Modifier.PRIVATE)){
+                continue;
+            }
             MethodSpec.Builder methodBuilder = MethodSpec
                     .methodBuilder(executableElement.getSimpleName().toString())
                     .addModifiers(Modifier.PUBLIC);

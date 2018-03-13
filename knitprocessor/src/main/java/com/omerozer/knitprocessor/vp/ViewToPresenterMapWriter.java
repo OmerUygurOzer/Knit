@@ -40,8 +40,6 @@ public class ViewToPresenterMapWriter extends KnitClassWriter {
         createGetPresenterForParentMethod(viewToPresenterMapBuilder,map);
 
        writeToFile(filer,KnitFileStrings.KNIT_PACKAGE,viewToPresenterMapBuilder);
-
-
     }
 
     private void createFindPresenterForClassMethod(TypeSpec.Builder builder,Map<KnitPresenterMirror, KnitViewMirror> map){
