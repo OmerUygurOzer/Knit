@@ -25,10 +25,6 @@ public class SecondPresenter extends KnitPresenter<SecondActivityContract> {
     public void onViewApplied(Object viewObject,Bundle bundle){
         super.onViewApplied(viewObject,bundle);
         request("umbrella", KnitSchedulers.IO,KnitSchedulers.MAIN);
-        request("umbrella", KnitSchedulers.IO,KnitSchedulers.MAIN);
-        request("umbrella", KnitSchedulers.IO,KnitSchedulers.MAIN);
-        request("umbrella", KnitSchedulers.IO,KnitSchedulers.MAIN);
-        request("umbrella", KnitSchedulers.IO,KnitSchedulers.MAIN);
         request("Ttest", KnitSchedulers.IO,KnitSchedulers.MAIN);
     }
 
