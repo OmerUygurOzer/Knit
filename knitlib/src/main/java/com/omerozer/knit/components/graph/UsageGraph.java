@@ -156,6 +156,10 @@ public class UsageGraph {
     }
 
     public void attachViewToComponent(Object viewObject,Bundle bundle){
+        if(!graphBase.containsKey(clazzToTagMap.get(viewObject.getClass()))){
+            return;
+        }
+
         for(EntityNode presenter:graphBase.get(clazzToTagMap.get(viewObject.getClass())).next){
             if(instanceMap.containsKey(presenter.tag)){
                 ((InternalPresenter) instanceMap.get(presenter.tag)).onViewApplied(viewObject,bundle);
@@ -164,6 +168,9 @@ public class UsageGraph {
     }
 
     public void releaseViewFromComponent(Object viewObject){
+        if(!graphBase.containsKey(clazzToTagMap.get(viewObject.getClass()))){
+            return;
+        }
         for(EntityNode presenter:graphBase.get(clazzToTagMap.get(viewObject.getClass())).next){
             if(instanceMap.containsKey(presenter.tag)){
                 ((InternalPresenter) instanceMap.get(presenter.tag)).onCurrentViewReleased();
