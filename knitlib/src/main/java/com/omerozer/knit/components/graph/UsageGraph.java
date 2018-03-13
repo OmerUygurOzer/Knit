@@ -204,6 +204,11 @@ public class UsageGraph {
 
     private void recurseForStart(EntityNode entityNode, Object viewObject, Bundle data) {
         //DFS to create models first
+
+        if(entityNode==null){
+            return;
+        }
+
         for (EntityNode node : entityNode.next) {
             recurseForStart(node, viewObject, data);
         }
@@ -243,6 +248,11 @@ public class UsageGraph {
 
 
     private void recurseForFinish(EntityNode entityNode) {
+
+        if(entityNode==null){
+            return;
+        }
+
         //Again DFS to finish models first
         for (EntityNode node : entityNode.next) {
             recurseForFinish(node);
