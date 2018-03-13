@@ -172,6 +172,9 @@ public class UsageGraph {
     }
 
     private boolean isComponentCreated(Object viewObject){
+        if(!graphBase.containsKey(clazzToTagMap.get(viewObject.getClass()))){
+            return false;
+        }
         for(EntityNode entityNode:graphBase.get(clazzToTagMap.get(viewObject.getClass())).next){
             if(instanceMap.containsKey(entityNode.tag)){
                 return true;
