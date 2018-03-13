@@ -78,22 +78,30 @@ public class KnitAppListener implements Application.ActivityLifecycleCallbacks {
 
     @Override
     public void onActivityStarted(Activity activity) {
-        knit.findPresenterForView(activity).onViewStart();
+        if(knit.findPresenterForView(activity)!=null){
+            knit.findPresenterForView(activity).onViewStart();
+        }
     }
 
     @Override
     public void onActivityResumed(Activity activity) {
-        knit.findPresenterForView(activity).onViewResume();
+        if(knit.findPresenterForView(activity)!=null) {
+            knit.findPresenterForView(activity).onViewResume();
+        }
     }
 
     @Override
     public void onActivityPaused(Activity activity) {
-        knit.findPresenterForView(activity).onViewPause();
+        if(knit.findPresenterForView(activity)!=null) {
+            knit.findPresenterForView(activity).onViewPause();
+        }
     }
 
     @Override
     public void onActivityStopped(Activity activity) {
-       knit.findPresenterForView(activity).onViewStop();
+        if(knit.findPresenterForView(activity)!=null) {
+            knit.findPresenterForView(activity).onViewStop();
+        }
     }
 
     @Override
