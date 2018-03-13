@@ -1,5 +1,6 @@
 package com.omerozer.knit;
 
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -9,7 +10,9 @@ import com.omerozer.knit.viewevents.KnitOnClickEvent;
 import com.omerozer.knit.viewevents.KnitOnClickEventPool;
 import com.omerozer.knit.viewevents.KnitOnFocusChangedEvent;
 import com.omerozer.knit.viewevents.KnitOnFocusChangedEventPool;
+import com.omerozer.knit.viewevents.KnitOnRefreshEvent;
 import com.omerozer.knit.viewevents.KnitOnTextChangedEventPool;
+import com.omerozer.knit.viewevents.KnitSwipeRefreshLayoutEventPool;
 import com.omerozer.knit.viewevents.KnitTextChangedEvent;
 
 /**
@@ -27,6 +30,7 @@ public class KnitEvents {
     private final static KnitOnClickEventPool onClickEventPool = new KnitOnClickEventPool();
     private final static KnitOnTextChangedEventPool onTextChangedEventPool = new KnitOnTextChangedEventPool();
     private final static KnitOnFocusChangedEventPool onFocusChangedEventPool = new KnitOnFocusChangedEventPool();
+    private final static KnitSwipeRefreshLayoutEventPool onSwipeRefreshEventPool = new KnitSwipeRefreshLayoutEventPool();
 
     public static void onClick(final String tag, final Object carrierObject, View view) {
         view.setOnClickListener(new android.view.View.OnClickListener() {
@@ -101,5 +105,16 @@ public class KnitEvents {
         });
     }
 
+    public static void onSwipeRefresh(final String tag, final Object carrierObject,final SwipeRefreshLayout view) {
+        view.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                KnitOnRefreshEvent event = onSwipeRefreshEventPool.getEvent();
+                event.setTag(tag);
+                event.setViewWeakReference(view);
+                knitInstance.findPresenterForView(carrierObject).handle(onSwipeRefreshEventPool, event, knitInstance.getModelManager());
+            }
+        });
+    }
 
 }
