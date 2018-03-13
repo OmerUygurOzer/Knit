@@ -24,19 +24,21 @@ import javax.tools.Diagnostic;
 
 public class KnitUserProcessor extends AbstractProcessor {
 
-    List<UserMirror> userMirros;
+    List<UserMirror> userMirrors;
+    UserWriter userWriter;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnvironment) {
         super.init(processingEnvironment);
-        userMirros = new ArrayList<>();
+        this.userMirrors = new ArrayList<>();
+        this.userWriter = new UserWriter();
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
 
         processUsers(roundEnvironment.getElementsAnnotatedWith(Use.class));
-        createUsers(userMirros);
+        createUsers(userMirrors);
 
         return true;
     }
@@ -62,13 +64,13 @@ public class KnitUserProcessor extends AbstractProcessor {
                     userMirror.requiredValues.add(element.getAnnotation(UseMethod.class).value());
                 }
             }
-            this.userMirros.add(userMirror);
+            this.userMirrors.add(userMirror);
         }
     }
 
     private void createUsers(List<UserMirror> users) {
         for (UserMirror userMirror : users) {
-            UserWriter.write(processingEnv.getFiler(), userMirror);
+            userWriter.write(processingEnv.getFiler(), userMirror);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.omerozer.knitprocessor.user;
 
+import com.omerozer.knitprocessor.KnitClassWriter;
 import com.omerozer.knitprocessor.KnitFileStrings;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
@@ -20,8 +21,8 @@ import javax.lang.model.element.VariableElement;
  * Created by omerozer on 2/5/18.
  */
 
-public class UserWriter {
-    static void write(Filer filer, UserMirror userMirror) {
+public class UserWriter extends KnitClassWriter {
+    void write(Filer filer, UserMirror userMirror) {
 
         TypeSpec.Builder clazzBuilder = TypeSpec
                 .classBuilder(
@@ -29,18 +30,39 @@ public class UserWriter {
                 .addSuperinterface(ClassName.bestGuess(KnitFileStrings.KNIT_USER))
                 .addModifiers(Modifier.PUBLIC);
 
+        addKnitWarning(clazzBuilder);
+
         FieldSpec parentField = FieldSpec
                 .builder(TypeName.get(userMirror.enclosingClass.asType()), "parent")
                 .addModifiers(Modifier.PRIVATE)
                 .build();
 
-        MethodSpec constructor = MethodSpec
-                .constructorBuilder()
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_PRESENTER), "parent")
-                .addStatement("this.parent =("+ userMirror.enclosingClass.getQualifiedName()  + ")parent")
-                .build();
+        createConstructor(clazzBuilder,userMirror);
+        createExposedMethodsMethod(clazzBuilder,userMirror);
+        createGetterMethods(clazzBuilder,userMirror);
 
+        clazzBuilder.addField(parentField);
+
+        PackageElement packageElement = (PackageElement)userMirror.enclosingClass.getEnclosingElement() ;
+
+        writeToFile(filer,packageElement.getQualifiedName().toString(),clazzBuilder);
+
+    }
+
+    private void createGetterMethods(TypeSpec.Builder builder, UserMirror userMirror){
+        for (String string : userMirror.getterMap.keySet()) {
+            MethodSpec getterMethod = MethodSpec
+                    .methodBuilder("get"+string)
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(TypeName.get(userMirror.getterMap.get(string).getReturnType()))
+                    .addStatement("return this.parent.get"+string+"()")
+                    .build();
+            builder.addMethod(getterMethod);
+        }
+
+    }
+
+    private void createExposedMethodsMethod(TypeSpec.Builder builder, UserMirror userMirror){
         for (ExecutableElement methodElement : userMirror.method) {
             MethodSpec.Builder userBuilder = MethodSpec
                     .methodBuilder("use_" + methodElement.getSimpleName().toString())
@@ -62,34 +84,15 @@ public class UserWriter {
             }
             paramsBlock.append(")");
             userBuilder.addStatement(paramsBlock.toString());
-            clazzBuilder.addMethod(userBuilder.build());
+            builder.addMethod(userBuilder.build());
         }
+    }
 
-        for (String string : userMirror.getterMap.keySet()) {
-                MethodSpec getterMethod = MethodSpec
-                        .methodBuilder("get"+string)
-                        .addModifiers(Modifier.PUBLIC)
-                        .returns(TypeName.get(userMirror.getterMap.get(string).getReturnType()))
-                        .addStatement("return this.parent.get"+string+"()")
-                        .build();
-                clazzBuilder.addMethod(getterMethod);
-        }
-
-
-        clazzBuilder.addMethod(constructor);
-        clazzBuilder.addField(parentField);
-
-        PackageElement packageElement = (PackageElement)userMirror.enclosingClass.getEnclosingElement() ;
-
-        JavaFile javaFile = JavaFile
-                .builder(packageElement.getQualifiedName().toString(),clazzBuilder.build())
-                .build();
-
-        try {
-            javaFile.writeTo(filer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+    private void createConstructor(TypeSpec.Builder builder, UserMirror userMirror){
+        builder.addMethod(MethodSpec
+                .constructorBuilder()
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_PRESENTER), "parent")
+                .addStatement("this.parent =("+ userMirror.enclosingClass.getQualifiedName()  + ")parent").build());
     }
 }

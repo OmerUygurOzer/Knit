@@ -34,6 +34,10 @@ public class KnitPresenterProcessor extends AbstractProcessor {
     private Set<KnitPresenterMirror> presenters;
     private Set<KnitViewMirror> views;
     private Map<KnitPresenterMirror, KnitViewMirror> presenterToViewMap;
+    private KnitPresenterWriter knitPresenterWriter;
+    private PresenterExposerWriter presenterExposerWriter;
+    private ContractWriter contractWriter;
+    private ViewToPresenterMapWriter viewToPresenterMapWriter;
 
 
     @Override
@@ -42,6 +46,10 @@ public class KnitPresenterProcessor extends AbstractProcessor {
         this.presenters = new LinkedHashSet<>();
         this.views = new LinkedHashSet<>();
         this.presenterToViewMap = new LinkedHashMap<>();
+        this.knitPresenterWriter = new KnitPresenterWriter();
+        this.presenterExposerWriter = new PresenterExposerWriter();
+        this.contractWriter = new ContractWriter();
+        this.viewToPresenterMapWriter = new ViewToPresenterMapWriter();
     }
 
     @Override
@@ -128,19 +136,19 @@ public class KnitPresenterProcessor extends AbstractProcessor {
     private void createPresenters(Set<KnitPresenterMirror> presenters,
             Map<KnitPresenterMirror, KnitViewMirror> map) {
         for (KnitPresenterMirror knitPresenterMirror : presenters) {
-            PresenterExposerWriter.write(processingEnv.getFiler(), knitPresenterMirror);
-            KnitPresenterWriter.write(processingEnv.getFiler(), knitPresenterMirror, map);
+            presenterExposerWriter.write(processingEnv.getFiler(), knitPresenterMirror);
+            knitPresenterWriter.write(processingEnv.getFiler(), knitPresenterMirror, map);
         }
     }
 
     private void createViewToPresenterMap(Map<KnitPresenterMirror, KnitViewMirror> map) {
-        ViewToPresenterMapWriter.write(processingEnv.getFiler(), map);
+        viewToPresenterMapWriter.write(processingEnv.getFiler(), map);
     }
 
 
     private void createViews(Set<KnitViewMirror> views) {
         for (KnitViewMirror viewMirror : views) {
-            ContractWriter.write(processingEnv.getFiler(),viewMirror);
+            contractWriter.write(processingEnv.getFiler(),viewMirror);
         }
     }
 

@@ -2,17 +2,16 @@ package com.omerozer.knitprocessor.vp;
 
 import com.omerozer.knit.Use;
 import com.omerozer.knit.UseMethod;
+import com.omerozer.knitprocessor.KnitClassWriter;
 import com.omerozer.knitprocessor.KnitFileStrings;
 import com.omerozer.knitprocessor.PackageStringExtractor;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -25,10 +24,42 @@ import javax.lang.model.element.VariableElement;
  * Created by omerozer on 2/2/18.
  */
 
-class KnitPresenterWriter {
-    static void write(Filer filer, KnitPresenterMirror presenterMirror,
+class KnitPresenterWriter extends KnitClassWriter {
+    void write(Filer filer, KnitPresenterMirror presenterMirror,
             Map<KnitPresenterMirror, KnitViewMirror> map) {
 
+        TypeSpec.Builder clazzBuilder = TypeSpec
+                .classBuilder(presenterMirror.enclosingClass.getSimpleName()
+                        + KnitFileStrings.KNIT_PRESENTER_POSTFIX)
+                .superclass(ClassName.bestGuess(KnitFileStrings.KNIT_PRESENTER))
+                .addAnnotation(Use.class)
+                .addModifiers(Modifier.PUBLIC);
+
+        addKnitWarning(clazzBuilder);
+
+        ClassName contractName = ClassName.bestGuess(presenterMirror.targetView.toString()+KnitFileStrings.KNIT_CONTRACT_POSTFIX);
+
+        createFields(clazzBuilder,contractName,presenterMirror);
+
+        createConstructor(clazzBuilder, presenterMirror);
+        createApplyMethod(clazzBuilder, presenterMirror, contractName);
+        createHandleMethod(clazzBuilder, presenterMirror, map);
+        createRemoveMethod(clazzBuilder, presenterMirror);
+        createLoadMethod(clazzBuilder, presenterMirror);
+        createDestroyMethod(clazzBuilder, presenterMirror);
+        createUpdatingMethods(clazzBuilder, presenterMirror, map);
+        createOnMemoryLowMethod(clazzBuilder,presenterMirror);
+        createMethods(clazzBuilder,map,presenterMirror);
+        createNativeViewCallbacks(clazzBuilder,presenterMirror);
+
+
+        String packageName = PackageStringExtractor.extract(presenterMirror.targetView);
+
+        writeToFile(filer,packageName,clazzBuilder);
+
+    }
+
+    private void createFields(TypeSpec.Builder builder,ClassName contractName ,KnitPresenterMirror presenterMirror){
         FieldSpec parentField = FieldSpec
                 .builder(ClassName.bestGuess(presenterMirror.enclosingClass.getQualifiedName() +
                                 KnitFileStrings.KNIT_MODEL_EXPOSER_POSTFIX), "parent",
@@ -54,16 +85,46 @@ class KnitPresenterWriter {
                 .addModifiers(Modifier.PRIVATE)
                 .build();
 
-        ClassName contractName = ClassName.bestGuess(presenterMirror.targetView.toString()+KnitFileStrings.KNIT_CONTRACT_POSTFIX);
+
 
         FieldSpec activeViewWeakRefField = FieldSpec
                 .builder(contractName, "activeViewContract")
                 .addModifiers(Modifier.PRIVATE)
                 .build();
 
+        builder.addField(parentField);
+        builder.addField(loadedField);
+        builder.addField(modelManagerField);
+        builder.addField(updateablesField);
+        builder.addField(navigatorField);
+        builder.addField(activeViewWeakRefField);
+    }
+
+    private void createConstructor(TypeSpec.Builder clazzBuilder,
+            KnitPresenterMirror presenterMirror) {
+
+        MethodSpec.Builder constructorBuilder = MethodSpec
+                .constructorBuilder()
+                .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT),"knitInstance")
+                .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_NAVIGATOR),"navigator")
+                .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL), "modelManager")
+                .addStatement("$L parent = new $L()",presenterMirror.enclosingClass.getQualifiedName(),presenterMirror.enclosingClass.getQualifiedName())
+                .addStatement("this.parent = new " + presenterMirror.enclosingClass.getQualifiedName() + KnitFileStrings.KNIT_MODEL_EXPOSER_POSTFIX + "(parent)")
+                .addStatement("parent.setKnit(knitInstance)")
+                .addStatement("this.modelManager = modelManager")
+                .addStatement("this.updateables = $L",KnitFileStrings.createStringArrayField(presenterMirror.updatingMethodsMap.keySet()))
+                .addStatement("this.navigator = navigator")
+                .addModifiers(Modifier.PUBLIC);
+
+        constructorBuilder.addStatement("this.loaded = false");
+
+        clazzBuilder.addMethod(constructorBuilder.build());
+
+    }
+
+    private void createMethods(TypeSpec.Builder builder,Map<KnitPresenterMirror, KnitViewMirror> map,KnitPresenterMirror presenterMirror){
 
         MethodSpec shouldLoadMethod;
-
         MethodSpec.Builder shouldLoadMethodBuilder = MethodSpec
                 .methodBuilder(KnitFileStrings.KNIT_ME_SHOULD_LOAD_METHOD)
                 .returns(TypeName.BOOLEAN)
@@ -120,89 +181,27 @@ class KnitPresenterWriter {
                 .addStatement("return this.parent.getParent()")
                 .build();
 
+        builder.addMethod(shouldLoadMethod);
+        builder.addMethod(getModelManagerMethod);
+        builder.addMethod(getContractMethod);
+        builder.addMethod(onCreateMethod);
+        builder.addMethod(getUpdatablesMethod);
+        builder.addMethod(getNavigatorMEthod);
+        builder.addMethod(getParentMethod);
+    }
 
-
-
-        TypeSpec.Builder clazzBuilder = TypeSpec
-                .classBuilder(presenterMirror.enclosingClass.getSimpleName()
-                        + KnitFileStrings.KNIT_PRESENTER_POSTFIX)
-                .superclass(ClassName.bestGuess(KnitFileStrings.KNIT_PRESENTER))
-                .addAnnotation(Use.class)
-                .addModifiers(Modifier.PUBLIC)
-                .addField(parentField)
-                .addField(loadedField)
-                .addField(modelManagerField)
-                .addField(activeViewWeakRefField)
-                .addField(updateablesField)
-                .addField(navigatorField)
-                .addMethod(shouldLoadMethod)
-                .addMethod(getModelManagerMethod)
-                .addMethod(onCreateMethod)
-                .addMethod(getUpdatablesMethod)
-                .addMethod(getContractMethod)
-                .addMethod(getNavigatorMEthod)
-                .addMethod(getParentMethod);
-
+    private void createNativeViewCallbacks(TypeSpec.Builder builder, KnitPresenterMirror knitPresenterMirror){
         for(String callback : NativeViewCallbacks.getAll()){
-            clazzBuilder.addMethod(MethodSpec
+            builder.addMethod(MethodSpec
                     .methodBuilder(callback)
                     .addAnnotation(Override.class)
                     .addModifiers(Modifier.PUBLIC)
                     .addStatement("this.parent.use_$L()",callback)
                     .build());
         }
-
-
-
-        createConstructor(clazzBuilder, presenterMirror);
-        createApplyMethod(clazzBuilder, presenterMirror, contractName);
-        createHandleMethod(clazzBuilder, presenterMirror, map);
-        createRemoveMethod(clazzBuilder, presenterMirror);
-        createLoadMethod(clazzBuilder, presenterMirror);
-        createDestroyMethod(clazzBuilder, presenterMirror);
-        createUpdatingMethods(clazzBuilder, presenterMirror, map);
-        createOnMemoryLowMethod(clazzBuilder,presenterMirror);
-
-
-        TypeSpec clazz = clazzBuilder.build();
-
-        String packageName = PackageStringExtractor.extract(presenterMirror.targetView);
-
-        JavaFile javaFile = JavaFile
-                .builder(packageName, clazz)
-                .build();
-
-        try {
-            javaFile.writeTo(filer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 
-    private static void createConstructor(TypeSpec.Builder clazzBuilder,
-            KnitPresenterMirror presenterMirror) {
-
-        MethodSpec.Builder constructorBuilder = MethodSpec
-                .constructorBuilder()
-                .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT),"knitInstance")
-                .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_NAVIGATOR),"navigator")
-                .addParameter(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL), "modelManager")
-                .addStatement("$L parent = new $L()",presenterMirror.enclosingClass.getQualifiedName(),presenterMirror.enclosingClass.getQualifiedName())
-                .addStatement("this.parent = new " + presenterMirror.enclosingClass.getQualifiedName() + KnitFileStrings.KNIT_MODEL_EXPOSER_POSTFIX + "(parent)")
-                .addStatement("parent.setKnit(knitInstance)")
-                .addStatement("this.modelManager = modelManager")
-                .addStatement("this.updateables = $L",KnitFileStrings.createStringArrayField(presenterMirror.updatingMethodsMap.keySet()))
-                .addStatement("this.navigator = navigator")
-                .addModifiers(Modifier.PUBLIC);
-
-        constructorBuilder.addStatement("this.loaded = false");
-
-        clazzBuilder.addMethod(constructorBuilder.build());
-
-    }
-
-    private static void createHandleMethod(TypeSpec.Builder clazzBuilder,
+    private void createHandleMethod(TypeSpec.Builder clazzBuilder,
             KnitPresenterMirror presenterMirror, Map<KnitPresenterMirror, KnitViewMirror> map) {
 
         MethodSpec.Builder handleMethodBuilder = MethodSpec
@@ -234,7 +233,7 @@ class KnitPresenterWriter {
         clazzBuilder.addMethod(handleMethodBuilder.build());
     }
 
-    private static void createApplyMethod(TypeSpec.Builder clazzBuilder,
+    private void createApplyMethod(TypeSpec.Builder clazzBuilder,
             KnitPresenterMirror presenterMirror, ClassName name) {
 
         MethodSpec.Builder applyMethodBuilder = MethodSpec
@@ -254,7 +253,7 @@ class KnitPresenterWriter {
         clazzBuilder.addMethod(applyMethodBuilder.build());
     }
 
-    private static void createRemoveMethod(TypeSpec.Builder clazzBuilder,
+    private void createRemoveMethod(TypeSpec.Builder clazzBuilder,
             KnitPresenterMirror presenterMirror) {
         MethodSpec.Builder removeActiveView = MethodSpec
                 .methodBuilder(KnitFileStrings.KNIT_PRESENTER_RELEASE_METHOD)
@@ -266,7 +265,7 @@ class KnitPresenterWriter {
         clazzBuilder.addMethod(removeActiveView.build());
     }
 
-    private static void createLoadMethod(TypeSpec.Builder clazzBuilder,
+    private void createLoadMethod(TypeSpec.Builder clazzBuilder,
             KnitPresenterMirror presenterMirror) {
         MethodSpec.Builder loadMethodBuilder = MethodSpec
                 .methodBuilder(KnitFileStrings.KNIT_ME_LOAD_METHOD)
@@ -278,7 +277,7 @@ class KnitPresenterWriter {
         clazzBuilder.addMethod(loadMethodBuilder.build());
     }
 
-    private static void createDestroyMethod(TypeSpec.Builder clazzBuilder,
+    private void createDestroyMethod(TypeSpec.Builder clazzBuilder,
             KnitPresenterMirror presenterMirror) {
 
         MethodSpec.Builder destroyMethodBuilder = MethodSpec
@@ -290,7 +289,7 @@ class KnitPresenterWriter {
         clazzBuilder.addMethod(destroyMethodBuilder.build());
     }
 
-    private static void createOnMemoryLowMethod(TypeSpec.Builder clazzBuilder,
+    private void createOnMemoryLowMethod(TypeSpec.Builder clazzBuilder,
             KnitPresenterMirror presenterMirror){
         MethodSpec.Builder onMemoryLowMethodBuilder = MethodSpec
                 .methodBuilder(KnitFileStrings.KNIT_ME_MEMORY_LOW_METHOD)
@@ -303,7 +302,7 @@ class KnitPresenterWriter {
     }
 
 
-    private static void createUpdatingMethods(TypeSpec.Builder clazzBuilder,
+    private void createUpdatingMethods(TypeSpec.Builder clazzBuilder,
             KnitPresenterMirror presenterMirror, Map<KnitPresenterMirror, KnitViewMirror> map) {
 
         for(String string : presenterMirror.updatingMethodsMap.keySet()){

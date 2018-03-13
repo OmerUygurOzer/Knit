@@ -1,8 +1,8 @@
 package com.omerozer.knitprocessor.model;
 
-import com.omerozer.knit.InstanceType;
 import com.omerozer.knit.UseMethod;
 import com.omerozer.knitprocessor.GeneratorExaminer;
+import com.omerozer.knitprocessor.KnitClassWriter;
 import com.omerozer.knitprocessor.KnitFileStrings;
 import com.omerozer.knitprocessor.user.UserMirror;
 import com.squareup.javapoet.ClassName;
@@ -12,7 +12,6 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import com.squareup.javapoet.WildcardTypeName;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -20,21 +19,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.VariableElement;
-import javax.tools.Diagnostic;
+
+import static com.omerozer.knitprocessor.KnitFileStrings.*;
 
 /**
  * Created by omerozer on 2/4/18.
  */
 
-class KnitModelWriter {
-    static void write(Filer filer, KnitModelMirror modelMirror,
+class KnitModelWriter extends KnitClassWriter {
+
+    String[] defaultMethods = new String[]{KNIT_ME_ONCREATE_METHOD,KNIT_ME_DESTROY_METHOD,KNIT_ME_LOAD_METHOD,KNIT_ME_MEMORY_LOW_METHOD};
+
+     void write(Filer filer, KnitModelMirror modelMirror,
             Map<KnitModelMirror, Set<UserMirror>> map) {
 
         TypeSpec.Builder clazzBuilder = TypeSpec
@@ -43,72 +45,30 @@ class KnitModelWriter {
                 .addModifiers(Modifier.PUBLIC)
                 .superclass(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL));
 
-        Set<String> handledVals = new HashSet<>();
+        addKnitWarning(clazzBuilder);
 
-        for (String[] params : modelMirror.generatesParamsMap.keySet()) {
-            handledVals.addAll(Arrays.asList(params));
-        }
+        createGetParentMethod(clazzBuilder,modelMirror);
+        createDependencyFields(clazzBuilder,modelMirror);
+        createDefaultMethods(clazzBuilder,modelMirror);
+        createGetHandledValuesMethod(clazzBuilder,modelMirror);
+        createRequestMethodForPresenter(clazzBuilder, modelMirror, map);
+        createRequestImmediateMethod(clazzBuilder,modelMirror);
+        createGeneratingFields(clazzBuilder, modelMirror);
+        createConstructor(clazzBuilder, modelMirror);
+        createInputMethod(clazzBuilder, modelMirror);
 
-        for (String[] params : modelMirror.inputterField.keySet()) {
-            handledVals.addAll(Arrays.asList(params));
-        }
 
-        String handledValsArray = KnitFileStrings.createStringArrayField(handledVals);
 
-        MethodSpec getHandledValsMethod = MethodSpec
-                .methodBuilder(KnitFileStrings.KNIT_MODEL_GETHANDLEDVALUES)
-                .addAnnotation(Override.class)
-                .addModifiers(Modifier.PUBLIC)
-                .returns(String[].class)
-                .addStatement("return " + handledValsArray)
-                .build();
+        PackageElement packageElement =
+                (PackageElement) modelMirror.enclosingClass.getEnclosingElement();
 
-        MethodSpec onCreateMethod = MethodSpec
-                .methodBuilder(KnitFileStrings.KNIT_ME_ONCREATE_METHOD)
-                .addAnnotation(Override.class)
-                .addModifiers(Modifier.PUBLIC)
-                .addStatement("this.parentExposer.use_$L()",
-                        KnitFileStrings.KNIT_ME_ONCREATE_METHOD)
-                .build();
 
-        MethodSpec onDestroyMethod = MethodSpec
-                .methodBuilder(KnitFileStrings.KNIT_ME_DESTROY_METHOD)
-                .addAnnotation(Override.class)
-                .addModifiers(Modifier.PUBLIC)
-                .addStatement("this.parentExposer.use_$L()", KnitFileStrings.KNIT_ME_DESTROY_METHOD)
-                .build();
+       writeToFile(filer,packageElement.getQualifiedName().toString(),clazzBuilder);
 
-        MethodSpec onLoadMethod = MethodSpec
-                .methodBuilder(KnitFileStrings.KNIT_ME_LOAD_METHOD)
-                .addAnnotation(Override.class)
-                .addModifiers(Modifier.PUBLIC)
-                .addStatement("this.parentExposer.use_$L()", KnitFileStrings.KNIT_ME_LOAD_METHOD)
-                .build();
+    }
 
-        MethodSpec onMemoryLow = MethodSpec
-                .methodBuilder(KnitFileStrings.KNIT_ME_MEMORY_LOW_METHOD)
-                .addAnnotation(Override.class)
-                .addModifiers(Modifier.PUBLIC)
-                .addStatement("this.parentExposer.use_$L()",
-                        KnitFileStrings.KNIT_ME_MEMORY_LOW_METHOD)
-                .build();
-
-        MethodSpec getParentMethod = MethodSpec
-                .methodBuilder(KnitFileStrings.KNIT_MODEL_GET_PARENT_METHOD)
-                .returns(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL_EXT))
-                .addAnnotation(Override.class)
-                .addModifiers(Modifier.PUBLIC)
-                .addStatement("return this.parentExposer.getParent()")
-                .build();
-
-        MethodSpec isSingletonMethod = MethodSpec
-                .methodBuilder(KnitFileStrings.KNIT_MODEL_IS_SINGLETON)
-                .returns(TypeName.BOOLEAN)
-                .addAnnotation(Override.class)
-                .addModifiers(Modifier.PUBLIC)
-                .addStatement("return $L",Boolean.toString(modelMirror.instanceType.equals(InstanceType.SINGLETON)))
-                .build();
-
+    private void createDependencyFields(TypeSpec.Builder builder,
+                                        KnitModelMirror modelMirror){
         FieldSpec parentExposerField = FieldSpec
                 .builder(ClassName.bestGuess(
                         modelMirror.enclosingClass.getQualifiedName().toString()
@@ -127,42 +87,12 @@ class KnitModelWriter {
                         ClassName.bestGuess(KnitFileStrings.KNIT_USER)), "userMap")
                 .addModifiers(Modifier.PRIVATE)
                 .build();
-
-        clazzBuilder.addField(parentExposerField);
-        clazzBuilder.addField(schedulerProviderField);
-        clazzBuilder.addField(instanceMapField);
-        clazzBuilder.addMethod(onCreateMethod);
-        createRequestMethodForPresenter(clazzBuilder, modelMirror, map);
-        createRequestImmediateMethod(clazzBuilder,modelMirror);
-        createGeneratingFields(clazzBuilder, modelMirror);
-        createConstructor(clazzBuilder, modelMirror);
-        createInputMethod(clazzBuilder, modelMirror);
-
-        clazzBuilder.addMethod(getHandledValsMethod);
-        clazzBuilder.addMethod(onDestroyMethod);
-        clazzBuilder.addMethod(onLoadMethod);
-        clazzBuilder.addMethod(onMemoryLow);
-        clazzBuilder.addMethod(getParentMethod);
-        clazzBuilder.addMethod(isSingletonMethod);
-
-
-        PackageElement packageElement =
-                (PackageElement) modelMirror.enclosingClass.getEnclosingElement();
-
-
-        JavaFile javaFile = JavaFile
-                .builder(packageElement.getQualifiedName().toString(), clazzBuilder.build())
-                .build();
-
-        try {
-            javaFile.writeTo(filer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        builder.addField(parentExposerField);
+        builder.addField(schedulerProviderField);
+        builder.addField(instanceMapField);
     }
 
-    private static void createGeneratingFields(TypeSpec.Builder clazzBuilder,
+    private void createGeneratingFields(TypeSpec.Builder builder,
             KnitModelMirror modelMirror) {
 
         Set<VariableElement> fields = new HashSet<>();
@@ -179,12 +109,12 @@ class KnitModelWriter {
                     .builder(TypeName.OBJECT, field.getSimpleName().toString()+"Lock",
                             Modifier.PRIVATE,Modifier.FINAL)
                     .build();
-            clazzBuilder.addField(generatorLock);
-            clazzBuilder.addField(generatorField);
+            builder.addField(generatorLock);
+            builder.addField(generatorField);
         }
     }
 
-    private static void createConstructor(TypeSpec.Builder clazzBuilder,
+    private void createConstructor(TypeSpec.Builder builder,
             KnitModelMirror modelMirror) {
 
         MethodSpec.Builder constructorBuilder = MethodSpec
@@ -209,10 +139,64 @@ class KnitModelWriter {
             constructorBuilder.addStatement("this.$L$L = new $L()",generator.getSimpleName().toString(),"Lock",TypeName.OBJECT);
         }
 
-        clazzBuilder.addMethod(constructorBuilder.build());
+        builder.addMethod(constructorBuilder.build());
     }
 
-    private static void createInputMethod(TypeSpec.Builder clazzBuilder,
+    private void createGetHandledValuesMethod(TypeSpec.Builder builder,
+                                              KnitModelMirror modelMirror){
+        Set<String> handledVals = new HashSet<>();
+
+        for (String[] params : modelMirror.generatesParamsMap.keySet()) {
+            handledVals.addAll(Arrays.asList(params));
+        }
+
+        for (String[] params : modelMirror.inputterField.keySet()) {
+            handledVals.addAll(Arrays.asList(params));
+        }
+
+        String handledValsArray = KnitFileStrings.createStringArrayField(handledVals);
+
+        MethodSpec getHandledValsMethod = MethodSpec
+                .methodBuilder(KNIT_MODEL_GETHANDLEDVALUES)
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(String[].class)
+                .addStatement("return " + handledValsArray)
+                .build();
+
+        builder.addMethod(getHandledValsMethod);
+    }
+
+    private void createGetParentMethod(TypeSpec.Builder builder,
+                                       KnitModelMirror modelMirror){
+
+        MethodSpec getParentMethod = MethodSpec
+                .methodBuilder(KnitFileStrings.KNIT_MODEL_GET_PARENT_METHOD)
+                .returns(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL_EXT))
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addStatement("return this.parentExposer.getParent()")
+                .build();
+
+        builder.addMethod(getParentMethod);
+    }
+
+    private void createDefaultMethods(TypeSpec.Builder builder,
+                                      KnitModelMirror modelMirror){
+
+        for(String methodName: defaultMethods){
+            MethodSpec methodSpec = MethodSpec
+                    .methodBuilder(methodName)
+                    .addAnnotation(Override.class)
+                    .addModifiers(Modifier.PUBLIC)
+                    .addStatement("this.parentExposer.use_$L()",
+                            methodName)
+                    .build();
+            builder.addMethod(methodSpec);
+        }
+    }
+
+    private void createInputMethod(TypeSpec.Builder builder,
             KnitModelMirror modelMirror) {
 
         MethodSpec.Builder inputMethodBuilder = MethodSpec
@@ -233,10 +217,10 @@ class KnitModelWriter {
             inputMethodBuilder.endControlFlow();
         }
 
-        clazzBuilder.addMethod(inputMethodBuilder.build());
+        builder.addMethod(inputMethodBuilder.build());
     }
 
-    private static void createRequestMethodForPresenter(TypeSpec.Builder clazzBuilder,
+    private void createRequestMethodForPresenter(TypeSpec.Builder builder,
             KnitModelMirror modelMirror, Map<KnitModelMirror, Set<UserMirror>> map) {
 
         MethodSpec.Builder requestMethodBuilder = MethodSpec
@@ -296,10 +280,10 @@ class KnitModelWriter {
         }
 
 
-        clazzBuilder.addMethod(requestMethodBuilder.build());
+        builder.addMethod(requestMethodBuilder.build());
     }
 
-    private static void createRequestImmediateMethod(TypeSpec.Builder clazzBuilder,
+    private void createRequestImmediateMethod(TypeSpec.Builder clazzBuilder,
             KnitModelMirror modelMirror) {
         MethodSpec.Builder requestImmediateMethodBuilder = MethodSpec
                 .methodBuilder(KnitFileStrings.KNIT_MODEL_REQUEST_IMMEDIATE_METHOD)
@@ -327,7 +311,7 @@ class KnitModelWriter {
     }
 
 
-    private static String createParamBlock(List<String> params, int padding) {
+    private String createParamBlock(List<String> params, int padding) {
         StringBuilder paramBuilder = new StringBuilder();
 
         for (int i = padding; i < params.size(); i++) {
@@ -346,7 +330,7 @@ class KnitModelWriter {
     }
 
 
-    private static String createConditionBlock(String[] params) {
+    private String createConditionBlock(String[] params) {
         StringBuilder conditionBuilder = new StringBuilder();
 
         for (int i = 0; i < params.length; i++) {
@@ -363,7 +347,7 @@ class KnitModelWriter {
     }
 
 
-    private static String findMethod(String[] params, UserMirror userMirror) {
+    private String findMethod(String[] params, UserMirror userMirror) {
         for (String param : params) {
             for (ExecutableElement executableElement : userMirror.method) {
                 if (executableElement.getAnnotation(UseMethod.class).value().equals(param)) {
@@ -374,7 +358,7 @@ class KnitModelWriter {
         return "";
     }
 
-    private static boolean methodExists(String[] params, UserMirror userMirror) {
+    private boolean methodExists(String[] params, UserMirror userMirror) {
         for (String param : params) {
             for (ExecutableElement executableElement : userMirror.method) {
                 if (executableElement.getAnnotation(UseMethod.class).value().equals(param)) {
@@ -386,7 +370,7 @@ class KnitModelWriter {
     }
 
 
-    private static TypeSpec createCallableTypeSpec(String[] params, List<String> types,
+    private TypeSpec createCallableTypeSpec(String[] params, List<String> types,
             KnitModelMirror modelMirror) {
 
         ClassName knitResponse = ClassName.bestGuess(KnitFileStrings.KNIT_RESPONSE);
@@ -417,7 +401,7 @@ class KnitModelWriter {
         return callable;
     }
 
-    private static TypeSpec createConsumerTypeSpec(String[] params, List<String> types, UserMirror userMirror) {
+    private TypeSpec createConsumerTypeSpec(String[] params, List<String> types, UserMirror userMirror) {
         ClassName knitResponse = ClassName.bestGuess(KnitFileStrings.KNIT_RESPONSE);
         TypeName responseType = GeneratorExaminer.getName(types.get(0));
         ParameterizedTypeName parameterizedKnitResponse = ParameterizedTypeName.get(knitResponse,

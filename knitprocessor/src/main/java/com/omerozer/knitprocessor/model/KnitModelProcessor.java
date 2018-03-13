@@ -37,6 +37,9 @@ public class KnitModelProcessor extends AbstractProcessor {
     private Set<KnitModelMirror> models;
     private Set<UserMirror> users;
     private Map<KnitModelMirror, Set<UserMirror>> modelToUserMap;
+    private KnitModelWriter modelWriter;
+    private ModelExposerWriter modelExposerWriter;
+    private ModelMapWriter modelMapWriter;
     //public static Messager messager;
 
     @Override
@@ -45,6 +48,9 @@ public class KnitModelProcessor extends AbstractProcessor {
         this.models = new HashSet<>();
         this.users = new HashSet<>();
         this.modelToUserMap = new HashMap<>();
+        this.modelWriter = new KnitModelWriter();
+        this.modelExposerWriter  = new ModelExposerWriter();
+        this.modelMapWriter = new ModelMapWriter();
         //messager = processingEnvironment.getMessager();
     }
 
@@ -135,12 +141,12 @@ public class KnitModelProcessor extends AbstractProcessor {
     private void createModels(Set<KnitModelMirror> models,
             Map<KnitModelMirror, Set<UserMirror>> map) {
         for (KnitModelMirror knitModelMirror : models) {
-            ModelExposerWriter.write(processingEnv.getFiler(), knitModelMirror);
-            KnitModelWriter.write(processingEnv.getFiler(), knitModelMirror, map);
+            modelExposerWriter.write(processingEnv.getFiler(), knitModelMirror);
+            modelWriter.write(processingEnv.getFiler(), knitModelMirror, map);
         }
     }
 
     private void createModelMap(Set<KnitModelMirror> modelsMirror){
-        ModelMapWriter.write(processingEnv.getFiler(),modelsMirror);
+        modelMapWriter.write(processingEnv.getFiler(),modelsMirror);
     }
 }

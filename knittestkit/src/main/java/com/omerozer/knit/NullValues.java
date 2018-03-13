@@ -42,10 +42,6 @@ public final class NullValues {
             return new String[0];
         }
 
-        @Override
-        public boolean isSingleton() {
-            return false;
-        }
     };
 
     public static final InternalPresenter NULL_PRESENTER = new InternalPresenter() {

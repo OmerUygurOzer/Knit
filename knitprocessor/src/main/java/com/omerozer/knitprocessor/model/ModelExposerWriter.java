@@ -1,6 +1,7 @@
 package com.omerozer.knitprocessor.model;
 
 import com.omerozer.knitprocessor.InterfaceMethodsCreatorForExposers;
+import com.omerozer.knitprocessor.KnitClassWriter;
 import com.omerozer.knitprocessor.KnitFileStrings;
 import com.omerozer.knitprocessor.KnitMethodsFilter;
 import com.omerozer.knitprocessor.model.KnitModelMirror;
@@ -25,22 +26,51 @@ import javax.lang.model.element.VariableElement;
  * Created by omerozer on 2/4/18.
  */
 
-class ModelExposerWriter {
-    static void write(Filer filer, KnitModelMirror modelMirror) {
+class ModelExposerWriter extends KnitClassWriter {
+    void write(Filer filer, KnitModelMirror modelMirror) {
 
         TypeSpec.Builder clazzBuilder = TypeSpec
                 .classBuilder(modelMirror.enclosingClass.getSimpleName()+ KnitFileStrings.KNIT_MODEL_EXPOSER_POSTFIX);
 
+        addKnitWarning(clazzBuilder);
+
         FieldSpec parentField = FieldSpec
                 .builder(TypeName.get(modelMirror.enclosingClass.asType()),"parent", Modifier.PRIVATE).build();
 
-        MethodSpec constructor = MethodSpec
+        createConstructor(clazzBuilder,modelMirror);
+        createExposedElements(clazzBuilder,modelMirror);
+        createGetParentMethod(clazzBuilder,modelMirror);
+        clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnCreateMethod());
+        clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnLoadMethod());
+        clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnMemoryLow());
+        clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnDestroyMethod());
+
+
+        clazzBuilder.addField(parentField);
+
+        PackageElement enclosingPackage = (PackageElement) modelMirror.enclosingClass.getEnclosingElement();
+
+        writeToFile(filer,enclosingPackage.getQualifiedName().toString(),clazzBuilder);
+
+    }
+
+    private void createConstructor(TypeSpec.Builder builder, KnitModelMirror modelMirror){
+        builder.addMethod( MethodSpec
                 .constructorBuilder()
                 .addParameter(TypeName.get(modelMirror.enclosingClass.asType()),"parent")
-                .addStatement("this.parent = parent")
-                .build();
+                .addStatement("this.parent = parent").build());
+    }
 
+    private void createGetParentMethod(TypeSpec.Builder builder, KnitModelMirror modelMirror){
+        builder.addMethod(MethodSpec
+                .methodBuilder("getParent")
+                .addModifiers(Modifier.PUBLIC)
+                .returns(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL_EXT))
+                .addStatement("return this.parent")
+                .build());
+    }
 
+    private void createExposedElements(TypeSpec.Builder builder, KnitModelMirror modelMirror){
         for(Element element : modelMirror.enclosingClass.getEnclosedElements()){
             if(element.getKind().isField()){
                 MethodSpec getter = MethodSpec
@@ -50,7 +80,7 @@ class ModelExposerWriter {
                         .addStatement("return parent."+element.getSimpleName())
                         .build();
 
-                clazzBuilder.addMethod(getter);
+                builder.addMethod(getter);
             }else if(element.getKind().equals(ElementKind.METHOD) && KnitMethodsFilter.filter(element)){
                 ExecutableElement methodElement = (ExecutableElement)element;
                 MethodSpec.Builder userMethodBuilder = MethodSpec
@@ -69,39 +99,8 @@ class ModelExposerWriter {
                     c++;
                 }
                 userMethodBuilder.addStatement("parent.$L($L)",methodElement.getSimpleName(),paramsText.toString());
-                clazzBuilder.addMethod(userMethodBuilder.build());
+                builder.addMethod(userMethodBuilder.build());
             }
         }
-
-        clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnCreateMethod());
-        clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnLoadMethod());
-        clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnMemoryLow());
-        clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnDestroyMethod());
-
-        MethodSpec getParentMethod = MethodSpec
-                .methodBuilder("getParent")
-                .addModifiers(Modifier.PUBLIC)
-                .returns(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL_EXT))
-                .addStatement("return this.parent")
-                .build();
-
-
-        clazzBuilder.addMethod(getParentMethod);
-        clazzBuilder.addField(parentField);
-        clazzBuilder.addMethod(constructor);
-
-        PackageElement enclosingPackage =
-                (PackageElement) modelMirror.enclosingClass.getEnclosingElement();
-
-        JavaFile javaFile = JavaFile
-                .builder(enclosingPackage.getQualifiedName().toString(), clazzBuilder.build())
-                .build();
-
-        try {
-            javaFile.writeTo(filer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 }

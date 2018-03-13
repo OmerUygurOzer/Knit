@@ -23,6 +23,11 @@ public class ModelMap implements ModelMapInterface {
     }
 
     @Override
+    public boolean isModelSingleton(Class<? extends InternalModel> clazz) {
+        return false;
+    }
+
+    @Override
     public Class<? extends InternalModel> getModelClassForModel(Class<? extends KnitModel> target) {
         return TestModel_Model.class;
     }

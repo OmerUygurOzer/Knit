@@ -30,8 +30,6 @@ import java.util.Set;
 
 public class UsageGraph {
 
-    private Knit knitInstance;
-
     private ViewToPresenterMapInterface viewToPresenterMap;
 
     private ModelMapInterface modelMap;
@@ -135,7 +133,7 @@ public class UsageGraph {
         if (!clazzToTagMap.containsKey(clazz)) {
             ComponentTag modelTag = ComponentTag.getNewTag();
             clazzToTagMap.put(clazz, modelTag);
-            counterMap.put(modelTag, new UserCounter());
+            counterMap.put(modelTag, modelMap.isModelSingleton(clazz)?new SingletonUserCounter() : new UserCounter());
             tagToClazzMap.put(modelTag, clazz);
         }
     }
@@ -209,6 +207,7 @@ public class UsageGraph {
         for (EntityNode node : entityNode.next) {
             recurseForStart(node, viewObject, data);
         }
+
         switch (entityNode.type) {
             case MODEL:
                 if (!counterMap.get(entityNode.tag).isUsed()) {
@@ -244,6 +243,11 @@ public class UsageGraph {
 
 
     private void recurseForFinish(EntityNode entityNode) {
+        //Again DFS to finish models first
+        for (EntityNode node : entityNode.next) {
+            recurseForFinish(node);
+        }
+
         counterMap.get(entityNode.tag).release();
         switch (entityNode.type) {
             case MODEL:
@@ -263,9 +267,7 @@ public class UsageGraph {
                 break;
         }
 
-        for (EntityNode node : entityNode.next) {
-            recurseForFinish(node);
-        }
+
     }
 
 

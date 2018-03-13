@@ -2,11 +2,14 @@ package com.omerozer.knitprocessor.model;
 
 import static com.omerozer.knitprocessor.KnitFileStrings.*;
 
+import com.omerozer.knit.InstanceType;
+import com.omerozer.knitprocessor.KnitClassWriter;
 import com.omerozer.knitprocessor.KnitFileStrings;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.WildcardTypeName;
 
@@ -22,15 +25,26 @@ import javax.lang.model.element.Modifier;
  * Created by omerozer on 2/6/18.
  */
 
-public class ModelMapWriter {
-    static void write(Filer filer, Set<KnitModelMirror> modelMirrors) {
-
+public class ModelMapWriter extends KnitClassWriter  {
+    void write(Filer filer, Set<KnitModelMirror> modelMirrors) {
 
         TypeSpec.Builder modelMapBuilder = TypeSpec
                 .classBuilder("ModelMap")
                 .addSuperinterface(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL_MAP_INTERFACE))
                 .addModifiers(Modifier.PUBLIC);
 
+        addKnitWarning(modelMapBuilder);
+
+        createGetAllMethod(modelMapBuilder,modelMirrors);
+        createGetHandledValuesMethod(modelMapBuilder,modelMirrors);
+        createGetRequiredValuesMethod(modelMapBuilder,modelMirrors);
+        createGetInternalModelForModelMethod(modelMapBuilder,modelMirrors);
+        createIsModelSingletonMethod(modelMapBuilder,modelMirrors);
+
+        writeToFile(filer,KnitFileStrings.KNIT_PACKAGE,modelMapBuilder);
+    }
+
+    private void createGetAllMethod(TypeSpec.Builder builder,Set<KnitModelMirror> modelMirrors){
         WildcardTypeName wildcardTypeName = WildcardTypeName.subtypeOf(
                 ClassName.bestGuess(KnitFileStrings.KNIT_MODEL));
 
@@ -53,15 +67,18 @@ public class ModelMapWriter {
         }
         stringBuilder.append(")");
 
-        MethodSpec getAllMethod = MethodSpec
+        builder.addMethod(MethodSpec
                 .methodBuilder("getAll")
                 .addAnnotation(Override.class)
                 .returns(returnTypeForGetAll)
                 .addStatement("return " + stringBuilder.toString())
                 .addModifiers(Modifier.PUBLIC)
-                .build();
+                .build());
+    }
 
-        modelMapBuilder.addMethod(getAllMethod);
+    private void createGetHandledValuesMethod(TypeSpec.Builder builder,Set<KnitModelMirror> modelMirrors){
+        int c;
+        StringBuilder stringBuilder;
 
         ParameterizedTypeName returnTypeForGeneratedVals = ParameterizedTypeName.get(TYPE_NAME_LIST, TYPE_NAME_STRING);
 
@@ -94,7 +111,13 @@ public class ModelMapWriter {
 
         getGeneratedValuesMethodBuilder.addStatement("return null");
 
-        modelMapBuilder.addMethod(getGeneratedValuesMethodBuilder.build());
+        builder.addMethod(getGeneratedValuesMethodBuilder.build());
+    }
+
+    private void createGetRequiredValuesMethod(TypeSpec.Builder builder,Set<KnitModelMirror> modelMirrors){
+        int c;
+        StringBuilder stringBuilder;
+        ParameterizedTypeName returnTypeForGeneratedVals = ParameterizedTypeName.get(TYPE_NAME_LIST, TYPE_NAME_STRING);
 
         MethodSpec.Builder getRequiredValuesMethodBuilder = MethodSpec
                 .methodBuilder("getRequiredValues")
@@ -125,7 +148,35 @@ public class ModelMapWriter {
 
         getRequiredValuesMethodBuilder.addStatement("return null");
 
-        modelMapBuilder.addMethod(getRequiredValuesMethodBuilder.build());
+        builder.addMethod(getRequiredValuesMethodBuilder.build());
+    }
+
+    private void createIsModelSingletonMethod(TypeSpec.Builder builder,Set<KnitModelMirror> modelMirrors){
+
+        WildcardTypeName knitModelSubType = WildcardTypeName.subtypeOf(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL));
+
+        ParameterizedTypeName knitModelClassName = ParameterizedTypeName.get(KnitFileStrings.TYPE_NAME_CLASS,knitModelSubType);
+
+        MethodSpec.Builder isModelSingletonMethodBuilder = MethodSpec
+                        .methodBuilder("isModelSingleton")
+                        .addAnnotation(Override.class)
+                        .returns(TypeName.BOOLEAN)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addParameter(knitModelClassName,"modelClazz");
+
+        for(KnitModelMirror modelMirror : modelMirrors){
+            isModelSingletonMethodBuilder.beginControlFlow("if(modelClazz.equals($L_Model.class))",modelMirror.enclosingClass.getQualifiedName());
+            isModelSingletonMethodBuilder.addStatement("return $L",Boolean.toString(modelMirror.instanceType.equals(InstanceType.SINGLETON)));
+            isModelSingletonMethodBuilder.endControlFlow();
+        }
+
+        isModelSingletonMethodBuilder.addStatement("return false");
+
+        builder.addMethod(isModelSingletonMethodBuilder.build());
+
+    }
+
+    private void createGetInternalModelForModelMethod(TypeSpec.Builder builder,Set<KnitModelMirror> modelMirrors){
 
         WildcardTypeName internalModelSubTypeName = WildcardTypeName.subtypeOf(ClassName.bestGuess(KnitFileStrings.KNIT_MODEL));
 
@@ -150,15 +201,6 @@ public class ModelMapWriter {
 
         getModelClassForModelMethodBuilder.addStatement("return null");
 
-        modelMapBuilder.addMethod(getModelClassForModelMethodBuilder.build());
-
-        JavaFile javaFile = JavaFile.builder(KnitFileStrings.KNIT_PACKAGE,
-                modelMapBuilder.build()).build();
-
-        try {
-            javaFile.writeTo(filer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        builder.addMethod(getModelClassForModelMethodBuilder.build());
     }
 }

@@ -4,18 +4,16 @@ import static com.omerozer.knitprocessor.KnitFileStrings.TYPE_NAME_CLASS;
 import static com.omerozer.knitprocessor.KnitFileStrings.TYPE_NAME_LIST;
 import static com.omerozer.knitprocessor.KnitFileStrings.TYPE_NAME_STRING;
 
+import com.omerozer.knitprocessor.KnitClassWriter;
 import com.omerozer.knitprocessor.KnitFileStrings;
 import com.omerozer.knitprocessor.PackageStringExtractor;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.WildcardTypeName;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.processing.Filer;
@@ -25,14 +23,28 @@ import javax.lang.model.element.Modifier;
  * Created by omerozer on 2/6/18.
  */
 
-public class ViewToPresenterMapWriter {
-    static void write(Filer filer, Map<KnitPresenterMirror, KnitViewMirror> map) {
+public class ViewToPresenterMapWriter extends KnitClassWriter {
+
+    void write(Filer filer, Map<KnitPresenterMirror, KnitViewMirror> map) {
         TypeSpec.Builder viewToPresenterMapBuilder = TypeSpec
                 .classBuilder(KnitFileStrings.KNIT_VIEW_PRESENTER)
                 .addSuperinterface(
                         ClassName.bestGuess(KnitFileStrings.KNIT_VIEW_PRESENTER_INTERFACE))
                 .addModifiers(Modifier.PUBLIC);
 
+        addKnitWarning(viewToPresenterMapBuilder);
+
+        createFindPresenterForClassMethod(viewToPresenterMapBuilder,map);
+        createGetAllViewsMethod(viewToPresenterMapBuilder,map);
+        createGetAllUpdatingValuesMethod(viewToPresenterMapBuilder,map);
+        createGetPresenterForParentMethod(viewToPresenterMapBuilder,map);
+
+       writeToFile(filer,KnitFileStrings.KNIT_PACKAGE,viewToPresenterMapBuilder);
+
+
+    }
+
+    private void createFindPresenterForClassMethod(TypeSpec.Builder builder,Map<KnitPresenterMirror, KnitViewMirror> map){
         MethodSpec.Builder findPresenterForClassMethodBuilder = MethodSpec
                 .methodBuilder("getPresenterClassForView")
                 .addParameter(TYPE_NAME_CLASS, "viewClass")
@@ -52,6 +64,10 @@ public class ViewToPresenterMapWriter {
         }
         findPresenterForClassMethodBuilder.addStatement("return null");
 
+        builder.addMethod(findPresenterForClassMethodBuilder.build());
+    }
+
+    private void createGetAllViewsMethod(TypeSpec.Builder builder,Map<KnitPresenterMirror, KnitViewMirror> map){
         WildcardTypeName wildcardTypeName = WildcardTypeName.subtypeOf(TypeName.OBJECT);
 
         ParameterizedTypeName viewClassName = ParameterizedTypeName.get(ClassName.bestGuess(Class.class.getCanonicalName()),wildcardTypeName);
@@ -79,12 +95,15 @@ public class ViewToPresenterMapWriter {
         stringBuilder.append(")");
 
         getAllViewsMethodBuilder.addStatement("return $L",stringBuilder.toString());
+        builder.addMethod(getAllViewsMethodBuilder.build());
+    }
 
-        viewToPresenterMapBuilder.addMethod(findPresenterForClassMethodBuilder.build());
-        viewToPresenterMapBuilder.addMethod(getAllViewsMethodBuilder.build());
-
-
+    private void createGetAllUpdatingValuesMethod(TypeSpec.Builder builder,Map<KnitPresenterMirror, KnitViewMirror> map){
         ParameterizedTypeName returnTypeForGeneratedVals = ParameterizedTypeName.get(TYPE_NAME_LIST, TYPE_NAME_STRING);
+
+        int c = 0;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("java.util.Arrays.asList(");
 
         MethodSpec.Builder getUpdatingValuesMethodBuilder = MethodSpec
                 .methodBuilder("getUpdatingValues")
@@ -116,10 +135,11 @@ public class ViewToPresenterMapWriter {
         }
 
         getUpdatingValuesMethodBuilder.addStatement("return null");
+        builder.addMethod(getUpdatingValuesMethodBuilder.build());
 
-        viewToPresenterMapBuilder.addMethod(getUpdatingValuesMethodBuilder.build());
+    }
 
-
+    private void createGetPresenterForParentMethod(TypeSpec.Builder builder,Map<KnitPresenterMirror, KnitViewMirror> map){
         MethodSpec.Builder getPresenterForParentMethodBuilder = MethodSpec
                 .methodBuilder("getPresenterClassForPresenter")
                 .addAnnotation(Override.class)
@@ -135,19 +155,6 @@ public class ViewToPresenterMapWriter {
             getPresenterForParentMethodBuilder.endControlFlow();
         }
         getPresenterForParentMethodBuilder.addStatement("return null");
-
-        viewToPresenterMapBuilder.addMethod(getPresenterForParentMethodBuilder.build());
-
-        JavaFile javaFile = JavaFile.builder(KnitFileStrings.KNIT_PACKAGE,
-                viewToPresenterMapBuilder.build()).build();
-
-
-        try {
-            javaFile.writeTo(filer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
+        builder.addMethod(getPresenterForParentMethodBuilder.build());
     }
 }

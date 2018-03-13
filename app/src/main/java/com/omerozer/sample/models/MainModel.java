@@ -3,6 +3,7 @@ package com.omerozer.sample.models;
 import android.util.Log;
 
 import com.omerozer.knit.Generates;
+import com.omerozer.knit.InstanceType;
 import com.omerozer.knit.KnitModel;
 import com.omerozer.knit.KnitResponse;
 import com.omerozer.knit.Model;
@@ -13,7 +14,7 @@ import com.omerozer.knit.generators.Generator1;
  * Created by omerozer on 2/3/18.
  */
 
-@Model
+@Model(InstanceType.SINGLETON)
 public class MainModel extends KnitModel {
 
     @Override
