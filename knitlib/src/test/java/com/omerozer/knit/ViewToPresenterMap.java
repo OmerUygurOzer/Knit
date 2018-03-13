@@ -13,32 +13,38 @@ import static org.mockito.Mockito.when;
 
 public class ViewToPresenterMap implements ViewToPresenterMapInterface {
 
-    private static ViewToPresenterMap mockViewToPresenterMap;
 
-    public static ViewToPresenterMap getMock(){
-        if(mockViewToPresenterMap==null) {
-            mockViewToPresenterMap = Mockito.mock(ViewToPresenterMap.class);
+    public static ViewToPresenterMap getMock() {
 
-            when(mockViewToPresenterMap.getAllViews()).thenReturn(Arrays.asList(View1.class, View2.class));
+        ViewToPresenterMap mockViewToPresenterMap = Mockito.mock(ViewToPresenterMap.class);
 
-            when(mockViewToPresenterMap.getUpdatingValues(TestPresenter_Presenter.class)).thenReturn(Arrays.asList("umb"));
-            when(mockViewToPresenterMap.getUpdatingValues(TestPresenter2_Presenter.class)).thenReturn(Arrays.<String>asList());
+        when(mockViewToPresenterMap.getAllViews()).thenReturn(
+                Arrays.asList(View1.class, View2.class));
 
-            when(mockViewToPresenterMap.getPresenterClassForPresenter(TestPresenter.class)).thenReturn(TestPresenter_Presenter.class);
-            when(mockViewToPresenterMap.getPresenterClassForPresenter(TestPresenter2.class)).thenReturn(TestPresenter2_Presenter.class);
+        when(mockViewToPresenterMap.getUpdatingValues(TestPresenter_Presenter.class)).thenReturn(
+                Arrays.asList("umb"));
+        when(mockViewToPresenterMap.getUpdatingValues(TestPresenter2_Presenter.class)).thenReturn(
+                Arrays.<String>asList());
 
-            when(mockViewToPresenterMap.getPresenterClassForView(View1.class)).thenReturn(TestPresenter_Presenter.class);
-            when(mockViewToPresenterMap.getPresenterClassForView(View2.class)).thenReturn(TestPresenter2_Presenter.class);
-        }
+        when(mockViewToPresenterMap.getPresenterClassForPresenter(TestPresenter.class)).thenReturn(
+                TestPresenter_Presenter.class);
+        when(mockViewToPresenterMap.getPresenterClassForPresenter(TestPresenter2.class)).thenReturn(
+                TestPresenter2_Presenter.class);
+
+        when(mockViewToPresenterMap.getPresenterClassForView(View1.class)).thenReturn(
+                TestPresenter_Presenter.class);
+        when(mockViewToPresenterMap.getPresenterClassForView(View2.class)).thenReturn(
+                TestPresenter2_Presenter.class);
+
         return mockViewToPresenterMap;
     }
 
     @Override
     public Class getPresenterClassForView(Class viewClass) {
-        if(viewClass.equals(View1.class)){
+        if (viewClass.equals(View1.class)) {
             return TestPresenter_Presenter.class;
         }
-        if(viewClass.equals(View2.class)){
+        if (viewClass.equals(View2.class)) {
             return TestPresenter2_Presenter.class;
         }
         return null;
@@ -46,10 +52,10 @@ public class ViewToPresenterMap implements ViewToPresenterMapInterface {
 
     @Override
     public Class getPresenterClassForPresenter(Class parentClass) {
-        if(parentClass.equals(TestPresenter.class)){
+        if (parentClass.equals(TestPresenter.class)) {
             return TestPresenter_Presenter.class;
         }
-        if(parentClass.equals(TestPresenter2.class)){
+        if (parentClass.equals(TestPresenter2.class)) {
             return TestPresenter2_Presenter.class;
         }
         return null;
@@ -62,11 +68,11 @@ public class ViewToPresenterMap implements ViewToPresenterMapInterface {
 
     @Override
     public List<String> getUpdatingValues(Class clazz) {
-        if(clazz.equals(TestPresenter_Presenter.class)){
+        if (clazz.equals(TestPresenter_Presenter.class)) {
             return Arrays.asList("umb");
         }
 
-        if(clazz.equals(TestPresenter2_Presenter.class)){
+        if (clazz.equals(TestPresenter2_Presenter.class)) {
             return Arrays.asList();
         }
 

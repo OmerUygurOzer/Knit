@@ -15,34 +15,17 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class IOScheduler implements SchedulerInterface {
 
-    private static final int DEFAULT_THREAD_POOL_SIZE = 4;
-    private static final String KNIT_LISTENER_THREAD_NAME = "knit_io_receiver";
-    private static  AtomicReference<ExecutorService> THREAD_POOL;
-
-    static {
-        THREAD_POOL = new AtomicReference<>();
-        init();
-    }
-
-    static void init(){
-        if(THREAD_POOL.get()!=null && THREAD_POOL.get().isShutdown()){
-            THREAD_POOL.set(Executors.newFixedThreadPool(DEFAULT_THREAD_POOL_SIZE));
-        }else if (THREAD_POOL.get()==null){
-            THREAD_POOL.set(Executors.newFixedThreadPool(DEFAULT_THREAD_POOL_SIZE));
-        }
-    }
 
 
-    private AtomicReference<HandlerThread> receiverThread;
-    private AtomicReference<Handler> receiverHandler;
+    private KnitIOThreadPool knitIOThreadPool;
+    private KnitIOReceiverThread knitIOReceiverThread;
     private AtomicReference<SchedulerInterface> target;
     private AtomicReference<Consumer> resultConsumer;
     private AtomicBoolean isDone;
 
-    public IOScheduler(){
-        init();
-        this.receiverThread  = new AtomicReference<>(new HandlerThread(KNIT_LISTENER_THREAD_NAME));
-        this.receiverHandler = new AtomicReference<>();
+    public IOScheduler(KnitIOThreadPool ioThreadPool,KnitIOReceiverThread receiverThread){
+        this.knitIOThreadPool = ioThreadPool;
+        this.knitIOReceiverThread = receiverThread;
         this.target = new AtomicReference<>();
         this.resultConsumer = new AtomicReference<>();
         this.isDone = new AtomicBoolean(false);
@@ -52,27 +35,24 @@ public class IOScheduler implements SchedulerInterface {
 
     @Override
     public<T> void submit(Callable<T> callable) {
-        THREAD_POOL.get().submit(createTask(callable));
+        knitIOThreadPool.submit(createTask(callable));
     }
 
     @Override
     public void submit(Runnable runnable) {
-        THREAD_POOL.get().submit(runnable);
+        knitIOThreadPool.submit(runnable);
     }
 
 
     @Override
     public void start() {
         EVICTOR_THREAD.registerScheduler(this);
-        this.receiverThread.get().start();
-        this.receiverHandler.set(new Handler(receiverThread.get().getLooper()));
+        this.knitIOReceiverThread.start();
     }
-
-
 
     @Override
     public void shutDown() {
-        this.receiverThread.get().quit();
+        this.knitIOReceiverThread.shutdown();
     }
 
     @Override
@@ -86,7 +66,7 @@ public class IOScheduler implements SchedulerInterface {
             public void run() {
                 try {
                     final Object data = callable.call();
-                    receiverHandler.get().post(new Runnable() {
+                    knitIOReceiverThread.post(new Runnable() {
                         @Override
                         public void run() {
                             target.get().start();

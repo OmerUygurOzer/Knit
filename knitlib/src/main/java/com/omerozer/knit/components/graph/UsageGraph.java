@@ -155,7 +155,7 @@ public class UsageGraph {
         return (InternalPresenter)instanceMap.get(clazzToTagMap.get(viewToPresenterMap.getPresenterClassForView(viewObject.getClass())));
     }
 
-    void attachViewToComponent(Object viewObject,Bundle bundle){
+    public void attachViewToComponent(Object viewObject,Bundle bundle){
         for(EntityNode presenter:graphBase.get(clazzToTagMap.get(viewObject.getClass())).next){
             if(instanceMap.containsKey(presenter.tag)){
                 ((InternalPresenter) instanceMap.get(presenter.tag)).onViewApplied(viewObject,bundle);

@@ -109,18 +109,20 @@ public class KnitAppListener implements Application.ActivityLifecycleCallbacks {
         }
     }
 
-    private FragmentManager.FragmentLifecycleCallbacks getSupportFragmentCallbacks() {
+    public FragmentManager.FragmentLifecycleCallbacks getSupportFragmentCallbacks() {
         if (supportFragmentCallbacks == null) {
             supportFragmentCallbacks = new FragmentManager.FragmentLifecycleCallbacks() {
                 @Override
                 public void onFragmentViewCreated(FragmentManager fm, Fragment f, View v,
                         Bundle savedInstanceState) {
                     super.onFragmentViewCreated(fm, f, v, savedInstanceState);
+                    knit.initViewDependencies(f);
                 }
 
                 @Override
                 public void onFragmentDestroyed(FragmentManager fm, Fragment f) {
                     super.onFragmentDestroyed(fm, f);
+                    knit.destoryComponent(f);
                 }
             };
         }
@@ -128,7 +130,7 @@ public class KnitAppListener implements Application.ActivityLifecycleCallbacks {
     }
 
     @SuppressLint("NewApi")
-    private android.app.FragmentManager.FragmentLifecycleCallbacks getoFragmentCallbacks() {
+    public android.app.FragmentManager.FragmentLifecycleCallbacks getoFragmentCallbacks() {
         if (oFragmentCallbacks == null) {
             oFragmentCallbacks = new android.app.FragmentManager.FragmentLifecycleCallbacks() {
                 @Override
@@ -143,7 +145,7 @@ public class KnitAppListener implements Application.ActivityLifecycleCallbacks {
                 public void onFragmentDestroyed(android.app.FragmentManager fm,
                         android.app.Fragment f) {
                     super.onFragmentDestroyed(fm, f);
-                    knit.releaseViewFromComponent(f);
+                    knit.destoryComponent(f);
                 }
             };
         }

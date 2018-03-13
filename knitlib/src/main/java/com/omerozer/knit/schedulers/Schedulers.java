@@ -8,9 +8,13 @@ import com.omerozer.knit.schedulers.heavy.HeavyTaskScheduler;
 
 public class Schedulers implements SchedulerProvider{
 
+    private KnitIOThreadPool ioThreadPool = new KnitIOThreadPool();
+
+    private KnitIOReceiverThread ioReceiverThread = new KnitIOReceiverThread();
+
     @Override
     public SchedulerInterface io(){
-        return new IOScheduler();
+        return new IOScheduler(ioThreadPool,ioReceiverThread);
     }
 
     @Override

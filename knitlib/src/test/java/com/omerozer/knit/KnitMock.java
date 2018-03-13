@@ -7,12 +7,13 @@ import com.omerozer.knit.components.ModelManager;
 import com.omerozer.knit.schedulers.SchedulerProvider;
 
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by bo_om on 3/12/2018.
+ * Created by Omer Ozer on 3/12/2018.
  */
 
 public class KnitMock {
@@ -24,13 +25,21 @@ public class KnitMock {
         KnitModelLoader knitModelLoader = Mockito.mock(KnitModelLoader.class);
         KnitPresenterLoader knitPresenterLoader = Mockito.mock(KnitPresenterLoader.class);
 
-        when(knitModelLoader.loadModel(TestModel_Model.class)).thenReturn(new TestModel_Model(new TestSchedulers()));
-        when(knitModelLoader.loadModel(TestModel2_Model.class)).thenReturn(new TestModel2_Model());
-        when(knitModelLoader.loadModel(TestSingleton_Model.class)).thenReturn(new TestSingleton_Model());
-        when(knitModelLoader.loadModel(UmbrellaModel_Model.class)).thenReturn(new UmbrellaModel_Model());
+        TestModel_Model mockTestModel = Mockito.mock(TestModel_Model.class);
+        TestModel2_Model mockTest2Model = Mockito.mock(TestModel2_Model.class);
+        TestSingleton_Model mockSingletonModel = Mockito.mock(TestSingleton_Model.class);
+        UmbrellaModel_Model mockUmbrellaModel = Mockito.mock(UmbrellaModel_Model.class);
 
-        when(knitPresenterLoader.loadPresenter(TestPresenter_Presenter.class)).thenReturn(new TestPresenter_Presenter());
-        when(knitPresenterLoader.loadPresenter(TestPresenter2_Presenter.class)).thenReturn(new TestPresenter2_Presenter());
+        when(knitModelLoader.loadModel(TestModel_Model.class)).thenReturn(mockTestModel);
+        when(knitModelLoader.loadModel(TestModel2_Model.class)).thenReturn(mockTest2Model);
+        when(knitModelLoader.loadModel(TestSingleton_Model.class)).thenReturn(mockSingletonModel);
+        when(knitModelLoader.loadModel(UmbrellaModel_Model.class)).thenReturn(mockUmbrellaModel);
+
+        TestPresenter_Presenter mockPresenter = Mockito.mock(TestPresenter_Presenter.class);
+        TestPresenter2_Presenter mockPresenter2 = Mockito.mock(TestPresenter2_Presenter.class);
+
+        when(knitPresenterLoader.loadPresenter(TestPresenter_Presenter.class)).thenReturn(mockPresenter);
+        when(knitPresenterLoader.loadPresenter(TestPresenter2_Presenter.class)).thenReturn(mockPresenter2);
 
         ViewToPresenterMap mockViewToPresenterMap = ViewToPresenterMap.getMock();
         when(utilsLoader.getViewToPresenterMap(any(Class.class))).thenReturn(mockViewToPresenterMap);
