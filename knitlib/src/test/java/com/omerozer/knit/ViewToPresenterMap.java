@@ -1,13 +1,38 @@
 package com.omerozer.knit;
 
+import org.mockito.Mockito;
+
 import java.util.Arrays;
 import java.util.List;
+
+import static org.mockito.Mockito.when;
 
 /**
  * Created by Omer Ozer on 3/8/18.
  */
 
 public class ViewToPresenterMap implements ViewToPresenterMapInterface {
+
+    private static ViewToPresenterMap mockViewToPresenterMap;
+
+    public static ViewToPresenterMap getMock(){
+        if(mockViewToPresenterMap==null) {
+            mockViewToPresenterMap = Mockito.mock(ViewToPresenterMap.class);
+
+            when(mockViewToPresenterMap.getAllViews()).thenReturn(Arrays.asList(View1.class, View2.class));
+
+            when(mockViewToPresenterMap.getUpdatingValues(TestPresenter_Presenter.class)).thenReturn(Arrays.asList("umb"));
+            when(mockViewToPresenterMap.getUpdatingValues(TestPresenter2_Presenter.class)).thenReturn(Arrays.<String>asList());
+
+            when(mockViewToPresenterMap.getPresenterClassForPresenter(TestPresenter.class)).thenReturn(TestPresenter_Presenter.class);
+            when(mockViewToPresenterMap.getPresenterClassForPresenter(TestPresenter2.class)).thenReturn(TestPresenter2_Presenter.class);
+
+            when(mockViewToPresenterMap.getPresenterClassForView(View1.class)).thenReturn(TestPresenter_Presenter.class);
+            when(mockViewToPresenterMap.getPresenterClassForView(View2.class)).thenReturn(TestPresenter2_Presenter.class);
+        }
+        return mockViewToPresenterMap;
+    }
+
     @Override
     public Class getPresenterClassForView(Class viewClass) {
         if(viewClass.equals(View1.class)){

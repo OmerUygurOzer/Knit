@@ -32,10 +32,11 @@ public class KnitMock {
         when(knitPresenterLoader.loadPresenter(TestPresenter_Presenter.class)).thenReturn(new TestPresenter_Presenter());
         when(knitPresenterLoader.loadPresenter(TestPresenter2_Presenter.class)).thenReturn(new TestPresenter2_Presenter());
 
-        when(utilsLoader.getViewToPresenterMap(any(Class.class))).thenReturn(new ViewToPresenterMap());
-        when(utilsLoader.getModelMap(any(Class.class))).thenReturn(new ModelMap());
+        ViewToPresenterMap mockViewToPresenterMap = ViewToPresenterMap.getMock();
+        when(utilsLoader.getViewToPresenterMap(any(Class.class))).thenReturn(mockViewToPresenterMap);
 
-
+        ModelMap mockModelMap = ModelMap.getMock();
+        when(utilsLoader.getModelMap(any(Class.class))).thenReturn(mockModelMap);
 
         when(knit.getModelManager()).thenReturn(Mockito.mock(ModelManager.class));
         when(knit.getNavigator()).thenReturn(Mockito.mock(KnitNavigator.class));

@@ -14,26 +14,27 @@ import static org.mockito.Mockito.when;
 
 public class ModelMap implements ModelMapInterface {
 
+    private static ModelMap mockModelMap;
+
     public static ModelMap getMock(){
-        ModelMap mockModelMap = Mockito.mock(ModelMap.class);
-        when(mockModelMap.getAll()).thenReturn(Arrays.asList(TestModel_Model.class,TestModel2_Model.class,TestSingleton_Model.class,UmbrellaModel_Model.class));
 
-        when(mockModelMap.getGeneratedValues(TestModel_Model.class)).thenReturn(Arrays.asList("v1"));
-        when(mockModelMap.getGeneratedValues(TestModel2_Model.class)).thenReturn(Arrays.asList("v2"));
-        when(mockModelMap.getGeneratedValues(UmbrellaModel_Model.class)).thenReturn(Arrays.asList("umb"));
-        when(mockModelMap.getGeneratedValues(TestSingleton_Model.class)).thenReturn(Arrays.asList("singltn"));
+            mockModelMap = Mockito.mock(ModelMap.class);
+            when(mockModelMap.getAll()).thenReturn(Arrays.asList(TestModel_Model.class, TestModel2_Model.class, TestSingleton_Model.class, UmbrellaModel_Model.class));
 
-        when(mockModelMap.getRequiredValues(TestModel_Model.class)).thenReturn(Arrays.<String>asList());
-        when(mockModelMap.getRequiredValues(TestModel2_Model.class)).thenReturn(Arrays.<String>asList());
-        when(mockModelMap.getRequiredValues(UmbrellaModel_Model.class)).thenReturn(Arrays.asList("v1","v2","singltn"));
-        when(mockModelMap.getRequiredValues(TestSingleton_Model.class)).thenReturn(Arrays.<String>asList());
+            when(mockModelMap.getGeneratedValues(TestModel_Model.class)).thenReturn(Arrays.asList("v1"));
+            when(mockModelMap.getGeneratedValues(TestModel2_Model.class)).thenReturn(Arrays.asList("v2"));
+            when(mockModelMap.getGeneratedValues(UmbrellaModel_Model.class)).thenReturn(Arrays.asList("umb"));
+            when(mockModelMap.getGeneratedValues(TestSingleton_Model.class)).thenReturn(Arrays.asList("singltn"));
 
-        when(mockModelMap.isModelSingleton(TestModel_Model.class)).thenReturn(false);
-        when(mockModelMap.isModelSingleton(TestModel2_Model.class)).thenReturn(false);
-        when(mockModelMap.isModelSingleton(UmbrellaModel_Model.class)).thenReturn(false);
-        when(mockModelMap.isModelSingleton(TestSingleton_Model.class)).thenReturn(true);
+            when(mockModelMap.getRequiredValues(TestModel_Model.class)).thenReturn(Arrays.<String>asList());
+            when(mockModelMap.getRequiredValues(TestModel2_Model.class)).thenReturn(Arrays.<String>asList());
+            when(mockModelMap.getRequiredValues(UmbrellaModel_Model.class)).thenReturn(Arrays.asList("v1", "v2", "singltn"));
+            when(mockModelMap.getRequiredValues(TestSingleton_Model.class)).thenReturn(Arrays.<String>asList());
 
-        //when(mockModelMap.getModelClassForModel(TestModel.class)).thenReturn(TestModel_Model.class);
+            when(mockModelMap.isModelSingleton(TestModel_Model.class)).thenReturn(false);
+            when(mockModelMap.isModelSingleton(TestModel2_Model.class)).thenReturn(false);
+            when(mockModelMap.isModelSingleton(UmbrellaModel_Model.class)).thenReturn(false);
+            when(mockModelMap.isModelSingleton(TestSingleton_Model.class)).thenReturn(true);
 
         return mockModelMap;
     }
