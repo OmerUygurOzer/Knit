@@ -1,5 +1,6 @@
 package com.omerozer.knit;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.omerozer.knit.schedulers.KnitSchedulers;
@@ -62,6 +63,11 @@ public final class NullValues {
 
         @Override
         public void onViewStop() {
+
+        }
+
+        @Override
+        public void onViewResult(int requestCode, int resultCode, Intent data) {
 
         }
 

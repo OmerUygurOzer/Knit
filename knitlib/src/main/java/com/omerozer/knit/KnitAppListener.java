@@ -109,6 +109,8 @@ public class KnitAppListener implements Application.ActivityLifecycleCallbacks {
 
     }
 
+
+
     @Override
     public void onActivityDestroyed(Activity activity) {
         if(activity.isFinishing()){

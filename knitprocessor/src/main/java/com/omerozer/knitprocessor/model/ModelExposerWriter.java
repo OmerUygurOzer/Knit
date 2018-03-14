@@ -45,7 +45,6 @@ class ModelExposerWriter extends KnitClassWriter {
         clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnMemoryLow());
         clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnDestroyMethod());
 
-
         clazzBuilder.addField(parentField);
 
         PackageElement enclosingPackage = (PackageElement) modelMirror.enclosingClass.getEnclosingElement();

@@ -1,5 +1,6 @@
 package com.omerozer.knit;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.omerozer.knit.schedulers.KnitSchedulers;
@@ -142,4 +143,8 @@ public abstract class KnitPresenter<T> implements PresenterInterface {
         contract = null;
     }
 
+    @Override
+    public void onViewResult(int requestCode, int resultCode, Intent data) {
+
+    }
 }

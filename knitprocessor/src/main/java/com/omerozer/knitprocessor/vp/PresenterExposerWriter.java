@@ -1,5 +1,7 @@
 package com.omerozer.knitprocessor.vp;
 
+import static com.omerozer.knitprocessor.KnitFileStrings.ANDROID_INTENT;
+
 import com.omerozer.knitprocessor.InterfaceMethodsCreatorForExposers;
 import com.omerozer.knitprocessor.KnitClassWriter;
 import com.omerozer.knitprocessor.KnitFileStrings;
@@ -113,6 +115,18 @@ public class PresenterExposerWriter extends KnitClassWriter {
 
     private void createNativeCallbacks(TypeSpec.Builder builder) {
         for (String callback : NativeViewCallbacks.getAll()) {
+            if(NativeViewCallbacks.isOnViewResult(callback)){
+                builder.addMethod(MethodSpec
+                        .methodBuilder("use_" + callback)
+                        .addParameter(TypeName.INT,"req")
+                        .addParameter(TypeName.INT,"res")
+                        .addParameter(ANDROID_INTENT,"data")
+                        .addModifiers(Modifier.PUBLIC)
+                        .addStatement("this.parent.$L(req,res,data)", callback)
+                        .build());
+                continue;
+            }
+
             builder.addMethod(MethodSpec
                     .methodBuilder("use_" + callback)
                     .addModifiers(Modifier.PUBLIC)

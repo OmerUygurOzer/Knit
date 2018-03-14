@@ -9,6 +9,10 @@ import java.util.List;
 
 public class NativeViewCallbacks {
     public static List<String> getAll(){
-        return Arrays.asList("onViewStart","onViewResume","onViewPause","onViewStop");
+        return Arrays.asList("onViewStart","onViewResume","onViewPause","onViewStop","onViewResult");
+    }
+
+    public static boolean isOnViewResult(String result){
+        return "onViewResult".equals(result);
     }
 }

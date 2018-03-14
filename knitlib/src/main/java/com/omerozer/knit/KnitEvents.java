@@ -1,5 +1,6 @@
 package com.omerozer.knit;
 
+import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -122,10 +123,15 @@ public class KnitEvents {
 
     public static<T> void fireGenericEvent(String tag,Object carrierObject,Object... params){
         GenericEvent genericEvent = genericEventPool.getEvent();
+        genericEvent.setTag(tag);
         genericEvent.setParams(params);
         knitInstance.findPresenterForView(carrierObject).handle(genericEventPool, genericEvent, knitInstance.getModelManager());
     }
 
+
+    public static void onViewResult(Object carrierObject,int requestCode,int resultCode,Intent data){
+        knitInstance.findPresenterForView(carrierObject).onViewResult(requestCode,resultCode,data);
+    }
 
 
 }

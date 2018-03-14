@@ -88,6 +88,7 @@ public class KnitFileStrings {
     public static final String ANDROID_HANDLER = "android.os.Handler";
     public static final String ANDROID_LOOPER = "android.os.Looper";
     public static final String ANDROID_BUNDLE = "android.os.Bundle";
+    public static final ClassName ANDROID_INTENT = ClassName.bestGuess("android.content.Intent");
 
 
     public static final String STRING_CLASS = String.class.getCanonicalName();

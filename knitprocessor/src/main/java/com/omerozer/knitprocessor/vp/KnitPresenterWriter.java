@@ -1,5 +1,7 @@
 package com.omerozer.knitprocessor.vp;
 
+import static com.omerozer.knitprocessor.KnitFileStrings.ANDROID_INTENT;
+
 import com.omerozer.knit.Use;
 import com.omerozer.knit.UseMethod;
 import com.omerozer.knitprocessor.KnitClassWriter;
@@ -192,6 +194,18 @@ class KnitPresenterWriter extends KnitClassWriter {
 
     private void createNativeViewCallbacks(TypeSpec.Builder builder, KnitPresenterMirror knitPresenterMirror){
         for(String callback : NativeViewCallbacks.getAll()){
+            if(NativeViewCallbacks.isOnViewResult(callback)){
+                builder.addMethod(MethodSpec
+                        .methodBuilder(callback)
+                        .addParameter(TypeName.INT,"req")
+                        .addParameter(TypeName.INT,"res")
+                        .addParameter(ANDROID_INTENT,"data")
+                        .addAnnotation(Override.class)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addStatement("this.parent.use_$L(req,res,data)", callback)
+                        .build());
+                continue;
+            }
             builder.addMethod(MethodSpec
                     .methodBuilder(callback)
                     .addAnnotation(Override.class)
