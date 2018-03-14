@@ -133,7 +133,7 @@ public class ModelMapWriter extends KnitClassWriter  {
                 stringBuilder.append("\"");
                 stringBuilder.append(field);
                 stringBuilder.append("\"");
-                if (c < knitModelMirror.vals.size() - 1) {
+                if (c < knitModelMirror.reqs.size() - 1) {
                     stringBuilder.append(",");
                 }
                 c++;
