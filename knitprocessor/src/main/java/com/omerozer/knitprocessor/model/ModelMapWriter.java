@@ -59,11 +59,10 @@ public class ModelMapWriter extends KnitClassWriter  {
             stringBuilder.append(modelMirror.enclosingClass.getQualifiedName());
             stringBuilder.append("_Model");
             stringBuilder.append(".class");
-
+            c++;
             if (c < modelMirrors.size() - 1) {
                 stringBuilder.append(",");
             }
-            c++;
         }
         stringBuilder.append(")");
 
@@ -97,10 +96,10 @@ public class ModelMapWriter extends KnitClassWriter  {
                 stringBuilder.append("\"");
                 stringBuilder.append(field);
                 stringBuilder.append("\"");
+                c++;
                 if (c < knitModelMirror.vals.size() - 1) {
                     stringBuilder.append(",");
                 }
-                c++;
             }
             stringBuilder.append(")");
 

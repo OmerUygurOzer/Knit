@@ -6,6 +6,8 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 
+import com.omerozer.knit.viewevents.GenericEvent;
+import com.omerozer.knit.viewevents.GenericEventPool;
 import com.omerozer.knit.viewevents.KnitOnClickEvent;
 import com.omerozer.knit.viewevents.KnitOnClickEventPool;
 import com.omerozer.knit.viewevents.KnitOnFocusChangedEvent;
@@ -31,6 +33,7 @@ public class KnitEvents {
     private final static KnitOnTextChangedEventPool onTextChangedEventPool = new KnitOnTextChangedEventPool();
     private final static KnitOnFocusChangedEventPool onFocusChangedEventPool = new KnitOnFocusChangedEventPool();
     private final static KnitSwipeRefreshLayoutEventPool onSwipeRefreshEventPool = new KnitSwipeRefreshLayoutEventPool();
+    private final static GenericEventPool genericEventPool = new GenericEventPool();
 
     public static void onClick(final String tag, final Object carrierObject, View view) {
         view.setOnClickListener(new android.view.View.OnClickListener() {
@@ -116,5 +119,13 @@ public class KnitEvents {
             }
         });
     }
+
+    public static<T> void fireGenericEvent(String tag,Object carrierObject,Object... params){
+        GenericEvent genericEvent = genericEventPool.getEvent();
+        genericEvent.setParams(params);
+        knitInstance.findPresenterForView(carrierObject).handle(genericEventPool, genericEvent, knitInstance.getModelManager());
+    }
+
+
 
 }
