@@ -72,6 +72,9 @@ class ModelExposerWriter extends KnitClassWriter {
 
     private void createExposedElements(TypeSpec.Builder builder, KnitModelMirror modelMirror){
         for(Element element : modelMirror.enclosingClass.getEnclosedElements()){
+            if(element.getModifiers().contains(Modifier.PRIVATE) || element.getModifiers().contains(Modifier.STATIC)){
+                continue;
+            }
             if(element.getKind().isField()){
                 MethodSpec getter = MethodSpec
                         .methodBuilder("get_"+element.getSimpleName().toString())

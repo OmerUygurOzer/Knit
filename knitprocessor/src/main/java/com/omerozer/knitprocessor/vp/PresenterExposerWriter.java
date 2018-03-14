@@ -75,6 +75,9 @@ public class PresenterExposerWriter extends KnitClassWriter {
 
     private void createExposingMethods(TypeSpec.Builder builder, KnitPresenterMirror presenterMirror) {
         for (Element element : presenterMirror.enclosingClass.getEnclosedElements()) {
+            if(element.getModifiers().contains(Modifier.PRIVATE) || element.getModifiers().contains(Modifier.STATIC)){
+                continue;
+            }
             if (element.getKind().isField()) {
                 MethodSpec getter = MethodSpec
                         .methodBuilder("get_" + element.getSimpleName().toString())
