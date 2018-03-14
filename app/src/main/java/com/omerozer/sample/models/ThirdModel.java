@@ -16,7 +16,7 @@ import java.util.List;
  * Created by omerozer on 3/1/18.
  */
 
-@Model
+//@Model
 public class ThirdModel extends KnitModel {
 
 
