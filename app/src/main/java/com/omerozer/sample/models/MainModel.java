@@ -14,7 +14,7 @@ import com.omerozer.knit.generators.Generator1;
  * Created by omerozer on 2/3/18.
  */
 
-//@Model(InstanceType.SINGLETON)
+@Model(InstanceType.SINGLETON)
 public class MainModel extends KnitModel {
 
     @Override

@@ -1,5 +1,6 @@
 package com.omerozer.knit;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.omerozer.knit.viewevents.ViewEventEnv;
@@ -115,6 +116,11 @@ public class TestPresenter_Presenter extends InternalPresenter {
 
     @Override
     public void onViewStop() {
+
+    }
+
+    @Override
+    public void onViewResult(int requestCode, int resultCode, Intent data) {
 
     }
 }

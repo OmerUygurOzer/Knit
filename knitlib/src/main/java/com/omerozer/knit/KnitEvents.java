@@ -5,7 +5,9 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 
 import com.omerozer.knit.viewevents.GenericEvent;
 import com.omerozer.knit.viewevents.GenericEventPool;
@@ -14,9 +16,15 @@ import com.omerozer.knit.viewevents.KnitOnClickEventPool;
 import com.omerozer.knit.viewevents.KnitOnFocusChangedEvent;
 import com.omerozer.knit.viewevents.KnitOnFocusChangedEventPool;
 import com.omerozer.knit.viewevents.KnitOnRefreshEvent;
+import com.omerozer.knit.viewevents.KnitOnSwitchToggleEvent;
+import com.omerozer.knit.viewevents.KnitOnSwitchToggleEventPool;
 import com.omerozer.knit.viewevents.KnitOnTextChangedEventPool;
 import com.omerozer.knit.viewevents.KnitSwipeRefreshLayoutEventPool;
 import com.omerozer.knit.viewevents.KnitTextChangedEvent;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by omerozer on 2/2/18.
@@ -30,10 +38,13 @@ public class KnitEvents {
         knitInstance = knit;
     }
 
+    private static Map<View,Set<Object>> viewToListenersMap = new LinkedHashMap<>();
+
     private final static KnitOnClickEventPool onClickEventPool = new KnitOnClickEventPool();
     private final static KnitOnTextChangedEventPool onTextChangedEventPool = new KnitOnTextChangedEventPool();
     private final static KnitOnFocusChangedEventPool onFocusChangedEventPool = new KnitOnFocusChangedEventPool();
     private final static KnitSwipeRefreshLayoutEventPool onSwipeRefreshEventPool = new KnitSwipeRefreshLayoutEventPool();
+    private final static KnitOnSwitchToggleEventPool onSwitchToggleEventPool = new KnitOnSwitchToggleEventPool();
     private final static GenericEventPool genericEventPool = new GenericEventPool();
 
     public static void onClick(final String tag, final Object carrierObject, View view) {
@@ -117,6 +128,18 @@ public class KnitEvents {
                 event.setTag(tag);
                 event.setViewWeakReference(view);
                 knitInstance.findPresenterForView(carrierObject).handle(onSwipeRefreshEventPool, event, knitInstance.getModelManager());
+            }
+        });
+    }
+
+    public static void onSwitchToggled(final String tag, final Object carrierObject,final Switch view){
+        view.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                KnitOnSwitchToggleEvent event = onSwitchToggleEventPool.getEvent();
+                event.setTag(tag);
+                event.setToggle(isChecked);
+                knitInstance.findPresenterForView(carrierObject).handle(onSwitchToggleEventPool,event,knitInstance.getModelManager());
             }
         });
     }

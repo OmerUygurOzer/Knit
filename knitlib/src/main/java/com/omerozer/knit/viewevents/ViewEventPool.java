@@ -24,8 +24,8 @@ public abstract class ViewEventPool<T extends ViewEventEnv> {
     }
 
     public void pool(T event){
+        event.clear();
         if(events.size()< getPoolSize()){
-            events.clear();
             events.push(event);
         }
     }
