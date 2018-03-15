@@ -41,6 +41,6 @@ public class KnitResponse<A> {
     }
 
     public boolean isSuccessfull() {
-        return errorMessage != null;
+        return errorMessage == null;
     }
 }
