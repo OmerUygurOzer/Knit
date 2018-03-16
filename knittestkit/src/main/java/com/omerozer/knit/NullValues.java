@@ -72,6 +72,11 @@ public final class NullValues {
         }
 
         @Override
+        public void onReturnToView() {
+
+        }
+
+        @Override
         public InternalModel getModelManager() {
             return null;
         }

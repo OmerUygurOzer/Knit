@@ -12,4 +12,5 @@ public interface NativeViewCallbacks {
     void onViewPause();
     void onViewStop();
     void onViewResult(int requestCode, int resultCode, Intent data);
+    void onReturnToView();
 }

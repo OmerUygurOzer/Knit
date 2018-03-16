@@ -4,9 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
-import com.omerozer.knit.Knit;
 import com.omerozer.knit.KnitView;
-import com.omerozer.knit.Updating;
 import com.omerozer.sample.R;
 
 /**

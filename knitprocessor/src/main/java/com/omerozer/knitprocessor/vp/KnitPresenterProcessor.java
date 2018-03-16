@@ -2,7 +2,7 @@ package com.omerozer.knitprocessor.vp;
 
 import com.omerozer.knit.KnitView;
 import com.omerozer.knit.Presenter;
-import com.omerozer.knit.Updating;
+import com.omerozer.knit.ModelEvent;
 import com.omerozer.knit.ViewEvent;
 import com.omerozer.knitprocessor.KnitAnnotations;
 
@@ -21,9 +21,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
-import javax.tools.Diagnostic;
 
 /**
  * Created by omerozer on 2/2/18.
@@ -77,9 +75,9 @@ public class KnitPresenterProcessor extends AbstractProcessor {
             knitPresenterMirror.targetView = getClassAnnotationValue(presenter, Presenter.class);
             for (Element element : clazz.getEnclosedElements()) {
                 if (element.getKind().equals(ElementKind.METHOD)) {
-                    if (element.getAnnotation(Updating.class) != null) {
+                    if (element.getAnnotation(ModelEvent.class) != null) {
                         knitPresenterMirror.updatingMethodsMap.put(
-                                element.getAnnotation(Updating.class).value(),
+                                element.getAnnotation(ModelEvent.class).value(),
                                 (ExecutableElement) element);
                     }else if(element.getAnnotation(ViewEvent.class)!=null){
                         knitPresenterMirror.viewEventMethods.put(

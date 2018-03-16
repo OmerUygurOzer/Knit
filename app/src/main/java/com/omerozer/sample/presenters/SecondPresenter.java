@@ -6,7 +6,7 @@ import android.util.Log;
 import com.omerozer.knit.KnitPresenter;
 import com.omerozer.knit.KnitResponse;
 import com.omerozer.knit.Presenter;
-import com.omerozer.knit.Updating;
+import com.omerozer.knit.ModelEvent;
 import com.omerozer.knit.schedulers.KnitSchedulers;
 import com.omerozer.sample.datatype.StringWrapper;
 import com.omerozer.sample.views.SecondActivity;
@@ -45,12 +45,12 @@ public class SecondPresenter extends KnitPresenter<SecondActivityContract> {
         Log.d("KNIT_TEST","PRESENTER TWO DESTROYED");
     }
 
-    @Updating("umbrella")
+    @ModelEvent("umbrella")
     void updateData2(KnitResponse<String> data){
         getContract().recMes(data.getBody());
     }
 
-    @Updating("Ttest")
+    @ModelEvent("Ttest")
     void updateDatat2(KnitResponse<List<StringWrapper>> data){
         getContract().recMes(data.getBody().get(0).string);
     }

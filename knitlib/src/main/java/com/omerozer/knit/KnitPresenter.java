@@ -144,7 +144,14 @@ public abstract class KnitPresenter<T> implements PresenterInterface {
     }
 
     @Override
+    public void onReturnToView() {
+
+    }
+
+    @Override
     public void onViewResult(int requestCode, int resultCode, Intent data) {
+
+
 
     }
 }

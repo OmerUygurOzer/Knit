@@ -62,6 +62,11 @@ public class TestPresenter2_Presenter extends InternalPresenter {
     }
 
     @Override
+    public void onReturnToView() {
+
+    }
+
+    @Override
     public void onViewApplied(Object viewObject, Bundle bundle) {
 
     }

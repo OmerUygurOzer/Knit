@@ -123,4 +123,9 @@ public class TestPresenter_Presenter extends InternalPresenter {
     public void onViewResult(int requestCode, int resultCode, Intent data) {
 
     }
+
+    @Override
+    public void onReturnToView() {
+
+    }
 }

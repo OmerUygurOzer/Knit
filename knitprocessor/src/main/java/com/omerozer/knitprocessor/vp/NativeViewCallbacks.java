@@ -9,7 +9,7 @@ import java.util.List;
 
 public class NativeViewCallbacks {
     public static List<String> getAll(){
-        return Arrays.asList("onViewStart","onViewResume","onViewPause","onViewStop","onViewResult");
+        return Arrays.asList("onViewStart","onViewResume","onViewPause","onViewStop","onViewResult","onReturnToView");
     }
 
     public static boolean isOnViewResult(String result){
