@@ -24,4 +24,6 @@ public interface KnitInterface {
 
     KnitUtilsLoader getUtilsLoader();
 
+    ViewEvents getViewEvents();
+
 }

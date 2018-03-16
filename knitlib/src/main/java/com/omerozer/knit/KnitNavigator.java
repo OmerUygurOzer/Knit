@@ -34,15 +34,10 @@ public class KnitNavigator {
         return new ActivityNavigator();
     }
 
-    public FragmentNavigator toFragment() {
-        return new FragmentNavigator();
-    }
-
     private Map<Class<?>, Bundle> navigatorDataMap = new LinkedHashMap<>();
 
     public Bundle getDataForTarget(Object object) {
-        return navigatorDataMap.containsKey(object.getClass()) ? navigatorDataMap.get(
-                object.getClass()) : null;
+        return navigatorDataMap.containsKey(object.getClass()) ? navigatorDataMap.get(object.getClass()) : null;
     }
 
     void navigatedTo(Object viewObject) {
@@ -74,61 +69,7 @@ public class KnitNavigator {
         }
     }
 
-    public class FragmentNavigator extends Navigator {
-        private Class<? extends Fragment> target;
-        private Bundle bundle;
-        private FragmentManager fragmentManager;
-        private int container;
 
-        public FragmentNavigator addData(Bundle bundle) {
-            this.bundle = bundle;
-            return this;
-        }
-
-        public FragmentNavigator target(Class<? extends Fragment> target) {
-            this.target = target;
-            return this;
-        }
-
-        public FragmentNavigator intoView(int id) {
-            this.container = id;
-            return this;
-        }
-
-        public FragmentNavigator usingManager(FragmentManager fragmentManager) {
-            this.fragmentManager = fragmentManager;
-            return this;
-        }
-
-        public void go() {
-            Constructor constructor;
-            Fragment instance = null;
-            if (bundle != null) {
-                navigatorDataMap.put(target, bundle);
-            }
-            try {
-                constructor = target.getConstructor();
-                instance = (Fragment) constructor.newInstance();
-                fragmentManager.beginTransaction()
-                        .replace(container, instance)
-                        .commit();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-        @Override
-        public Class<?> getTarget() {
-            return target;
-        }
-    }
 
 
 }

@@ -6,7 +6,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.omerozer.knit.KnitEvents;
+import com.omerozer.knit.Knit;
 import com.omerozer.knit.KnitView;
 import com.omerozer.sample.R;
 
@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.button = (Button)findViewById(R.id.btn_next) ;
-        KnitEvents.onClick(BUTTON_CLICK,this,button);
+        Knit.getInstance().getViewEvents().onClick(BUTTON_CLICK,this,button);
     }
 
     public void recMes(String message){

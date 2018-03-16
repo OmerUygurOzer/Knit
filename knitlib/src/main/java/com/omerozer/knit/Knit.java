@@ -45,6 +45,8 @@ public class Knit implements KnitInterface {
 
     private WeakReference<Application> app;
 
+    private ViewEvents viewEvents;
+
     private Knit(Application application){
         this.app = new WeakReference<Application>(application);
         this.modelManager = new ModelManager();
@@ -56,7 +58,6 @@ public class Knit implements KnitInterface {
         this.userGraph = new UsageGraph(this);
         application.registerComponentCallbacks(new KnitMemoryManager(userGraph));
         application.registerActivityLifecycleCallbacks(new KnitAppListener(this));
-        KnitEvents.init(this);
     }
 
     public Application getApp(){
@@ -112,6 +113,14 @@ public class Knit implements KnitInterface {
     @Override
     public KnitUtilsLoader getUtilsLoader() {
         return knitUtilsLoader;
+    }
+
+    @Override
+    public ViewEvents getViewEvents() {
+        if(viewEvents == null){
+            viewEvents = new ViewEvents(this);
+        }
+        return viewEvents;
     }
 
 
