@@ -19,25 +19,16 @@ import java.util.Map;
 
 public class KnitNavigator {
 
-    private static KnitNavigator instance;
-
-    static KnitNavigator getInstance() {
-        if (instance == null) {
-            instance = new KnitNavigator();
-        }
-        return instance;
-    }
+    private KnitInterface knitInterface;
 
     private WeakReference<Context> contextRef;
 
-    public ActivityNavigator toActivity() {
-        return new ActivityNavigator();
+    public KnitNavigator(KnitInterface knitInterface) {
+        this.knitInterface = knitInterface;
     }
 
-    private Map<Class<?>, Bundle> navigatorDataMap = new LinkedHashMap<>();
-
-    public Bundle getDataForTarget(Object object) {
-        return navigatorDataMap.containsKey(object.getClass()) ? navigatorDataMap.get(object.getClass()) : null;
+    public ActivityNavigator toActivity() {
+        return new ActivityNavigator();
     }
 
     void navigatedTo(Object viewObject) {
@@ -52,13 +43,24 @@ public class KnitNavigator {
     }
 
     public class ActivityNavigator extends Navigator {
+
         private Class<? extends Activity> target;
+        private KnitMessage knitMessage;
+
         public ActivityNavigator target(Class<? extends Activity> target) {
             this.target = target;
             return this;
         }
 
+        public ActivityNavigator setMessage(KnitMessage message) {
+            this.knitMessage = message;
+            return this;
+        }
+
         public void go() {
+            if (knitMessage != null) {
+                knitInterface.getMessageTrain().putMessageForView(target, knitMessage);
+            }
             Intent intent = new Intent(contextRef.get(), target);
             contextRef.get().startActivity(intent);
         }
@@ -68,8 +70,6 @@ public class KnitNavigator {
             return target;
         }
     }
-
-
 
 
 }

@@ -47,15 +47,20 @@ public class Knit implements KnitInterface {
 
     private ViewEvents viewEvents;
 
+    private MessagePool messagePool;
+
+    private MessageTrain messageTrain;
+
     private Knit(Application application){
         this.app = new WeakReference<Application>(application);
         this.modelManager = new ModelManager();
         this.schedulerProvider = new Schedulers();
-        this.navigator = KnitNavigator.getInstance();
+        this.navigator = new KnitNavigator(this);
         this.knitModelLoader = new KnitModelLoader(schedulerProvider);
         this.knitPresenterLoader = new KnitPresenterLoader(this);
         this.knitUtilsLoader = new KnitUtilsLoader();
         this.userGraph = new UsageGraph(this);
+        this.messagePool = new MessagePool();
         application.registerComponentCallbacks(new KnitMemoryManager(userGraph));
         application.registerActivityLifecycleCallbacks(new KnitAppListener(this));
     }
@@ -66,7 +71,7 @@ public class Knit implements KnitInterface {
 
     void initViewDependencies(Object viewObject) {
         navigator.navigatedTo(viewObject);
-        userGraph.startViewAndItsComponents(viewObject,navigator.getDataForTarget(viewObject));
+        userGraph.startViewAndItsComponents(viewObject);
     }
 
     void releaseViewFromComponent(Object viewObject) {
@@ -123,5 +128,16 @@ public class Knit implements KnitInterface {
         return viewEvents;
     }
 
+    @Override
+    public MessagePool getMessagePool() {
+        return messagePool;
+    }
 
+    @Override
+    public MessageTrain getMessageTrain() {
+        if(messageTrain == null){
+            messageTrain = new MessageTrain();
+        }
+        return messageTrain;
+    }
 }

@@ -34,25 +34,30 @@ public class ViewEvents {
 
     private static Map<View,Set<Object>> viewToListenersMap = new LinkedHashMap<>();
 
-    private final static KnitOnClickEventPool onClickEventPool = new KnitOnClickEventPool();
-    private final static KnitOnTextChangedEventPool onTextChangedEventPool = new KnitOnTextChangedEventPool();
-
-    private final static KnitOnFocusChangedEventPool onFocusChangedEventPool = new KnitOnFocusChangedEventPool();
-    private final static KnitSwipeRefreshLayoutEventPool onSwipeRefreshEventPool = new KnitSwipeRefreshLayoutEventPool();
-    private final static KnitOnSwitchToggleEventPool onSwitchToggleEventPool = new KnitOnSwitchToggleEventPool();
-    private final static GenericEventPool genericEventPool = new GenericEventPool();
+    private KnitOnClickEventPool onClickEventPool;
+    private KnitOnTextChangedEventPool onTextChangedEventPool;
+    private KnitOnFocusChangedEventPool onFocusChangedEventPool;
+    private KnitSwipeRefreshLayoutEventPool onSwipeRefreshEventPool;
+    private KnitOnSwitchToggleEventPool onSwitchToggleEventPool;
+    private GenericEventPool genericEventPool;
 
     private Knit knit;
 
     public ViewEvents(Knit knit){
         this.knit = knit;
+        this.onClickEventPool = new KnitOnClickEventPool();
+        this.onTextChangedEventPool = new KnitOnTextChangedEventPool();
+        this.onFocusChangedEventPool = new KnitOnFocusChangedEventPool();
+        this.onSwipeRefreshEventPool = new KnitSwipeRefreshLayoutEventPool();
+        this.onSwitchToggleEventPool = new KnitOnSwitchToggleEventPool();
+        this.genericEventPool = new GenericEventPool();
     }
 
     public void onClick(final String tag, final Object carrierObject, View view) {
         view.setOnClickListener(new android.view.View.OnClickListener() {
             @Override
             public void onClick(android.view.View view) {
-                KnitOnClickEvent event = onClickEventPool.getEvent();
+                KnitOnClickEvent event = onClickEventPool.getObject();
                 event.setTag(tag);
                 event.setViewWeakReference(view);
                 knit.findPresenterForView(carrierObject).handle(onClickEventPool, event, knit.getModelManager());
@@ -66,7 +71,7 @@ public class ViewEvents {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 view.removeTextChangedListener(this);
-                KnitTextChangedEvent event = onTextChangedEventPool.getEvent();
+                KnitTextChangedEvent event = onTextChangedEventPool.getObject();
                 event.setTag(tag);
                 event.setState(KnitTextChangedEvent.State.BEFORE);
                 event.setCharSequence(charSequence);
@@ -81,7 +86,7 @@ public class ViewEvents {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 view.removeTextChangedListener(this);
-                KnitTextChangedEvent event = onTextChangedEventPool.getEvent();
+                KnitTextChangedEvent event = onTextChangedEventPool.getObject();
                 event.setTag(tag);
                 event.setState(KnitTextChangedEvent.State.ON);
                 event.setCharSequence(charSequence);
@@ -96,7 +101,7 @@ public class ViewEvents {
             @Override
             public void afterTextChanged(Editable editable) {
                 view.removeTextChangedListener(this);
-                KnitTextChangedEvent event = onTextChangedEventPool.getEvent();
+                KnitTextChangedEvent event = onTextChangedEventPool.getObject();
                 event.setTag(tag);
                 event.setState(KnitTextChangedEvent.State.AFTER);
                 event.setAfterEditable(editable);
@@ -113,7 +118,7 @@ public class ViewEvents {
         view.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
-                KnitOnFocusChangedEvent event = onFocusChangedEventPool.getEvent();
+                KnitOnFocusChangedEvent event = onFocusChangedEventPool.getObject();
                 event.setTag(tag);
                 event.setFocus(b);
                 knit.findPresenterForView(carrierObject).handle(onFocusChangedEventPool, event, knit.getModelManager());
@@ -125,7 +130,7 @@ public class ViewEvents {
         view.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                KnitOnRefreshEvent event = onSwipeRefreshEventPool.getEvent();
+                KnitOnRefreshEvent event = onSwipeRefreshEventPool.getObject();
                 event.setTag(tag);
                 event.setViewWeakReference(view);
                 knit.findPresenterForView(carrierObject).handle(onSwipeRefreshEventPool, event, knit.getModelManager());
@@ -137,7 +142,7 @@ public class ViewEvents {
         view.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                KnitOnSwitchToggleEvent event = onSwitchToggleEventPool.getEvent();
+                KnitOnSwitchToggleEvent event = onSwitchToggleEventPool.getObject();
                 event.setTag(tag);
                 event.setToggle(isChecked);
                 knit.findPresenterForView(carrierObject).handle(onSwitchToggleEventPool,event,knit.getModelManager());
@@ -146,7 +151,7 @@ public class ViewEvents {
     }
 
     public <T> void fireGenericEvent(String tag,Object carrierObject,Object... params){
-        GenericEvent genericEvent = genericEventPool.getEvent();
+        GenericEvent genericEvent = genericEventPool.getObject();
         genericEvent.setTag(tag);
         genericEvent.setParams(params);
         knit.findPresenterForView(carrierObject).handle(genericEventPool, genericEvent, knit.getModelManager());

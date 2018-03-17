@@ -26,6 +26,7 @@ public class KnitFileStrings {
     public static final String KNIT_PRESENTER_APPLY_METHOD = "onViewApplied";
     public static final String KNIT_PRESENTER_RELEASE_METHOD = "onCurrentViewReleased";
     public static final String KNIT_PRESENTER_GET_PARENT_METHOD = "getParent";
+    public static final String KNIT_PRESENTER_RECEIVE_MESSAGE = "receiveMessage";
 
     //MEMORY ENTITY
     public static final String KNIT_ME_ONCREATE_METHOD = "onCreate";
@@ -78,7 +79,7 @@ public class KnitFileStrings {
     public static final ClassName TYPE_NAME_CALLABLE = ClassName.bestGuess("java.util.concurrent.Callable");
     public static final ClassName TYPE_NAME_CONSUMER = ClassName.bestGuess("com.omerozer.knit.schedulers.Consumer");
     public static final ClassName TYPE_NAME_SCHEDULER_ENUM = ClassName.bestGuess("com.omerozer.knit.schedulers.KnitSchedulers");
-
+    public static final ClassName TYPE_NAME_KNIT_MESSAGE = ClassName.bestGuess("com.omerozer.knit.KnitMessage");
 
 
     //CONTRACT

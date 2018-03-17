@@ -3,13 +3,15 @@ package com.omerozer.knit.viewevents;
 import android.os.Bundle;
 import android.view.View;
 
+import com.omerozer.knit.Poolable;
+
 import java.lang.ref.WeakReference;
 
 /**
  * Created by omerozer on 2/7/18.
  */
 
-public abstract class ViewEventEnv {
+public abstract class ViewEventEnv implements Poolable {
 
     private String tag;
 
@@ -27,7 +29,8 @@ public abstract class ViewEventEnv {
         this.dataBundle = new Bundle();
     }
 
-    public void clear(){
+    @Override
+    public void recycle(){
         this.tag = null;
         this.dataBundle.clear();
         this.viewWeakReference = null;

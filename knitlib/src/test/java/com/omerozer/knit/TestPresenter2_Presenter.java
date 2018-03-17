@@ -67,7 +67,7 @@ public class TestPresenter2_Presenter extends InternalPresenter {
     }
 
     @Override
-    public void onViewApplied(Object viewObject, Bundle bundle) {
+    public void onViewApplied(Object viewObject) {
 
     }
 
@@ -103,6 +103,11 @@ public class TestPresenter2_Presenter extends InternalPresenter {
 
     @Override
     public void handle(ViewEventPool eventPool, ViewEventEnv eventEnv, InternalModel modelManager) {
+
+    }
+
+    @Override
+    public void receiveMessage(KnitMessage message) {
 
     }
 }

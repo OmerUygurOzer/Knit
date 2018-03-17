@@ -45,6 +45,7 @@ public class PresenterExposerWriter extends KnitClassWriter {
         clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnLoadMethod());
         clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnMemoryLow());
         clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getOnDestroyMethod());
+        clazzBuilder.addMethod(InterfaceMethodsCreatorForExposers.getSetMessageMethod());
         createNativeCallbacks(clazzBuilder);
 
         PackageElement enclosingPackage = (PackageElement) presenterMirror.enclosingClass.getEnclosingElement();
@@ -74,6 +75,7 @@ public class PresenterExposerWriter extends KnitClassWriter {
 
         builder.addMethod(getParentMethod);
     }
+
 
     private void createExposingMethods(TypeSpec.Builder builder, KnitPresenterMirror presenterMirror) {
         for (Element element : presenterMirror.enclosingClass.getEnclosedElements()) {

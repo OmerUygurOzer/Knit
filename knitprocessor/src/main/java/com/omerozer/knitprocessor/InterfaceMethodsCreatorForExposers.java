@@ -1,6 +1,5 @@
 package com.omerozer.knitprocessor;
 
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 
 import javax.lang.model.element.Modifier;
@@ -47,9 +46,8 @@ public class InterfaceMethodsCreatorForExposers {
         return MethodSpec
                 .methodBuilder("use_onViewApplied")
                 .addParameter(Object.class,"o")
-                .addParameter(ClassName.bestGuess(KnitFileStrings.ANDROID_BUNDLE),"data")
                 .addModifiers(Modifier.PUBLIC)
-                .addStatement("parent.onViewApplied(o,data)")
+                .addStatement("parent.onViewApplied(o)")
                 .build();
     }
 
@@ -58,6 +56,15 @@ public class InterfaceMethodsCreatorForExposers {
                 .methodBuilder("use_onCurrentViewReleased")
                 .addModifiers(Modifier.PUBLIC)
                 .addStatement("parent.onCurrentViewReleased()")
+                .build();
+    }
+
+    public static MethodSpec getSetMessageMethod(){
+        return MethodSpec
+                .methodBuilder("use_"+KnitFileStrings.KNIT_PRESENTER_RECEIVE_MESSAGE)
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(KnitFileStrings.TYPE_NAME_KNIT_MESSAGE,"msg")
+                .addStatement("parent.setMessage(msg)")
                 .build();
     }
 }

@@ -22,12 +22,6 @@ import com.omerozer.sample.views.SecondActivity;
 public class MainPresenter extends KnitPresenter<MainActivityContract> {
 
     @Override
-    public void onViewApplied(Object viewObject,Bundle data){
-        super.onViewApplied(viewObject,data);
-
-    }
-
-    @Override
     public void onCurrentViewReleased() {
         super.onCurrentViewReleased();
     }

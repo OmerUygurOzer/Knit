@@ -16,7 +16,7 @@ public final class MockEvents {
     private static final KnitOnFocusChangedEventPool onFocusChangedEventPool = new KnitOnFocusChangedEventPool();
 
     public static void fireMockClickEvent(String tag,KnitPresenterTest presenterTest){
-        KnitOnClickEvent event = onClickEventPool.getEvent();
+        KnitOnClickEvent event = onClickEventPool.getObject();
         event.setTag(tag);
         presenterTest.getInternalObject().handle(onClickEventPool,event,NullValues.NULL_MODEL);
     }

@@ -183,6 +183,14 @@ class KnitPresenterWriter extends KnitClassWriter {
                 .addStatement("return this.parent.getParent()")
                 .build();
 
+        MethodSpec receiveMessageMethod = MethodSpec
+                .methodBuilder(KnitFileStrings.KNIT_PRESENTER_RECEIVE_MESSAGE)
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(KnitFileStrings.TYPE_NAME_KNIT_MESSAGE,"msg")
+                .addStatement("this.parent.use_receiveMessage(msg)")
+                .build();
+
         builder.addMethod(shouldLoadMethod);
         builder.addMethod(getModelManagerMethod);
         builder.addMethod(getContractMethod);
@@ -190,6 +198,7 @@ class KnitPresenterWriter extends KnitClassWriter {
         builder.addMethod(getUpdatablesMethod);
         builder.addMethod(getNavigatorMEthod);
         builder.addMethod(getParentMethod);
+        builder.addMethod(receiveMessageMethod);
     }
 
     private void createNativeViewCallbacks(TypeSpec.Builder builder, KnitPresenterMirror knitPresenterMirror){
@@ -253,7 +262,6 @@ class KnitPresenterWriter extends KnitClassWriter {
         MethodSpec.Builder applyMethodBuilder = MethodSpec
                 .methodBuilder(KnitFileStrings.KNIT_PRESENTER_APPLY_METHOD)
                 .addParameter(TypeName.OBJECT, "viewObject")
-                .addParameter(ClassName.bestGuess(KnitFileStrings.ANDROID_BUNDLE),"data")
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class);
 
@@ -262,7 +270,7 @@ class KnitPresenterWriter extends KnitClassWriter {
 
 
         applyMethodBuilder.addStatement("this.activeViewContract = new $L(target)",name);
-        applyMethodBuilder.addStatement("this.parent.use_onViewApplied(viewObject,data)");
+        applyMethodBuilder.addStatement("this.parent.use_onViewApplied(viewObject)");
 
         clazzBuilder.addMethod(applyMethodBuilder.build());
     }

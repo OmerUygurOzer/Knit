@@ -47,6 +47,11 @@ public final class NullValues {
 
     public static final InternalPresenter NULL_PRESENTER = new InternalPresenter() {
         @Override
+        public void receiveMessage(KnitMessage message) {
+
+        }
+
+        @Override
         public void onViewStart() {
 
         }
@@ -102,7 +107,7 @@ public final class NullValues {
         }
 
         @Override
-        public void onViewApplied(Object viewObject, Bundle bundle) {
+        public void onViewApplied(Object viewObject) {
 
         }
 

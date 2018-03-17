@@ -47,12 +47,16 @@ public class KnitMock {
         ModelMap mockModelMap = ModelMap.getMock();
         when(utilsLoader.getModelMap(any(Class.class))).thenReturn(mockModelMap);
 
+        MessageTrain mockMessageTrain = Mockito.mock(MessageTrain.class);
+        when(mockMessageTrain.getMessageForView(any(Class.class))).thenReturn(null);
+
         when(knit.getModelManager()).thenReturn(Mockito.mock(ModelManager.class));
         when(knit.getNavigator()).thenReturn(Mockito.mock(KnitNavigator.class));
         when(knit.getSchedulerProvider()).thenReturn(Mockito.mock(SchedulerProvider.class));
         when(knit.getUtilsLoader()).thenReturn(utilsLoader);
         when(knit.getModelLoader()).thenReturn(knitModelLoader);
         when(knit.getPresenterLoader()).thenReturn(knitPresenterLoader);
+        when(knit.getMessageTrain()).thenReturn(mockMessageTrain);
         return knit;
     }
 

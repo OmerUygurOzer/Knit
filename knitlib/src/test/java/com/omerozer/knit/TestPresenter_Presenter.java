@@ -60,7 +60,7 @@ public class TestPresenter_Presenter extends InternalPresenter {
     }
 
     @Override
-    public void onViewApplied(Object viewObject, Bundle bundle) {
+    public void onViewApplied(Object viewObject) {
 
     }
 
@@ -126,6 +126,11 @@ public class TestPresenter_Presenter extends InternalPresenter {
 
     @Override
     public void onReturnToView() {
+
+    }
+
+    @Override
+    public void receiveMessage(KnitMessage message) {
 
     }
 }

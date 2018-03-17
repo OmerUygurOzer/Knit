@@ -105,7 +105,7 @@ public class UsageGraphTests {
 
     @Test
     public void startViewComponentTest(){
-        usageGraph.startViewAndItsComponents(new View1(),null);
+        usageGraph.startViewAndItsComponents(new View1());
         verify(modelManager,times(TestEnv.totalModels())).registerModelComponentTag(any(ComponentTag.class));
         //+4 because we load them in setup also
         verify(modelLoader,times(TestEnv.totalModels()+4)).loadModel(internalModelCaptor.capture());
@@ -127,7 +127,7 @@ public class UsageGraphTests {
     @Test
     public void destroyViewComponentsTest(){
         View1 view1 = new View1();
-        usageGraph.startViewAndItsComponents(view1,null);
+        usageGraph.startViewAndItsComponents(view1);
         usageGraph.stopViewAndItsComponents(view1);
         verify(modelManager,times(TestEnv.nonSingleTonModels())).unregisterComponentTag(any(ComponentTag.class));
         verify(testModel).onDestroy();
@@ -141,19 +141,17 @@ public class UsageGraphTests {
     public void attachViewToComponentTest(){
         View1 view1 = new View1();
         ArgumentCaptor<View1> view1ArgumentCaptor = ArgumentCaptor.forClass(View1.class);
-        ArgumentCaptor<Bundle> bundleArgumentCaptor = ArgumentCaptor.forClass(Bundle.class);
-        usageGraph.startViewAndItsComponents(view1,null);
+        usageGraph.startViewAndItsComponents(view1);
         Mockito.reset(testPresenter);
-        usageGraph.attachViewToComponent(view1,null);
-        verify(testPresenter).onViewApplied(view1ArgumentCaptor.capture(),bundleArgumentCaptor.capture());
+        usageGraph.attachViewToComponent(view1);
+        verify(testPresenter).onViewApplied(view1ArgumentCaptor.capture());
         assertEquals(view1,view1ArgumentCaptor.getValue());
-        assertNull(bundleArgumentCaptor.getValue());
     }
 
     @Test
     public void releaseViewFromComponentTest(){
         View1 view1 = new View1();
-        usageGraph.startViewAndItsComponents(view1,null);
+        usageGraph.startViewAndItsComponents(view1);
         usageGraph.releaseViewFromComponent(view1);
         verify(testPresenter).onCurrentViewReleased();
     }

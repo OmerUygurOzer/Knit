@@ -7,7 +7,7 @@ import com.omerozer.knit.viewevents.handlers.EventHandler;
  */
 
 
-public abstract class InternalPresenter implements EventHandler,PresenterInterface {
+public abstract class InternalPresenter implements EventHandler,PresenterInterface,MessageReceiver {
 
     public abstract InternalModel getModelManager();
 

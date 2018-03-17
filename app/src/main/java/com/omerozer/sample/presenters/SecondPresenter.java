@@ -22,8 +22,8 @@ import java.util.List;
 public class SecondPresenter extends KnitPresenter<SecondActivityContract> {
 
     @Override
-    public void onViewApplied(Object viewObject,Bundle bundle){
-        super.onViewApplied(viewObject,bundle);
+    public void onViewApplied(Object viewObject){
+        super.onViewApplied(viewObject);
         request("umbrella", KnitSchedulers.IO,KnitSchedulers.MAIN);
         request("Ttest", KnitSchedulers.IO,KnitSchedulers.MAIN);
     }

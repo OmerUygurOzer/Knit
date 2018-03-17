@@ -26,4 +26,7 @@ public interface KnitInterface {
 
     ViewEvents getViewEvents();
 
+    MessagePool getMessagePool();
+
+    MessageTrain getMessageTrain();
 }

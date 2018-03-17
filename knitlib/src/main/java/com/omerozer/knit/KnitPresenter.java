@@ -26,12 +26,14 @@ public abstract class KnitPresenter<T> implements PresenterInterface {
 
     private Object contract;
 
+    private KnitMessage message;
+
     public void setKnit(Knit knit) {
         this.knitInstance = knit;
     }
 
     @Override
-    public void onViewApplied(Object viewObject, Bundle bundle) {
+    public void onViewApplied(Object viewObject) {
         this.contract = null;
         this.viewObjectRef = new WeakReference<Object>(viewObject);
     }
@@ -151,7 +153,17 @@ public abstract class KnitPresenter<T> implements PresenterInterface {
     @Override
     public void onViewResult(int requestCode, int resultCode, Intent data) {
 
+    }
+    protected KnitMessage newMessage(){
+        return knitInstance.getMessagePool().getObject();
+    }
 
 
+    public void setMessage(KnitMessage message) {
+        this.message = message;
+    }
+
+    protected KnitMessage getMessage(){
+        return this.message;
     }
 }

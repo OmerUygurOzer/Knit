@@ -8,6 +8,7 @@ import com.omerozer.knit.Knit;
 import com.omerozer.knit.KnitInterface;
 import com.omerozer.knit.KnitNavigator;
 import com.omerozer.knit.MemoryEntity;
+import com.omerozer.knit.MessageTrain;
 import com.omerozer.knit.ModelMapInterface;
 import com.omerozer.knit.ViewToPresenterMapInterface;
 import com.omerozer.knit.classloaders.KnitModelLoader;
@@ -41,6 +42,8 @@ public class UsageGraph {
 
     private KnitPresenterLoader knitPresenterLoader;
 
+    private MessageTrain messageTrain;
+
     private Map<ComponentTag, UserCounter> counterMap;
 
     private Map<ComponentTag, EntityNode> graphBase;
@@ -55,6 +58,7 @@ public class UsageGraph {
 
     private Set<ComponentTag> activePresenterTags;
 
+
     public UsageGraph(KnitInterface knitInstance) {
         this.modelManager = knitInstance.getModelManager();
         this.modelManager.setUsageGraph(this);
@@ -62,6 +66,7 @@ public class UsageGraph {
         this.modelMap = knitInstance.getUtilsLoader().getModelMap(knitInstance.getClass());
         this.knitModelLoader = knitInstance.getModelLoader();
         this.knitPresenterLoader = knitInstance.getPresenterLoader();
+        this.messageTrain = knitInstance.getMessageTrain();
         this.counterMap = new HashMap<>();
         this.graphBase = new HashMap<>();
         this.clazzToTagMap = new HashMap<>();
@@ -155,14 +160,14 @@ public class UsageGraph {
         return (InternalPresenter)instanceMap.get(clazzToTagMap.get(viewToPresenterMap.getPresenterClassForView(viewObject.getClass())));
     }
 
-    public void attachViewToComponent(Object viewObject,Bundle bundle){
+    public void attachViewToComponent(Object viewObject){
         if(!graphBase.containsKey(clazzToTagMap.get(viewObject.getClass()))){
             return;
         }
 
         for(EntityNode presenter:graphBase.get(clazzToTagMap.get(viewObject.getClass())).next){
             if(instanceMap.containsKey(presenter.tag)){
-                ((InternalPresenter) instanceMap.get(presenter.tag)).onViewApplied(viewObject,bundle);
+                ((InternalPresenter) instanceMap.get(presenter.tag)).onViewApplied(viewObject);
             }
         }
     }
@@ -190,9 +195,9 @@ public class UsageGraph {
         return false;
     }
 
-    public void startViewAndItsComponents(Object viewObject, Bundle data) {
+    public void startViewAndItsComponents(Object viewObject) {
         if(isComponentCreated(viewObject)){
-            attachViewToComponent(viewObject,data);
+            attachViewToComponent(viewObject);
             return;
         }
 
@@ -200,16 +205,15 @@ public class UsageGraph {
         if(!clazzToTagMap.containsKey(clazz)){
             return;
         }
-        recurseTraverseTheGraphAndStartIfNeeded(clazzToTagMap.get(clazz), viewObject, data);
+        recurseTraverseTheGraphAndStartIfNeeded(clazzToTagMap.get(clazz), viewObject);
     }
 
-    private void recurseTraverseTheGraphAndStartIfNeeded(ComponentTag tag, Object viewObject,
-            Bundle data) {
-        recurseForStart(graphBase.get(tag), viewObject, data);
+    private void recurseTraverseTheGraphAndStartIfNeeded(ComponentTag tag, Object viewObject) {
+        recurseForStart(graphBase.get(tag), viewObject);
     }
 
 
-    private void recurseForStart(EntityNode entityNode, Object viewObject, Bundle data) {
+    private void recurseForStart(EntityNode entityNode, Object viewObject) {
         //DFS to create models first
 
         if(entityNode==null){
@@ -217,7 +221,7 @@ public class UsageGraph {
         }
 
         for (EntityNode node : entityNode.next) {
-            recurseForStart(node, viewObject, data);
+            recurseForStart(node, viewObject);
         }
 
         switch (entityNode.type) {
@@ -234,11 +238,14 @@ public class UsageGraph {
             case PRESENTER:
                 if (!counterMap.get(entityNode.tag).isUsed()) {
                     InternalPresenter internalPresenter = knitPresenterLoader.loadPresenter(tagToClazzMap.get(entityNode.tag));
+                    if(messageTrain.getMessageForView(tagToClazzMap.get(entityNode.tag))!=null){
+                        internalPresenter.receiveMessage(messageTrain.getMessageForView(tagToClazzMap.get(entityNode.tag)));
+                    }
                     instanceMap.put(entityNode.tag, internalPresenter);
                     activePresenterTags.add(entityNode.tag);
                     internalPresenter.onCreate();
                 }
-                ((InternalPresenter) instanceMap.get(entityNode.tag)).onViewApplied(viewObject, data);
+                ((InternalPresenter) instanceMap.get(entityNode.tag)).onViewApplied(viewObject);
                 break;
         }
         counterMap.get(entityNode.tag).use();
