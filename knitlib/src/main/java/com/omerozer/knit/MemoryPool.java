@@ -24,14 +24,18 @@ public abstract class MemoryPool<T extends Poolable> {
 
     public void pool(T event){
         event.recycle();
-        if(events.size()< getPoolSize()){
+        if(events.size()< getMaxPoolSize()){
             events.push(event);
         }
     }
 
     protected abstract T createNewInstance();
 
-    protected int getPoolSize(){
+    public int availableObjects(){
+        return events.size();
+    }
+
+    protected int getMaxPoolSize(){
         return MAX;
     }
 }

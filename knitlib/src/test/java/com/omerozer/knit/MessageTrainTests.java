@@ -39,8 +39,4 @@ public class MessageTrainTests {
         assertFalse(messageTrain.hasMessage(View1.class));
     }
 
-
-
-
-
 }

@@ -11,7 +11,7 @@ public class KnitOnTextChangedEventPool extends ViewEventPool<KnitTextChangedEve
     }
 
     @Override
-    protected int getPoolSize() {
+    protected int getMaxPoolSize() {
         return 3;
     }
 }

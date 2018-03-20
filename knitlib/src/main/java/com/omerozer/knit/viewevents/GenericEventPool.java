@@ -11,7 +11,7 @@ public class GenericEventPool extends ViewEventPool<GenericEvent> {
     }
 
     @Override
-    protected int getPoolSize() {
+    protected int getMaxPoolSize() {
         return 4;
     }
 }

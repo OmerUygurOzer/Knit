@@ -12,7 +12,7 @@ public class KnitSwipeRefreshLayoutEventPool extends ViewEventPool<KnitOnRefresh
     }
 
     @Override
-    protected int getPoolSize() {
+    protected int getMaxPoolSize() {
         return 2;
     }
 }

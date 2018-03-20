@@ -11,7 +11,7 @@ public class KnitOnFocusChangedEventPool extends ViewEventPool<KnitOnFocusChange
     }
 
     @Override
-    protected int getPoolSize() {
+    protected int getMaxPoolSize() {
         return 2;
     }
 }

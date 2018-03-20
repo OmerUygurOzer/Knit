@@ -10,7 +10,7 @@ public abstract class ViewEventPool<T extends ViewEventEnv> extends MemoryPool<T
 
     private static final int MAX = 5;
 
-    protected int getPoolSize(){
+    protected int getMaxPoolSize(){
         return MAX;
     }
 

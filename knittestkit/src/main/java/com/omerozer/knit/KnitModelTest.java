@@ -19,10 +19,11 @@ public abstract class KnitModelTest<T extends KnitModel>{
 
     private TestModelManager modelManager;
 
+    private Mocker mocker;
+
     @Before
     public void init(){
         modelManager = new TestModelManager(getSchedulerProvider());
-
         try{
         setup();
         }catch (Exception e){
@@ -34,14 +35,6 @@ public abstract class KnitModelTest<T extends KnitModel>{
 
     }
 
-    private void addInitialModels(){
-        if(initWithModels().equals(Collections.EMPTY_LIST)){
-            return;
-        }
-        for(InternalModel model : initWithModels()){
-            modelManager.registerInternalModel(model);
-        }
-    }
 
     protected abstract SchedulerProvider getSchedulerProvider();
 
@@ -55,8 +48,13 @@ public abstract class KnitModelTest<T extends KnitModel>{
         return  (T)modelManager.registerModel(getModelClass());
     }
 
-    protected List<InternalModel> initWithModels(){
-        return Collections.EMPTY_LIST;
+    protected void setMocker(Mocker mocker){
+        this.mocker = mocker;
     }
+
+    protected InternalModel addMockModel(Class<? extends KnitModel> modelClazz){
+        return modelManager.registerModelMock(modelClazz,mocker);
+    }
+
 
 }
