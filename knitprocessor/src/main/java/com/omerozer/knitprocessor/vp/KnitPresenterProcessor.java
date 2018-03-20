@@ -6,6 +6,8 @@ import com.omerozer.knit.ModelEvent;
 import com.omerozer.knit.ViewEvent;
 import com.omerozer.knitprocessor.KnitAnnotations;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -73,12 +75,19 @@ public class KnitPresenterProcessor extends AbstractProcessor {
             KnitPresenterMirror knitPresenterMirror = new KnitPresenterMirror();
             knitPresenterMirror.enclosingClass = clazz;
             knitPresenterMirror.targetView = getClassAnnotationValue(presenter, Presenter.class);
+            String[] needs = presenter.getAnnotation(Presenter.class).needs();
+            if(needs[0]!=""){
+                knitPresenterMirror.needs.addAll(Arrays.<String>asList(needs));
+            }
             for (Element element : clazz.getEnclosedElements()) {
+
                 if (element.getKind().equals(ElementKind.METHOD)) {
                     if (element.getAnnotation(ModelEvent.class) != null) {
                         knitPresenterMirror.updatingMethodsMap.put(
                                 element.getAnnotation(ModelEvent.class).value(),
                                 (ExecutableElement) element);
+                        knitPresenterMirror.needs.addAll(Collections.<String>singletonList(
+                                element.getAnnotation(ModelEvent.class).value()));
                     }else if(element.getAnnotation(ViewEvent.class)!=null){
                         knitPresenterMirror.viewEventMethods.put(
                                 element.getAnnotation(ViewEvent.class).value(),

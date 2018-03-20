@@ -64,7 +64,7 @@ public class InterfaceMethodsCreatorForExposers {
                 .methodBuilder("use_"+KnitFileStrings.KNIT_PRESENTER_RECEIVE_MESSAGE)
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(KnitFileStrings.TYPE_NAME_KNIT_MESSAGE,"msg")
-                .addStatement("parent.setMessage(msg)")
+                .addStatement("parent.receiveMessage(msg)")
                 .build();
     }
 }

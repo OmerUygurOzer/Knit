@@ -6,8 +6,10 @@ import com.omerozer.knit.InternalModel;
 import com.omerozer.knit.InternalPresenter;
 import com.omerozer.knit.Knit;
 import com.omerozer.knit.KnitInterface;
+import com.omerozer.knit.KnitMessage;
 import com.omerozer.knit.KnitNavigator;
 import com.omerozer.knit.MemoryEntity;
+import com.omerozer.knit.MessagePool;
 import com.omerozer.knit.MessageTrain;
 import com.omerozer.knit.ModelMapInterface;
 import com.omerozer.knit.ViewToPresenterMapInterface;
@@ -44,6 +46,8 @@ public class UsageGraph {
 
     private MessageTrain messageTrain;
 
+    private MessagePool messagePool;
+
     private Map<ComponentTag, UserCounter> counterMap;
 
     private Map<ComponentTag, EntityNode> graphBase;
@@ -67,6 +71,7 @@ public class UsageGraph {
         this.knitModelLoader = knitInstance.getModelLoader();
         this.knitPresenterLoader = knitInstance.getPresenterLoader();
         this.messageTrain = knitInstance.getMessageTrain();
+        this.messagePool = knitInstance.getMessagePool();
         this.counterMap = new HashMap<>();
         this.graphBase = new HashMap<>();
         this.clazzToTagMap = new HashMap<>();
@@ -238,8 +243,10 @@ public class UsageGraph {
             case PRESENTER:
                 if (!counterMap.get(entityNode.tag).isUsed()) {
                     InternalPresenter internalPresenter = knitPresenterLoader.loadPresenter(tagToClazzMap.get(entityNode.tag));
-                    if(messageTrain.getMessageForView(tagToClazzMap.get(entityNode.tag))!=null){
-                        internalPresenter.receiveMessage(messageTrain.getMessageForView(tagToClazzMap.get(entityNode.tag)));
+                    if(messageTrain.hasMessage(tagToClazzMap.get(entityNode.tag))){
+                        KnitMessage message = messageTrain.getMessageForView(tagToClazzMap.get(entityNode.tag));
+                        internalPresenter.receiveMessage(message);
+                        messagePool.pool(message);
                     }
                     instanceMap.put(entityNode.tag, internalPresenter);
                     activePresenterTags.add(entityNode.tag);

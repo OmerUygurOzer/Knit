@@ -7,6 +7,9 @@ import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Created by omerozer on 2/20/18.
  */
@@ -19,6 +22,7 @@ public abstract class KnitModelTest<T extends KnitModel>{
     @Before
     public void init(){
         modelManager = new TestModelManager(getSchedulerProvider());
+
         try{
         setup();
         }catch (Exception e){
@@ -28,6 +32,15 @@ public abstract class KnitModelTest<T extends KnitModel>{
 
     public void setup() throws Exception{
 
+    }
+
+    private void addInitialModels(){
+        if(initWithModels().equals(Collections.EMPTY_LIST)){
+            return;
+        }
+        for(InternalModel model : initWithModels()){
+            modelManager.registerInternalModel(model);
+        }
     }
 
     protected abstract SchedulerProvider getSchedulerProvider();
@@ -40,6 +53,10 @@ public abstract class KnitModelTest<T extends KnitModel>{
 
     protected T getModel(){
         return  (T)modelManager.registerModel(getModelClass());
+    }
+
+    protected List<InternalModel> initWithModels(){
+        return Collections.EMPTY_LIST;
     }
 
 }

@@ -116,11 +116,11 @@ public class ViewToPresenterMapWriter extends KnitClassWriter {
             stringBuilder.append("java.util.Arrays.asList(");
             String packageString = PackageStringExtractor.extract(map.get(presenterMirror).enclosingClass.asType());
 
-            for (String field : presenterMirror.updatingMethodsMap.keySet()) {
+            for (String field : presenterMirror.needs) {
                 stringBuilder.append("\"");
                 stringBuilder.append(field);
                 stringBuilder.append("\"");
-                if (c < presenterMirror.updatingMethodsMap.size() - 1) {
+                if (c < presenterMirror.needs.size() - 1) {
                     stringBuilder.append(",");
                 }
                 c++;

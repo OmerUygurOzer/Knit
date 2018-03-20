@@ -2,7 +2,6 @@ package com.omerozer.sample.presenters;
 
 import static com.omerozer.sample.views.MainActivity.BUTTON_CLICK;
 
-import android.os.Bundle;
 import android.util.Log;
 
 import com.omerozer.knit.KnitPresenter;

@@ -18,7 +18,7 @@ import java.util.List;
  * Created by omerozer on 2/6/18.
  */
 
-@Presenter(SecondActivity.class)
+@Presenter(value = SecondActivity.class,needs = "DENTS")
 public class SecondPresenter extends KnitPresenter<SecondActivityContract> {
 
     @Override

@@ -1,5 +1,8 @@
 package com.omerozer.knit;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import com.omerozer.knit.classloaders.KnitModelLoader;
 import com.omerozer.knit.classloaders.KnitPresenterLoader;
 import com.omerozer.knit.classloaders.KnitUtilsLoader;
@@ -7,10 +10,6 @@ import com.omerozer.knit.components.ModelManager;
 import com.omerozer.knit.schedulers.SchedulerProvider;
 
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by Omer Ozer on 3/12/2018.

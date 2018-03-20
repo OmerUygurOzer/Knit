@@ -14,7 +14,7 @@ import java.lang.ref.WeakReference;
  * Created by omerozer on 2/12/18.
  */
 
-public abstract class KnitPresenter<T> implements PresenterInterface {
+public abstract class KnitPresenter<T> implements PresenterInterface,MessageReceiver {
 
     private WeakReference<Object> viewObjectRef;
 
@@ -88,7 +88,6 @@ public abstract class KnitPresenter<T> implements PresenterInterface {
             navigator =  knitInstance.findPresenterForParent(this).getNavigator();
         }
         return navigator;
-
     }
 
     @Override
@@ -159,8 +158,9 @@ public abstract class KnitPresenter<T> implements PresenterInterface {
     }
 
 
-    public void setMessage(KnitMessage message) {
-        this.message = message;
+    @Override
+    public void receiveMessage(KnitMessage message) {
+
     }
 
     protected KnitMessage getMessage(){

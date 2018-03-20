@@ -1,7 +1,9 @@
 package com.omerozer.knitprocessor.vp;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -21,5 +23,6 @@ public class KnitPresenterMirror {
 
     public Map<String,ExecutableElement> viewEventMethods = new LinkedHashMap<>();
 
+    public Set<String> needs = new LinkedHashSet<>();
 
 }

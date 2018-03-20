@@ -30,6 +30,12 @@ public final class TestModelManager extends ModelManager {
         return internalModel.getParent();
     }
 
+    void registerInternalModel(InternalModel internalModel){
+        for(String string : internalModel.getHandledValues()){
+            dataToModelMap.put(string,internalModel);
+        }
+    }
+
     @Override
     public void input(String data, Object... params) {
         if(dataToModelMap.containsKey(data)){

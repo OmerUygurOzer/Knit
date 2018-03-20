@@ -19,7 +19,13 @@ public class MessageTrain {
         this.messageMap.put(view,message);
     }
 
+    public boolean hasMessage(Class<?> view){
+        return this.messageMap.containsKey(view);
+    }
+
     public KnitMessage getMessageForView(Class<?> view){
-        return this.messageMap.get(view);
+        KnitMessage message = this.messageMap.get(view);
+        this.messageMap.remove(view);
+        return message;
     }
 }
