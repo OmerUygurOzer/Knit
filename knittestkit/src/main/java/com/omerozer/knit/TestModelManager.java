@@ -27,9 +27,10 @@ public final class TestModelManager extends ModelManager {
         this.modelMapInterface = utilsLoader.getModelMap(Knit.class);
     }
 
-    KnitModel registerModel(Class<? extends KnitModel> model){
-        InternalModel internalModel = modelLoader.loadModel(modelLoader.getModelForModel(model));
+    KnitModel registerModel(Class<? extends KnitModel> modelClazz){
+        InternalModel internalModel = modelLoader.loadModel(modelLoader.getModelForModel(modelClazz));
         registerInternalModel(internalModel);
+        internalModel.getParent().setModelManager(this);
         return internalModel.getParent();
     }
 
